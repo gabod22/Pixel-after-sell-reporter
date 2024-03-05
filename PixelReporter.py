@@ -33,7 +33,9 @@ class MainWindow(QMainWindow):
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
         self.completer.setWidget(self.ui.TxtClientName)
         self.completer.activated.connect(self.handleCompletion)
-        self.ui.TxtClientName.textChanged.connect(self.handleTextChanged)
+        self.completer.highlighted.connect(self.handle_select_client_change)
+        self.ui.TxtClientName.setCompleter(self.completer)
+        self.ui.TxtClientName.textEdited.connect(self.text_changed)
         self.ui.BtnSave.clicked.connect(lambda: self.save_to_trello())
         self.ui.CheckSameUser.stateChanged.connect(self.handle_same_owner_change)
         self.ui.CheckSameUser.setChecked(True)
@@ -41,10 +43,12 @@ class MainWindow(QMainWindow):
         self.ui.TxtUserPhone.setEnabled(False)
         self._completing = False
 
-    def handle_select_client_change(self):
-        _, client_name, client_phone = self.split_client_info(
-            self.ui.TxtClientName.text()
-        )
+    def text_changed(self):
+        self.ui.TxtUserName.setText("")
+        self.ui.TxtUserPhone.setText("")
+
+    def handle_select_client_change(self, text):
+        _, client_name, client_phone = self.split_client_info(text)
         self.ui.TxtUserName.setText(client_name)
         self.ui.TxtUserPhone.setText(client_phone)
         self.ui.TxtUserName.setEnabled(False)
@@ -76,7 +80,7 @@ class MainWindow(QMainWindow):
         )
 
         clients = [
-            f"{id} - {name} - {phone}".replace("\n", "").replace("\r", "")
+            f"{id} - {name} - {phone}".replace("\n", "").replace("\r", "").strip()
             for id, name, phone in zip(
                 clients_list[0],
                 clients_list[1],
@@ -85,8 +89,18 @@ class MainWindow(QMainWindow):
         ]
         return clients
 
-    def get_sell_notes():
-        pass
+    def mix_sell_note_clients():
+        sell_notes_df = pd.read_excel("Notasdeventa.xlsx")
+        sell_notes_df[
+            [
+                "Folio",
+                "Cliente - Nombre del cliente",
+                "Importe del total",
+                "Cliente - Teléfono",
+            ]
+        ]
+        for inx in sell_notes_df.index:
+            sell_notes_df
 
     def handleTextChanged(self, text):
         self.ui.TxtUserName.setText("")
@@ -98,7 +112,6 @@ class MainWindow(QMainWindow):
                 self.completer.setCompletionPrefix(prefix)
                 if self.completer.currentRow() >= 0:
                     found = True
-                    self.handle_select_client_change()
             if found:
                 self.completer.complete()
             else:
@@ -110,19 +123,12 @@ class MainWindow(QMainWindow):
             prefix = self.completer.completionPrefix()
             text = self.ui.TxtClientName.text()[: -len(prefix)] + text
             self.ui.TxtClientName.setText(text)
-            _, client_name, client_phone = self.split_client_info(text)
-            if self.ui.CheckSameUser.isChecked():
-                self.ui.TxtUserName.setText(client_name)
-                self.ui.TxtUserPhone.setText(client_phone)
-                self.ui.TxtUserName.setEnabled(False)
-                self.ui.TxtUserPhone.setEnabled(False)
+
             self._completing = False
 
     def split_client_info(self, str):
-        client_info = str
-        print(client_info)
-        client_arr = client_info.replace(" - ", ",")
-        client_arr = client_arr.split(",")
+        print(str)
+        client_arr = str.split(" - ")
         client_id = client_arr[0]
         client_name = client_arr[1]
         client_phone = client_arr[2]
