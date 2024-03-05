@@ -18,7 +18,8 @@ import requests
 import json
 
 from constants import trello_url, trello_headers
-from gspread import *
+
+# from gspread import *
 
 
 class MainWindow(QMainWindow):
@@ -33,8 +34,38 @@ class MainWindow(QMainWindow):
         self.completer.setWidget(self.ui.TxtClientName)
         self.completer.activated.connect(self.handleCompletion)
         self.ui.TxtClientName.textChanged.connect(self.handleTextChanged)
-        self.ui.BtnSave.clicked.connect(lambda: self.save_record())
+        self.ui.BtnSave.clicked.connect(lambda: self.save_to_trello())
+        self.ui.CheckSameUser.stateChanged.connect(self.handle_same_owner_change)
+        self.ui.CheckSameUser.setChecked(True)
+        self.ui.TxtUserName.setEnabled(False)
+        self.ui.TxtUserPhone.setEnabled(False)
         self._completing = False
+
+    def handle_select_client_change(self):
+        _, client_name, client_phone = self.split_client_info(
+            self.ui.TxtClientName.text()
+        )
+        self.ui.TxtUserName.setText(client_name)
+        self.ui.TxtUserPhone.setText(client_phone)
+        self.ui.TxtUserName.setEnabled(False)
+        self.ui.TxtUserPhone.setEnabled(False)
+
+    def handle_same_owner_change(self):
+        _, client_name, client_phone = self.split_client_info(
+            self.ui.TxtClientName.text()
+        )
+
+        if self.ui.CheckSameUser.isChecked():
+            self.ui.TxtUserName.setText(client_name)
+            self.ui.TxtUserPhone.setText(client_phone)
+            self.ui.TxtUserName.setEnabled(False)
+            self.ui.TxtUserPhone.setEnabled(False)
+            return
+        self.ui.TxtUserName.setText("")
+        self.ui.TxtUserPhone.setText("")
+        self.ui.TxtUserName.setEnabled(True)
+        self.ui.TxtUserPhone.setEnabled(True)
+        return
 
     def get_clients_list(self):
         clients_df = pd.read_excel("Clientes.xlsx")
@@ -54,7 +85,12 @@ class MainWindow(QMainWindow):
         ]
         return clients
 
+    def get_sell_notes():
+        pass
+
     def handleTextChanged(self, text):
+        self.ui.TxtUserName.setText("")
+        self.ui.TxtUserPhone.setText("")
         if not self._completing:
             found = False
             prefix = text.rpartition(",")[-1]
@@ -62,6 +98,7 @@ class MainWindow(QMainWindow):
                 self.completer.setCompletionPrefix(prefix)
                 if self.completer.currentRow() >= 0:
                     found = True
+                    self.handle_select_client_change()
             if found:
                 self.completer.complete()
             else:
@@ -71,46 +108,30 @@ class MainWindow(QMainWindow):
         if not self._completing:
             self._completing = True
             prefix = self.completer.completionPrefix()
-            self.ui.TxtClientName.setText(
-                self.ui.TxtClientName.text()[: -len(prefix)] + text
-            )
+            text = self.ui.TxtClientName.text()[: -len(prefix)] + text
+            self.ui.TxtClientName.setText(text)
+            _, client_name, client_phone = self.split_client_info(text)
+            if self.ui.CheckSameUser.isChecked():
+                self.ui.TxtUserName.setText(client_name)
+                self.ui.TxtUserPhone.setText(client_phone)
+                self.ui.TxtUserName.setEnabled(False)
+                self.ui.TxtUserPhone.setEnabled(False)
             self._completing = False
 
-    # def save_to_google(self):
-    #     try:
-    #         # progress_callback.emit('Obteniendo worksheet')
-    #         wks = get_worksheet()
-    #         print(wks)
-    #     except Exception as e:
-
-    #         # progress_callback.emit('Error al obtener el worksheet')
-    #         print(e)
-    #         return "No se guardó"
-
-    #     try:
-    #         # progress_callback.emit('Guardando...')
-    #         write_r
-    #         ange(
-    #             self.data,
-    #             self.notes,
-    #             wks,
-    #         )
-    #         print("La info fue guardada correctamente")
-    #     except Exception as e:
-    #         # self.showFailDialog('La información no fue guardada.')
-    #         # progress_callback.emit('No se guardó...')
-    #         print("La info no fue guardad :C %s" % e)
-    #         print(e)
-    #     finally:
-    #         self.data = [[]]
-    #         self.notes = []
-
-    #         return "Finalizado"
+    def split_client_info(self, str):
+        client_info = str
+        print(client_info)
+        client_arr = client_info.replace(" - ", ",")
+        client_arr = client_arr.split(",")
+        client_id = client_arr[0]
+        client_name = client_arr[1]
+        client_phone = client_arr[2]
+        return client_id, client_name, client_phone
 
     def save_to_trello(self):
-        client_name = self.ui.TxtClientName.text()
-        client_arr = client_name.replace(" ", "")
-        client_arr = client_arr.split("-")
+        _, client_name, client_phone = self.split_client_info(
+            self.ui.TxtClientName.text()
+        )
         user_name = self.ui.TxtUserName.text()
         user_phone = self.ui.TxtUserPhone.text()
         nota = self.ui.TxtNot.text()
@@ -119,11 +140,29 @@ class MainWindow(QMainWindow):
         type = self.ui.CbxType.currentText()
         problem = self.ui.TxtProblem.toPlainText()
 
+        if self.ui.CheckSameUser.isChecked():
+            desc = """
+            Cliente: {1} - {2} 
+            Usuario: {3} - {4}
+            {5}
+            {6}
+            """.format(
+                client_name, client_phone, user_name, user_phone, model, problem
+            )
+        else:
+            desc = """
+            Cliente: {1} - {2} 
+            {3}
+            {4}
+            """.format(
+                client_name, client_phone, model, problem
+            )
+
         query = {
             "idList": "64e3a78386e39e4a09ee5dfa",
             "key": "2c0369eb0c76fbbbf4ecf3094fd31356",
             "token": "ATTA504126bdf847174a49735b9aae0a35f420aaf97820a22364aeda54ceeecc067cF815610B",
-            "name": client_arr[1] + " " + nota,
+            "name": user_name + " " + nota,
             "desc": model + "\n" + problem,
         }
 
