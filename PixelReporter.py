@@ -27,12 +27,19 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self._completing_client = False
+        self._completing_sell_note = False
         self.clients = self.get_clients_list()
+        self.clients_notes = self.mix_sell_note_clients()
         self.completer = QCompleter(self.clients)
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
         self.completer.setWidget(self.ui.TxtClientName)
-        self.completer.activated.connect(self.handleCompletion)
+        self.completer.activated.connect(
+            lambda text: self.handleCompletion(
+                text, self.ui.TxtClientName, self.completer, self._completing_client
+            )
+        )
         self.completer.highlighted.connect(self.handle_select_client_change)
         self.ui.TxtClientName.setCompleter(self.completer)
         self.ui.TxtClientName.textEdited.connect(self.text_changed)
@@ -41,7 +48,6 @@ class MainWindow(QMainWindow):
         self.ui.CheckSameUser.setChecked(True)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
-        self._completing = False
 
     def text_changed(self):
         self.ui.TxtUserName.setText("")
@@ -53,6 +59,17 @@ class MainWindow(QMainWindow):
         self.ui.TxtUserPhone.setText(client_phone)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
+        print(self.clients_notes[client_name.strip()])
+        self.note_completer = QCompleter(self.clients_notes[client_name.strip()])
+        self.note_completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.note_completer.setFilterMode(Qt.MatchFlag.MatchContains)
+        self.note_completer.setWidget(self.ui.TxtNot)
+        self.note_completer.activated.connect(
+            lambda text: self.handleCompletion(
+                text, self.ui.TxtNot, self.note_completer, self._completing_sell_note
+            )
+        )
+        self.ui.TxtNot.setCompleter(self.note_completer)
 
     def handle_same_owner_change(self):
         _, client_name, client_phone = self.split_client_info(
@@ -89,7 +106,8 @@ class MainWindow(QMainWindow):
         ]
         return clients
 
-    def mix_sell_note_clients():
+    def mix_sell_note_clients(self):
+        clients_notes = {}
         sell_notes_df = pd.read_excel("Notasdeventa.xlsx")
         sell_notes_df[
             [
@@ -99,32 +117,47 @@ class MainWindow(QMainWindow):
                 "Cliente - Teléfono",
             ]
         ]
+
         for inx in sell_notes_df.index:
-            sell_notes_df
+            clients_notes[sell_notes_df["Cliente - Nombre del cliente"].iloc[inx]] = []
 
-    def handleTextChanged(self, text):
-        self.ui.TxtUserName.setText("")
-        self.ui.TxtUserPhone.setText("")
-        if not self._completing:
-            found = False
-            prefix = text.rpartition(",")[-1]
-            if len(prefix) > 1:
-                self.completer.setCompletionPrefix(prefix)
-                if self.completer.currentRow() >= 0:
-                    found = True
-            if found:
-                self.completer.complete()
-            else:
-                self.completer.popup().hide()
+        for inx in sell_notes_df.index:
+            clients_notes[
+                sell_notes_df["Cliente - Nombre del cliente"].iloc[inx]
+            ].append(
+                "{0} - {1} - {2}".format(
+                    sell_notes_df["Folio"].iloc[inx],
+                    round(sell_notes_df["Importe del total"].iloc[inx], 2),
+                    sell_notes_df["Fecha registro"].iloc[inx],
+                ),
+            )
 
-    def handleCompletion(self, text):
-        if not self._completing:
-            self._completing = True
-            prefix = self.completer.completionPrefix()
-            text = self.ui.TxtClientName.text()[: -len(prefix)] + text
-            self.ui.TxtClientName.setText(text)
+        return clients_notes
 
-            self._completing = False
+    # def handleTextChanged(self, text):
+    #     self.ui.TxtUserName.setText("")
+    #     self.ui.TxtUserPhone.setText("")
+    #     if not self._completing:
+    #         found = False
+    #         prefix = text.rpartition(",")[-1]
+    #         if len(prefix) > 1:
+    #             self.completer.setCompletionPrefix(prefix)
+    #             if self.completer.currentRow() >= 0:
+    #                 found = True
+    #         if found:
+    #             self.completer.complete()
+    #         else:
+    #             self.completer.popup().hide()
+
+    def handleCompletion(
+        self, text, txt_line: QLineEdit, completer: QCompleter, completing
+    ):
+        if not completing:
+            completing = True
+            prefix = completer.completionPrefix()
+            txt_line.setText(txt_line.text()[: -len(prefix)] + text)
+
+            completing = False
 
     def split_client_info(self, str):
         print(str)
@@ -148,18 +181,18 @@ class MainWindow(QMainWindow):
 
         if self.ui.CheckSameUser.isChecked():
             desc = """
-            Cliente: {1} - {2} 
-            Usuario: {3} - {4}
+            Cliente: {0} - {1} 
+            Usuario: {2} - {3}
+            {4}
             {5}
-            {6}
             """.format(
                 client_name, client_phone, user_name, user_phone, model, problem
             )
         else:
             desc = """
-            Cliente: {1} - {2} 
+            Cliente: {0} - {1} 
+            {2}
             {3}
-            {4}
             """.format(
                 client_name, client_phone, model, problem
             )
@@ -169,7 +202,7 @@ class MainWindow(QMainWindow):
             "key": "2c0369eb0c76fbbbf4ecf3094fd31356",
             "token": "ATTA504126bdf847174a49735b9aae0a35f420aaf97820a22364aeda54ceeecc067cF815610B",
             "name": user_name + " " + nota,
-            "desc": model + "\n" + problem,
+            "desc": desc,
         }
 
         response = requests.request(
