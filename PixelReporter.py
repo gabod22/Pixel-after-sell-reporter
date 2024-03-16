@@ -37,8 +37,8 @@ class MainWindow(QMainWindow):
         self._completing_client = False
         self._completing_sell_note = False
         # self.clients = self.get_clients_list()
-        self.clients_notes = self.mix_sell_note_clients()
-        self.sell_notes = self.get_sell_notes()
+        # self.clients_notes = self.mix_sell_note_clients()
+        self.sell_notes = self.mix_invoices_sellnotes()
         self.completer = QCompleter(self.sell_notes)
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
@@ -99,31 +99,38 @@ class MainWindow(QMainWindow):
 
     def get_clients_list(self):
         clients_df = pd.read_excel(path.join(dirname, "Clientes.xlsx"))
-        clients_list = list(
-            clients_df[["id", "Nombre del cliente", "Teléfono"]]
-            .to_dict("list")
-            .values()
-        )
+        clients_df = clients_df[["Nombre del cliente", "Teléfono"]]
+        # clients_list = list(
+        #     clients_df[["id", "Nombre del cliente", "Teléfono"]]
+        #     .to_dict("list")
+        #     .values()
+        # )
 
-        clients = [
-            f"{id} - {name} - {phone}".replace("\n", "").replace("\r", "").strip()
-            for id, name, phone in zip(
-                clients_list[0],
-                clients_list[1],
-                clients_list[2],
-            )
-        ]
-        return clients
+        # clients = [
+        #     f"{id} - {name} - {phone}".replace("\n", "").replace("\r", "").strip()
+        #     for id, name, phone in zip(
+        #         clients_list[0],
+        #         clients_list[1],
+        #         clients_list[2],
+        #     )
+        # ]
+        return clients_df
+    
+    def mix_invoices_sellnotes(self):
+        sell_notes = self.get_sell_notes()
+        invoices = self.get_invoices()
+        return sell_notes + invoices
 
     def get_sell_notes(self):
         sell_notes_df = pd.read_excel(path.join(dirname, "Notasdeventa.xlsx"))
+        sell_notes_df.rename(columns={"Cliente - Nombre del cliente": "Nombre del cliente", "Cliente - Teléfono": "Teléfono"}, inplace=True)
         sell_notes_list = list(
             sell_notes_df[
                 [
                     "Folio",
-                    "Cliente - Nombre del cliente",
+                    "Nombre del cliente",
                     "Importe del total",
-                    "Cliente - Teléfono",
+                    "Teléfono",
                 ]
             ]
             .to_dict("list")
@@ -138,18 +145,49 @@ class MainWindow(QMainWindow):
             )
         ]
         return sell_notes
+    
+    def get_invoices(self):
+        invoices_df = pd.read_excel(path.join(dirname, "Facturacion.xlsx"))
+        invoices_df.rename(columns={"Cliente - Nombre del cliente": "Nombre del cliente"}, inplace=True)
+        clients = self.get_clients_list()
+        invoices_df = invoices_df.merge(clients, on= "Nombre del cliente", how="left")
+        invoices_df_list = list(
+            invoices_df[
+                [
+                    "Folio",
+                    "Nombre del cliente",
+                    "Importe total",
+                    "Teléfono",
+                ]
+            ]
+            .to_dict("list")
+            .values()
+        )
+        sell_notes = [
+            f"{folio} - {name} - {phone}".replace("\n", "").replace("\r", "").strip()
+            for folio, name, phone in zip(
+                invoices_df_list[0],
+                invoices_df_list[1],
+                invoices_df_list[3],
+            )
+        ]
+        return sell_notes
 
     def mix_sell_note_clients(self):
         clients_notes = {}
-        sell_notes_df = pd.read_excel("Notasdeventa.xlsx")
-        sell_notes_df[
+        try:
+            sell_notes_df = pd.read_excel("Notasdeventa.xlsx")
+            sell_notes_df[
             [
                 "Folio",
-                "Cliente - Nombre del cliente",
+                "Nombre del cliente",
                 "Importe del total",
                 "Cliente - Teléfono",
             ]
         ]
+        except Exception as e:
+            showFailDialog(self, "No se pudo abrir el documento de las notas de venta, revise que el archivo exista o no esté dañado.")
+            return []
 
         for inx in sell_notes_df.index:
             clients_notes[sell_notes_df["Cliente - Nombre del cliente"].iloc[inx]] = []
@@ -234,8 +272,12 @@ class MainWindow(QMainWindow):
             print("todo correcto")
             self.clean_inputs()
             
-        if(response.status_code == 401):
+        elif(response.status_code == 401):
             showFailDialog(self, "Error, no se pudo agregar, no tiene los permisos.")
+        
+        else:
+            showFailDialog(self, "Algo salió mal, contacta con el administrador")
+
 
 
 if __name__ == "__main__":
