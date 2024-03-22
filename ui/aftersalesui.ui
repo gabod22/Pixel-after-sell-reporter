@@ -100,13 +100,6 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="TxtModel">
-        <property name="placeholderText">
-         <string>Lenovo Thinkpad YOGA 11e</string>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
@@ -161,6 +154,9 @@
       </item>
       <item row="4" column="1">
        <widget class="QPlainTextEdit" name="TxtProblem"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="CbxModel"/>
       </item>
      </layout>
     </item>

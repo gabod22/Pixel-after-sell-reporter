@@ -108,11 +108,6 @@ class Ui_MainWindow(object):
 
         self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_5)
 
-        self.TxtModel = QLineEdit(self.centralwidget)
-        self.TxtModel.setObjectName(u"TxtModel")
-
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.TxtModel)
-
         self.label_6 = QLabel(self.centralwidget)
         self.label_6.setObjectName(u"label_6")
 
@@ -147,6 +142,11 @@ class Ui_MainWindow(object):
 
         self.formLayout.setWidget(4, QFormLayout.FieldRole, self.TxtProblem)
 
+        self.CbxModel = QComboBox(self.centralwidget)
+        self.CbxModel.setObjectName(u"CbxModel")
+
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.CbxModel)
+
 
         self.verticalLayout_2.addLayout(self.formLayout)
 
@@ -179,7 +179,6 @@ class Ui_MainWindow(object):
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"Nota de venta", None))
         self.TxtNot.setPlaceholderText(QCoreApplication.translate("MainWindow", u"NOT00000", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"Modelo del equipo", None))
-        self.TxtModel.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Lenovo Thinkpad YOGA 11e", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"Orden servicio", None))
         self.TxtOS.setPlaceholderText(QCoreApplication.translate("MainWindow", u"SERV00000", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"Tipo de postventa", None))

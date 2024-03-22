@@ -20,6 +20,7 @@ from os import path
 
 from constants import trello_url, trello_headers
 from dialogs import showSuccessDialog, showFailDialog
+from helpers import get_last_index, split_client_info
 
 # from gspread import *
 
@@ -28,18 +29,48 @@ if getattr(sys, "frozen", False):
 elif __file__:
     dirname = path.join(path.dirname(__file__))
 
+sell_notes_columns = [
+    "Folio",
+    "Sucursal",
+    "Nombre del cliente",
+    "Fecha registro",
+    "Estado",
+    "Subtotal",
+    "Descuento",
+    "Impuestos",
+    "Importe del total",
+    "Ejecutivo",
+    
+
+]
+items_cols = [
+    "SKU",
+    "Descripcion",
+    "Cantidad",
+    "Precio unitario",
+    "Impuestos",
+    "Porcentaje de descuento",
+    "Subtotal",
+    "Importe",
+]
+
+
+
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.filepath = path.join(dirname, "notasventa.xlsx")
         self._completing_client = False
         self._completing_sell_note = False
-        # self.clients = self.get_clients_list()
+        self.clients = self.get_clients_list()
+        self.tables = [{"data": self.clients, "on": "Nombre del cliente", "how":"left"}]
         # self.clients_notes = self.mix_sell_note_clients()
-        self.sell_notes = self.mix_invoices_sellnotes()
-        self.completer = QCompleter(self.sell_notes)
+        self.sell_notes_items, self.simplied_sell_notes = self.simplify_kor_table(self.filepath, sell_notes_columns, items_cols,self.tables)
+        
+        self.completer = QCompleter(self.get_sell_notes(self.simplied_sell_notes))
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
         self.completer.setWidget(self.ui.TxtClientName)
@@ -48,7 +79,7 @@ class MainWindow(QMainWindow):
                 text, self.ui.TxtClientName, self.completer, self._completing_client
             )
         )
-        self.completer.highlighted.connect(self.handle_select_client_change)
+        self.completer.highlighted.connect(lambda text: self.handle_select_client_change(text))
         self.ui.TxtClientName.setCompleter(self.completer)
         self.ui.TxtClientName.textEdited.connect(self.text_changed)
         self.ui.BtnSave.clicked.connect(lambda: self.save_to_trello())
@@ -56,18 +87,24 @@ class MainWindow(QMainWindow):
         self.ui.CheckSameUser.setChecked(True)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
+        
+        
+        
 
     def text_changed(self):
         self.ui.TxtUserName.setText("")
         self.ui.TxtUserPhone.setText("")
 
     def handle_select_client_change(self, text):
-        sell_note, client_name, client_phone = self.split_client_info(text)
+        sell_note, client_name, client_phone = split_client_info(text)
         self.ui.TxtUserName.setText(client_name)
         self.ui.TxtUserPhone.setText(client_phone)
         self.ui.TxtNot.setText(sell_note)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
+        items = self.sell_notes_items[sell_note]
+        print(self.sell_notes_items)
+        self.ui.CbxModel.addItems(items)
         # print(self.clients_notes[client_name.strip()])
         # self.note_completer = QCompleter(self.clients_notes[client_name.strip()])
         # self.note_completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
@@ -81,55 +118,44 @@ class MainWindow(QMainWindow):
         # self.ui.TxtNot.setCompleter(self.note_completer)
 
     def handle_same_owner_change(self):
-        _, client_name, client_phone = self.split_client_info(
-            self.ui.TxtClientName.text()
-        )
+        if self.ui.TxtClientName.text() != "":
+            _, client_name, client_phone = split_client_info(
+                self.ui.TxtClientName.text()
+            )
 
-        if self.ui.CheckSameUser.isChecked():
-            self.ui.TxtUserName.setText(client_name)
-            self.ui.TxtUserPhone.setText(client_phone)
+            if self.ui.CheckSameUser.isChecked():
+                self.ui.TxtUserName.setText(client_name)
+                self.ui.TxtUserPhone.setText(client_phone)
+                self.ui.TxtUserName.setEnabled(False)
+                self.ui.TxtUserPhone.setEnabled(False)
+                return
+            
+        if not self.ui.CheckSameUser.isChecked():    
+            self.ui.TxtUserName.setText("")
+            self.ui.TxtUserPhone.setText("")
+            self.ui.TxtUserName.setEnabled(True)
+            self.ui.TxtUserPhone.setEnabled(True)
+        else:
             self.ui.TxtUserName.setEnabled(False)
             self.ui.TxtUserPhone.setEnabled(False)
-            return
-        self.ui.TxtUserName.setText("")
-        self.ui.TxtUserPhone.setText("")
-        self.ui.TxtUserName.setEnabled(True)
-        self.ui.TxtUserPhone.setEnabled(True)
-        return
 
     def get_clients_list(self):
         clients_df = pd.read_excel(path.join(dirname, "Clientes.xlsx"))
         clients_df = clients_df[["Nombre del cliente", "Teléfono"]]
-        # clients_list = list(
-        #     clients_df[["id", "Nombre del cliente", "Teléfono"]]
-        #     .to_dict("list")
-        #     .values()
-        # )
-
-        # clients = [
-        #     f"{id} - {name} - {phone}".replace("\n", "").replace("\r", "").strip()
-        #     for id, name, phone in zip(
-        #         clients_list[0],
-        #         clients_list[1],
-        #         clients_list[2],
-        #     )
-        # ]
+        
         return clients_df
-    
+
     def mix_invoices_sellnotes(self):
         sell_notes = self.get_sell_notes()
         invoices = self.get_invoices()
         return sell_notes + invoices
 
-    def get_sell_notes(self):
-        sell_notes_df = pd.read_excel(path.join(dirname, "Notasdeventa.xlsx"))
-        sell_notes_df.rename(columns={"Cliente - Nombre del cliente": "Nombre del cliente", "Cliente - Teléfono": "Teléfono"}, inplace=True)
+    def get_sell_notes(self, sell_notes_df):
         sell_notes_list = list(
             sell_notes_df[
                 [
                     "Folio",
                     "Nombre del cliente",
-                    "Importe del total",
                     "Teléfono",
                 ]
             ]
@@ -141,16 +167,18 @@ class MainWindow(QMainWindow):
             for folio, name, phone in zip(
                 sell_notes_list[0],
                 sell_notes_list[1],
-                sell_notes_list[3],
+                sell_notes_list[2],
             )
         ]
         return sell_notes
-    
+
     def get_invoices(self):
         invoices_df = pd.read_excel(path.join(dirname, "Facturacion.xlsx"))
-        invoices_df.rename(columns={"Cliente - Nombre del cliente": "Nombre del cliente"}, inplace=True)
+        invoices_df.rename(
+            columns={"Cliente - Nombre del cliente": "Nombre del cliente"}, inplace=True
+        )
         clients = self.get_clients_list()
-        invoices_df = invoices_df.merge(clients, on= "Nombre del cliente", how="left")
+        invoices_df = invoices_df.merge(clients, on="Nombre del cliente", how="left")
         invoices_df_list = list(
             invoices_df[
                 [
@@ -173,37 +201,6 @@ class MainWindow(QMainWindow):
         ]
         return sell_notes
 
-    def mix_sell_note_clients(self):
-        clients_notes = {}
-        try:
-            sell_notes_df = pd.read_excel("Notasdeventa.xlsx")
-            sell_notes_df[
-            [
-                "Folio",
-                "Nombre del cliente",
-                "Importe del total",
-                "Cliente - Teléfono",
-            ]
-        ]
-        except Exception as e:
-            showFailDialog(self, "No se pudo abrir el documento de las notas de venta, revise que el archivo exista o no esté dañado.")
-            return []
-
-        for inx in sell_notes_df.index:
-            clients_notes[sell_notes_df["Cliente - Nombre del cliente"].iloc[inx]] = []
-
-        for inx in sell_notes_df.index:
-            clients_notes[
-                sell_notes_df["Cliente - Nombre del cliente"].iloc[inx]
-            ].append(
-                "{0} - {1} - {2}".format(
-                    sell_notes_df["Folio"].iloc[inx],
-                    round(sell_notes_df["Importe del total"].iloc[inx], 2),
-                    sell_notes_df["Fecha registro"].iloc[inx],
-                ),
-            )
-
-        return clients_notes
 
     def handleCompletion(
         self, text, txt_line: QLineEdit, completer: QCompleter, completing
@@ -215,13 +212,7 @@ class MainWindow(QMainWindow):
 
             completing = False
 
-    def split_client_info(self, str):
-        print(str)
-        client_arr = str.split(" - ")
-        client_id = client_arr[0]
-        client_name = client_arr[1]
-        client_phone = client_arr[2]
-        return client_id, client_name, client_phone
+
 
     def clean_inputs(self):
         self.ui.TxtClientName.setText("")
@@ -231,8 +222,9 @@ class MainWindow(QMainWindow):
         self.ui.TxtOS.setText("")
         self.ui.TxtNot.setText("")
         self.ui.TxtProblem.setPlainText("")
+
     def save_to_trello(self):
-        _, client_name, client_phone = self.split_client_info(
+        _, client_name, client_phone = split_client_info(
             self.ui.TxtClientName.text()
         )
         user_name = self.ui.TxtUserName.text()
@@ -267,17 +259,87 @@ class MainWindow(QMainWindow):
             "POST", trello_url, headers=trello_headers, params=query
         )
         # print(response.status_code,response.text)
-        if(response.status_code == 200):
+        if response.status_code == 200:
             showSuccessDialog(self, "Se agregó correctamente")
             print("todo correcto")
             self.clean_inputs()
-            
-        elif(response.status_code == 401):
+
+        elif response.status_code == 401:
             showFailDialog(self, "Error, no se pudo agregar, no tiene los permisos.")
-        
+
         else:
             showFailDialog(self, "Algo salió mal, contacta con el administrador")
+    
+    def clean_sell_notes(self, filepath):
+        try:
+            detailed_sell_notes = pd.read_excel(filepath)
+        except Exception as e:
+            raise "No se pudo abrir el documento:" + e
 
+        
+        detailed_sell_notes.drop(detailed_sell_notes.index[0:7], inplace=True)
+        detailed_sell_notes.reset_index(drop=True, inplace=True)
+        # detailed_sell_notes.set_axis(sell_notes_columns, axis=1)
+        
+        
+        return detailed_sell_notes.set_axis(sell_notes_columns, axis=1)
+    
+    def simplify_kor_table(self, filepath, header, items_header ,tables_to_merge: list):
+        id_items = {}
+        try:
+            detailed_table = pd.read_excel(filepath)
+        except Exception as e:
+            raise "No se pudo abrir el documento:" + e
+
+        
+        detailed_table.drop(detailed_table.index[0:7], inplace=True)
+        detailed_table = detailed_table.reset_index(drop=True)
+        detailed_table = detailed_table.set_axis(header, axis=1)
+        simplified_table = detailed_table.dropna(
+            subset=['Folio'], inplace=False
+        )
+        
+        last_index = get_last_index(detailed_table)
+        table_indexs  = simplified_table.index.append(
+            pd.Index([last_index])
+        )
+        print(table_indexs)
+        for table in tables_to_merge:
+            simplified_table = simplified_table.merge(table["data"], on=table["on"], how=table["how"])
+            
+        print(simplified_table)
+        for inx in range(len(table_indexs) - 1):
+            items_df = pd.DataFrame(
+                detailed_table.iloc[
+                    table_indexs[inx] + 2 : table_indexs[inx + 1] - 1,
+                    [1, 2, 3, 4, 5, 6, 7, 8],
+                ]
+            )
+            # print(items_df)
+            items_df.columns = items_header
+            sell_notes_list = list(
+                items_df[
+                    [
+                        "SKU",
+                        "Descripcion"
+                    ]
+                ]
+                .to_dict("list")
+                .values()
+            )
+            items = [
+                f"{sku} - {description}".replace("\n", "").replace("\r", "").strip()
+                for sku, description in zip(
+                    sell_notes_list[0],
+                    sell_notes_list[1],
+                )
+            ]
+            # print(sell_notes_list)
+            id = simplified_table.iloc[inx,0]
+            
+            id_items[id] = items
+        return id_items, simplified_table
+        
 
 
 if __name__ == "__main__":
@@ -288,3 +350,41 @@ if __name__ == "__main__":
     mainwindow.show()
 
     sys.exit(app.exec())
+
+
+
+
+    # def mix_sell_note_clients(self):
+    #     clients_notes = {}
+    #     try:
+    #         sell_notes_df = pd.read_excel("Notasdeventa.xlsx")
+    #         sell_notes_df[
+    #             [
+    #                 "Folio",
+    #                 "Nombre del cliente",
+    #                 "Importe del total",
+    #                 "Cliente - Teléfono",
+    #             ]
+    #         ]
+    #     except Exception as e:
+    #         showFailDialog(
+    #             self,
+    #             "No se pudo abrir el documento de las notas de venta, revise que el archivo exista o no esté dañado.",
+    #         )
+    #         return []
+
+    #     for inx in sell_notes_df.index:
+    #         clients_notes[sell_notes_df["Cliente - Nombre del cliente"].iloc[inx]] = []
+
+    #     for inx in sell_notes_df.index:
+    #         clients_notes[
+    #             sell_notes_df["Cliente - Nombre del cliente"].iloc[inx]
+    #         ].append(
+    #             "{0} - {1} - {2}".format(
+    #                 sell_notes_df["Folio"].iloc[inx],
+    #                 round(sell_notes_df["Importe del total"].iloc[inx], 2),
+    #                 sell_notes_df["Fecha registro"].iloc[inx],
+    #             ),
+    #         )
+
+    #     return clients_notes
