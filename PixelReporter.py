@@ -62,15 +62,14 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.filepath = path.join(dirname, "notasventa.xlsx")
+        self.delailed_filepath = path.join(dirname, "notasdeventadetalladas.xlsx")
+        self.simplied_filepath = path.join(dirname, "notasdeventasimplificada.xlsx")
+        self.simplied_invoice_path = path.join(dirname, "Facturacion.xlsx")
         self._completing_client = False
         self._completing_sell_note = False
-        self.clients = self.get_clients_list()
-        self.tables = [{"data": self.clients, "on": "Nombre del cliente", "how":"left"}]
-        # self.clients_notes = self.mix_sell_note_clients()
-        self.sell_notes_items, self.simplied_sell_notes = self.simplify_kor_table(self.filepath, sell_notes_columns, items_cols,self.tables)
-        
-        self.completer = QCompleter(self.get_sell_notes(self.simplied_sell_notes))
+        self.sell_notes_items = self.substract_details_from_kor_table(self.delailed_filepath, sell_notes_columns, items_cols)
+        self.simplied_sell_notes = self.mix_invoices_sellnotes()
+        self.completer = QCompleter(self.simplied_sell_notes)
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
         self.completer.setWidget(self.ui.TxtClientName)
@@ -81,19 +80,17 @@ class MainWindow(QMainWindow):
         )
         self.completer.highlighted.connect(lambda text: self.handle_select_client_change(text))
         self.ui.TxtClientName.setCompleter(self.completer)
-        self.ui.TxtClientName.textEdited.connect(self.text_changed)
+        self.ui.TxtClientName.textEdited.connect(self.handle_text_changed)
         self.ui.BtnSave.clicked.connect(lambda: self.save_to_trello())
         self.ui.CheckSameUser.stateChanged.connect(self.handle_same_owner_change)
         self.ui.CheckSameUser.setChecked(True)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
-        
-        
-        
 
-    def text_changed(self):
+    def handle_text_changed(self):
         self.ui.TxtUserName.setText("")
         self.ui.TxtUserPhone.setText("")
+        self.ui.CbxModel.clear()
 
     def handle_select_client_change(self, text):
         sell_note, client_name, client_phone = split_client_info(text)
@@ -103,19 +100,7 @@ class MainWindow(QMainWindow):
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
         items = self.sell_notes_items[sell_note]
-        print(self.sell_notes_items)
         self.ui.CbxModel.addItems(items)
-        # print(self.clients_notes[client_name.strip()])
-        # self.note_completer = QCompleter(self.clients_notes[client_name.strip()])
-        # self.note_completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        # self.note_completer.setFilterMode(Qt.MatchFlag.MatchContains)
-        # self.note_completer.setWidget(self.ui.TxtNot)
-        # self.note_completer.activated.connect(
-        #     lambda text: self.handleCompletion(
-        #         text, self.ui.TxtNot, self.note_completer, self._completing_sell_note
-        #     )
-        # )
-        # self.ui.TxtNot.setCompleter(self.note_completer)
 
     def handle_same_owner_change(self):
         if self.ui.TxtClientName.text() != "":
@@ -142,17 +127,19 @@ class MainWindow(QMainWindow):
     def get_clients_list(self):
         clients_df = pd.read_excel(path.join(dirname, "Clientes.xlsx"))
         clients_df = clients_df[["Nombre del cliente", "Teléfono"]]
+        clients_df.drop_duplicates(subset=["Nombre del cliente"], inplace=True)
         
         return clients_df
 
     def mix_invoices_sellnotes(self):
-        sell_notes = self.get_sell_notes()
-        invoices = self.get_invoices()
+        sell_notes = self.get_sell_notes(self.simplied_filepath)
+        invoices = self.get_invoices(self.simplied_invoice_path)
         return sell_notes + invoices
 
-    def get_sell_notes(self, sell_notes_df):
+    def df_to_list_str(self, df, headers:list):
+        # simplified_table.rename(columns={"Cliente - Nombre del cliente": "Nombre del cliente", "Cliente - Teléfono": "Teléfono"}, inplace=True)
         sell_notes_list = list(
-            sell_notes_df[
+            df[
                 [
                     "Folio",
                     "Nombre del cliente",
@@ -209,16 +196,13 @@ class MainWindow(QMainWindow):
             completing = True
             prefix = completer.completionPrefix()
             txt_line.setText(txt_line.text()[: -len(prefix)] + text)
-
             completing = False
-
-
 
     def clean_inputs(self):
         self.ui.TxtClientName.setText("")
         self.ui.TxtUserName.setText("")
         self.ui.TxtUserPhone.setText("")
-        self.ui.TxtModel.setText("")
+        self.ui.CbxModel.clear()
         self.ui.TxtOS.setText("")
         self.ui.TxtNot.setText("")
         self.ui.TxtProblem.setPlainText("")
@@ -230,7 +214,7 @@ class MainWindow(QMainWindow):
         user_name = self.ui.TxtUserName.text()
         user_phone = self.ui.TxtUserPhone.text()
         nota = self.ui.TxtNot.text()
-        model = self.ui.TxtModel.text()
+        model = self.ui.CbxModel.currentText()
         os = self.ui.TxtOS.text()
         type = self.ui.CbxType.currentText()
         problem = self.ui.TxtProblem.toPlainText()
@@ -270,24 +254,24 @@ class MainWindow(QMainWindow):
         else:
             showFailDialog(self, "Algo salió mal, contacta con el administrador")
     
-    def clean_sell_notes(self, filepath):
-        try:
-            detailed_sell_notes = pd.read_excel(filepath)
-        except Exception as e:
-            raise "No se pudo abrir el documento:" + e
+    # def clean_sell_notes(self, filepath):
+    #     try:
+    #         detailed_sell_notes = pd.read_excel(filepath)
+    #     except Exception as e:
+    #         raise "No se pudo abrir el documento:" + e
 
         
-        detailed_sell_notes.drop(detailed_sell_notes.index[0:7], inplace=True)
-        detailed_sell_notes.reset_index(drop=True, inplace=True)
-        # detailed_sell_notes.set_axis(sell_notes_columns, axis=1)
+    #     detailed_sell_notes.drop(detailed_sell_notes.index[0:7], inplace=True)
+    #     detailed_sell_notes.reset_index(drop=True, inplace=True)
+    #     # detailed_sell_notes.set_axis(sell_notes_columns, axis=1)
         
         
-        return detailed_sell_notes.set_axis(sell_notes_columns, axis=1)
+    #     return detailed_sell_notes.set_axis(sell_notes_columns, axis=1)
     
-    def simplify_kor_table(self, filepath, header, items_header ,tables_to_merge: list):
+    def substract_details_from_kor_table(self, detailed_filepath, header, items_header):
         id_items = {}
         try:
-            detailed_table = pd.read_excel(filepath)
+            detailed_table = pd.read_excel(detailed_filepath)
         except Exception as e:
             raise "No se pudo abrir el documento:" + e
 
@@ -298,16 +282,12 @@ class MainWindow(QMainWindow):
         simplified_table = detailed_table.dropna(
             subset=['Folio'], inplace=False
         )
-        
         last_index = get_last_index(detailed_table)
         table_indexs  = simplified_table.index.append(
             pd.Index([last_index])
         )
-        print(table_indexs)
-        for table in tables_to_merge:
-            simplified_table = simplified_table.merge(table["data"], on=table["on"], how=table["how"])
+        
             
-        print(simplified_table)
         for inx in range(len(table_indexs) - 1):
             items_df = pd.DataFrame(
                 detailed_table.iloc[
@@ -338,7 +318,23 @@ class MainWindow(QMainWindow):
             id = simplified_table.iloc[inx,0]
             
             id_items[id] = items
-        return id_items, simplified_table
+        return id_items
+    
+    def save_excel(self, df: pd.DataFrame, book_name: str, sheet_name: str):
+        # Create a Pandas Excel writer using XlsxWriter as the engine.
+        writer = pd.ExcelWriter(book_name + ".xlsx", engine="xlsxwriter")
+        # Convert the dataframe to an XlsxWriter Excel object.
+        df.to_excel(writer, sheet_name=sheet_name, index=False)
+        # Get the xlsxwriter workbook and worksheet objects.
+        workbook = writer.book
+        worksheet = writer.sheets[sheet_name]
+        # Add a format.
+        text_format = workbook.add_format({"text_wrap": True})
+        # Resize columns for clarity and add formatting to column C.
+        worksheet.set_column(4, 4, 70, text_format)
+        # Close the Pandas Excel writer and output the Excel file.
+        writer.close()
+
         
 
 

@@ -11,20 +11,24 @@
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
+    QCursor, QFont, QFontDatabase, QGradient,
+    QIcon, QImage, QKeySequence, QLinearGradient,
+    QPainter, QPalette, QPixmap, QRadialGradient,
+    QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
     QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-    QMainWindow, QMenuBar, QPlainTextEdit, QPushButton,
-    QSizePolicy, QStatusBar, QVBoxLayout, QWidget)
+    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
+    QPushButton, QSizePolicy, QStatusBar, QVBoxLayout,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(574, 569)
+        self.actionActualizar_datos = QAction(MainWindow)
+        self.actionActualizar_datos.setObjectName(u"actionActualizar_datos")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_2 = QVBoxLayout(self.centralwidget)
@@ -159,10 +163,15 @@ class Ui_MainWindow(object):
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 574, 22))
+        self.menuArchivo = QMenu(self.menubar)
+        self.menuArchivo.setObjectName(u"menuArchivo")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
+        self.menubar.addAction(self.menuArchivo.menuAction())
+        self.menuArchivo.addAction(self.actionActualizar_datos)
 
         self.retranslateUi(MainWindow)
 
@@ -171,6 +180,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Registro de postventas", None))
+        self.actionActualizar_datos.setText(QCoreApplication.translate("MainWindow", u"Actualizar datos", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Cliente Kordata", None))
         self.CheckSameUser.setText(QCoreApplication.translate("MainWindow", u"Mismo due\u00f1o", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"Usuario de computadora", None))
@@ -189,5 +199,6 @@ class Ui_MainWindow(object):
 
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Descripci\u00f3n del problema", None))
         self.BtnSave.setText(QCoreApplication.translate("MainWindow", u"Guardar registro", None))
+        self.menuArchivo.setTitle(QCoreApplication.translate("MainWindow", u"Archivo", None))
     # retranslateUi
 

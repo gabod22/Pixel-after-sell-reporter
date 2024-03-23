@@ -178,8 +178,20 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuArchivo">
+    <property name="title">
+     <string>Archivo</string>
+    </property>
+    <addaction name="actionActualizar_datos"/>
+   </widget>
+   <addaction name="menuArchivo"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionActualizar_datos">
+   <property name="text">
+    <string>Actualizar datos</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
