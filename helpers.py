@@ -1,5 +1,9 @@
 import pandas as pd
 
+def merge_dict(dict1, dict2):
+    res = {**dict1, **dict2}
+    return res
+
 def split_client_info(str):
     if str != None or str != "":
         print(str)

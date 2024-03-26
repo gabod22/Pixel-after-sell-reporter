@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QLineEdit,
     QApplication,
-    QCompleter
+    QCompleter,
 )
 from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt
 from PySide6.QtGui import QCloseEvent, QIcon, QPixmap
@@ -23,6 +23,9 @@ from dialogs import showSuccessDialog, showFailDialog
 from helpers import get_last_index, split_client_info, process_kor_table
 
 from update_info_dialog import UpdateInfoDialog
+
+
+import pickle
 
 # from gspread import *
 
@@ -60,14 +63,14 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.delailed_filepath = path.join(dirname, "notasdeventadetalladas.xlsx")
-        self.simplied_filepath = path.join(dirname, "notasdeventasimplificada.xlsx")
-        self.simplied_invoice_path = path.join(dirname, "Facturacion.xlsx")
+        
+        self.ui.TxtModel.setVisible(False)
+        
         self._completing_client = False
         self._completing_sell_note = False
-        
-        self.sell_notes_items, self.simplied_sell_notes = self.get_info()
-        
+
+        self.sell_notes_items, self.simplied_sell_notes = self.load_info()
+
         self.completer = QCompleter(self.simplied_sell_notes)
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
@@ -87,18 +90,19 @@ class MainWindow(QMainWindow):
         self.ui.CheckSameUser.setChecked(True)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
-        
+
         self.ui.actionActualizar_datos.triggered.connect(self.show_update_info_dialog)
 
     def show_update_info_dialog(self):
-        updateDialog = UpdateInfoDialog()
+        updateDialog = UpdateInfoDialog(self)
         updateDialog.show()
-        
+
     def handle_text_changed(self):
         self.ui.TxtUserName.setText("")
         self.ui.TxtUserPhone.setText("")
         self.ui.CbxModel.clear()
         self.ui.TxtNot.setText("")
+        self.ui.TxtModel.setText("")
 
     def handle_select_client_change(self, text):
         sell_note, client_name, client_phone = split_client_info(text)
@@ -107,7 +111,14 @@ class MainWindow(QMainWindow):
         self.ui.TxtNot.setText(sell_note)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
-        items = self.sell_notes_items[sell_note]
+        try:
+            items = self.sell_notes_items[sell_note]
+        except:
+            items = []
+            self.ui.TxtModel.setVisible(True)
+            self.ui.CbxModel.setDisabled(True)
+            self.ui.TxtModel.setFocus()
+        self.ui.CbxModel.clear()
         self.ui.CbxModel.addItems(items)
 
     def handle_same_owner_change(self):
@@ -131,7 +142,7 @@ class MainWindow(QMainWindow):
         else:
             self.ui.TxtUserName.setEnabled(False)
             self.ui.TxtUserPhone.setEnabled(False)
-    
+
     def handle_completion(
         self, text, txt_line: QLineEdit, completer: QCompleter, completing
     ):
@@ -149,19 +160,18 @@ class MainWindow(QMainWindow):
         self.ui.TxtNot.setText("")
         self.ui.TxtProblem.setPlainText("")
         self.ui.CbxModel.clear()
-    
-    def get_clients_list(self):
-        clients_df = pd.read_excel(path.join(dirname, "Clientes.xlsx"))
-        clients_df = clients_df[["Nombre del cliente", "Teléfono"]]
-        clients_df.drop_duplicates(subset=["Nombre del cliente"], inplace=True)
 
-        return clients_df
-    
-    def get_info(self):
-        clients = self.get_clients_list()
-        tables_to_merge = [{"data": clients, "on": "Nombre del cliente", "how": "left"}]
-        return process_kor_table(self.delailed_filepath, sell_notes_columns, items_cols,tables_to_merge)
-    
+    def load_info(self):
+        if path.isfile('sells.pkl') and path.isfile('sell_items.pkl'):
+            with open('sells.pkl', 'rb') as file:
+                sells = pickle.load(file)
+                
+            with open('sell_items.pkl', 'rb') as file:
+                sell_items = pickle.load(file)
+            return sell_items, sells
+        else:
+            self.show_update_info_dialog()
+            return {}, []
     def save_to_trello(self):
         _, client_name, client_phone = split_client_info(self.ui.TxtClientName.text())
         user_name = self.ui.TxtUserName.text()
@@ -206,7 +216,6 @@ class MainWindow(QMainWindow):
 
         else:
             showFailDialog(self, "Algo salió mal, contacta con el administrador")
-
 
 
 if __name__ == "__main__":

@@ -115,17 +115,17 @@ class Ui_MainWindow(object):
         self.label_6 = QLabel(self.centralwidget)
         self.label_6.setObjectName(u"label_6")
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_6)
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_6)
 
         self.TxtOS = QLineEdit(self.centralwidget)
         self.TxtOS.setObjectName(u"TxtOS")
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.TxtOS)
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.TxtOS)
 
         self.label_7 = QLabel(self.centralwidget)
         self.label_7.setObjectName(u"label_7")
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_7)
+        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_7)
 
         self.CbxType = QComboBox(self.centralwidget)
         self.CbxType.addItem("")
@@ -134,22 +134,27 @@ class Ui_MainWindow(object):
         self.CbxType.addItem("")
         self.CbxType.setObjectName(u"CbxType")
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.CbxType)
+        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.CbxType)
 
         self.label_8 = QLabel(self.centralwidget)
         self.label_8.setObjectName(u"label_8")
 
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_8)
+        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_8)
 
         self.TxtProblem = QPlainTextEdit(self.centralwidget)
         self.TxtProblem.setObjectName(u"TxtProblem")
 
-        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.TxtProblem)
+        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.TxtProblem)
 
         self.CbxModel = QComboBox(self.centralwidget)
         self.CbxModel.setObjectName(u"CbxModel")
 
         self.formLayout.setWidget(1, QFormLayout.FieldRole, self.CbxModel)
+
+        self.TxtModel = QLineEdit(self.centralwidget)
+        self.TxtModel.setObjectName(u"TxtModel")
+
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.TxtModel)
 
 
         self.verticalLayout_2.addLayout(self.formLayout)
