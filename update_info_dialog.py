@@ -116,13 +116,31 @@ class UpdateInfoDialog(QDialog):
             self.ui.PlantextLog.appendPlainText("Juntando la información")
             info_sells = sell_notes + invoices
             info_items = merge_dict(sell_notes_items, invoices_items)
-
-            self.ui.PlantextLog.appendPlainText("Guardando la información")
-            with open('sells.pkl', 'wb') as file:
-                pickle.dump(info_sells,file)
-                
-            with open('sell_items.pkl', 'wb') as file:
-                pickle.dump(info_items,file)
+ 
+            if path.isfile('sells.pkl') and path.isfile('sell_items.pkl'):
+                with open('sells.pkl', 'rb') as file:
+                    sells = pickle.load(file)
+                    
+                with open('sell_items.pkl', 'rb') as file:
+                    sell_items = pickle.load(file)
+            
+                sells.append(info_sells)
+                sells = list(dict.fromkeys(sells))
+            
+                sell_items.update(info_items)
+            
+                with open('sells.pkl', 'wb') as file:
+                    pickle.dump(sells,file)
+                    
+                with open('sell_items.pkl', 'wb') as file:
+                    pickle.dump(sell_items,file)
+                    
+            else:
+                with open('sells.pkl', 'wb') as file:
+                    pickle.dump(info_sells,file)
+                    
+                with open('sell_items.pkl', 'wb') as file:
+                    pickle.dump(info_items,file)
             showSuccessDialog(self,"Se actualizó la información correctamente")
             self.parent.load_info()
             self.close()
