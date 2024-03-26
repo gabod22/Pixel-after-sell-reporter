@@ -66,18 +66,24 @@ items_cols = [
 def df_to_list_str(df, headers: list):
     lista = []
     sell_notes_list = list(df[headers].to_dict("list").values())
-    print(sell_notes_list)
-    
+    for row in range(len(sell_notes_list[0])):
+        text = ""
+        for col in range(len(sell_notes_list)):
+            text = text + str(sell_notes_list[col][row])
+            if col != len(sell_notes_list) - 1:
+                text = text + " - "
+        lista.append(text)
         
-    sell_notes = [
-        f"{folio} - {name} - {phone}".replace("\n", "").replace("\r", "").strip()
-        for folio, name, phone in zip(
-            sell_notes_list[0],
-            sell_notes_list[1],
-            sell_notes_list[2],
-        )
-    ]
-    return sell_notes
+        
+    # sell_notes = [
+    #     f"{folio} - {name} - {phone}".replace("\n", "").replace("\r", "").strip()
+    #     for folio, name, phone in zip(
+    #         sell_notes_list[0],
+    #         sell_notes_list[1],
+    #         sell_notes_list[2],
+    #     )
+    # ]
+    return lista
 
 
 def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
@@ -109,16 +115,7 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
         )
         # print(items_df)
         items_df.columns = items_header
-        sell_notes_list = list(
-            items_df[["SKU", "Descripcion"]].to_dict("list").values()
-        )
-        items = [
-            f"{sku} - {description}".replace("\n", "").replace("\r", "").strip()
-            for sku, description in zip(
-                sell_notes_list[0],
-                sell_notes_list[1],
-            )
-        ]
+        items = df_to_list_str(items_df, ["SKU", "Descripcion"])
         # print(sell_notes_list)
         id = simplified_table.iloc[inx, 0]
 

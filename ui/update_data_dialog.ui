@@ -6,13 +6,100 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>396</width>
-    <height>290</height>
+    <width>400</width>
+    <height>391</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <layout class="QVBoxLayout" name="verticalLayout_4">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Notas de venta</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLineEdit" name="TxtSellnotePath"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="BtnOpenSellnoteFile">
+         <property name="text">
+          <string>Abrir documento</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Faturas</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLineEdit" name="TxtInvoicesPath"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="BtnOpenInvoiceFile">
+         <property name="text">
+          <string>Abrir documento</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Clientes</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLineEdit" name="TxtClienFilePath"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="BtnOpenClientFile">
+         <property name="text">
+          <string>Abrir documento</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QPlainTextEdit" name="PlantextLog"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="BtnUpdateData">
+     <property name="text">
+      <string>Actualizar datos</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
