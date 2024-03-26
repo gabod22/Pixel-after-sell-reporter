@@ -63,7 +63,14 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        
+        icon = QIcon()
+        icon.addFile(
+            path.join(path.dirname(__file__), "icono.ico"),
+            QSize(),
+            QIcon.Normal,
+            QIcon.Off,
+        )
+        self.setWindowIcon(icon)
         self.ui.TxtModel.setVisible(False)
         
         self._completing_client = False
@@ -94,7 +101,7 @@ class MainWindow(QMainWindow):
         self.ui.actionActualizar_datos.triggered.connect(self.show_update_info_dialog)
 
     def show_update_info_dialog(self):
-        updateDialog = UpdateInfoDialog(self)
+        updateDialog = UpdateInfoDialog(parent=self)
         updateDialog.show()
 
     def handle_text_changed(self):
