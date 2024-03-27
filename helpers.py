@@ -31,6 +31,7 @@ def df_to_list_str(df, headers: list):
             text = text + str(sell_notes_list[col][row])
             if col != len(sell_notes_list) - 1:
                 text = text + " - "
+        text = text.replace("\n", "").replace("\r", "").strip()
         result.append(text)
 
     # sell_notes = [

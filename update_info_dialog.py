@@ -104,48 +104,50 @@ class UpdateInfoDialog(QDialog):
     def update_info(self):
         clients = self.get_clients_list()
         tables_to_merge = [{"data": clients, "on": "Nombre del cliente", "how": "left"}]
-        try:
-            self.ui.PlantextLog.appendPlainText("Procesando las notas de venta")
-            sell_notes_items, sell_notes = process_kor_table(
-                self.ui.TxtSellnotePath.text(), sell_notes_columns, items_cols, tables_to_merge
-            )
-            self.ui.PlantextLog.appendPlainText("Procesando las facturas")
-            invoices_items, invoices = process_kor_table(
-                self.ui.TxtInvoicesPath.text(), invoices_columns, items_cols, tables_to_merge
-            )
-            self.ui.PlantextLog.appendPlainText("Juntando la información")
-            info_sells = sell_notes + invoices
-            info_items = merge_dict(sell_notes_items, invoices_items)
- 
-            if path.isfile('sells.pkl') and path.isfile('sell_items.pkl'):
-                with open('sells.pkl', 'rb') as file:
-                    sells = pickle.load(file)
-                    
-                with open('sell_items.pkl', 'rb') as file:
-                    sell_items = pickle.load(file)
+        
+        self.ui.PlantextLog.appendPlainText("Procesando las notas de venta")
+        sell_notes_items, sell_notes = process_kor_table(
+            self.ui.TxtSellnotePath.text(), sell_notes_columns, items_cols, tables_to_merge
+        )
+        self.ui.PlantextLog.appendPlainText("Procesando las facturas")
+        invoices_items, invoices = process_kor_table(
+            self.ui.TxtInvoicesPath.text(), invoices_columns, items_cols, tables_to_merge
+        )
+        self.ui.PlantextLog.appendPlainText("Juntando la información")
+        info_sells = sell_notes + invoices
+        info_items = merge_dict(sell_notes_items, invoices_items)
+
+        if path.isfile('sells.pkl') and path.isfile('sell_items.pkl'):
+            with open('sells.pkl', 'rb') as file:
+                sells = pickle.load(file)
+                
+            with open('sell_items.pkl', 'rb') as file:
+                sell_items = pickle.load(file)
+            print(sells)
+            sells.append(info_sells)
+            sells = list(set(sells))
+        
+            sell_items.update(info_items)
+        
+            with open('sells.pkl', 'wb') as file:
+                pickle.dump(sells,file)
+                
+            with open('sell_items.pkl', 'wb') as file:
+                pickle.dump(sell_items,file)
+                
+            print(sells)
+            print(sell_items)
+        else:
+            with open('sells.pkl', 'wb') as file:  
+                pickle.dump(info_sells,file)
+                
+            with open('sell_items.pkl', 'wb') as file:
+                pickle.dump(info_items,file)
+        showSuccessDialog(self,"Se actualizó la información correctamente")
+        self.parent.load_info()
+        self.close()
             
-                sells.append(info_sells)
-                sells = list(dict.fromkeys(sells))
-            
-                sell_items.update(info_items)
-            
-                with open('sells.pkl', 'wb') as file:
-                    pickle.dump(sells,file)
-                    
-                with open('sell_items.pkl', 'wb') as file:
-                    pickle.dump(sell_items,file)
-                    
-            else:
-                with open('sells.pkl', 'wb') as file:
-                    pickle.dump(info_sells,file)
-                    
-                with open('sell_items.pkl', 'wb') as file:
-                    pickle.dump(info_items,file)
-            showSuccessDialog(self,"Se actualizó la información correctamente")
-            self.parent.load_info()
-            self.close()
-            
-        except Exception as e:
-            showFailDialog(self,"Ocurrió un error, revise que haya seleccionado los archivos correctos o que los exportó correctamente")
-            
+        # except Exception as e:
+        #     showFailDialog(self,"Ocurrió un error, revise que haya seleccionado los archivos correctos o que los exportó correctamente")
+        #     print(e)
         
