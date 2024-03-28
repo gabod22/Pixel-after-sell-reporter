@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt
 
 from ui.update_data_dialog_ui import Ui_Dialog
+from tabulate import tabulate
 
 import sys
 import pandas as pd
@@ -119,10 +120,12 @@ class UpdateInfoDialog(QDialog):
 
         if path.isfile('sells.pkl') and path.isfile('sell_items.pkl'):
             with open('sells.pkl', 'rb') as file:
-                sells = pickle.load(file)
-                
+                sells:list[str] = list(pickle.load(file))
+            
+            print(type(sells),sells)
+            
             with open('sell_items.pkl', 'rb') as file:
-                sell_items = pickle.load(file)
+                sell_items = dict(pickle.load(file))
             print(sells)
             sells.append(info_sells)
             sells = list(set(sells))

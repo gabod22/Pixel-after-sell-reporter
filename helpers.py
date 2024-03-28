@@ -1,4 +1,5 @@
 import pandas as pd
+from tabulate import tabulate 
 
 def merge_dict(dict1, dict2):
     res = {**dict1, **dict2}
@@ -54,15 +55,26 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
     detailed_table.drop(detailed_table.index[0:7], inplace=True)
     detailed_table = detailed_table.reset_index(drop=True)
     detailed_table = detailed_table.set_axis(header, axis=1)
-    simplified_table = detailed_table.dropna(subset=["Folio"], inplace=False)
+    folio_column_index = detailed_table.columns.get_loc('Folio')
+    
+    
+    simplified_table = detailed_table.dropna(subset=detailed_table.columns[0], inplace=False)
+    if folio_column_index != 0:
+        folio_column = simplified_table.pop('Folio')
+        print("El folio está en la columna: ", folio_column_index)
+        simplified_table.insert(0, folio_column.name, folio_column)
+    print(tabulate(detailed_table))
     last_index = get_last_index(detailed_table)
 
     table_indexs = simplified_table.index.append(pd.Index([last_index]))
-
+    
+    
+    print("Antes", simplified_table.index)
     for table in tables_to_merge:
         simplified_table = simplified_table.merge(
             table["data"], on=table["on"], how=table["how"]
         ).set_axis(simplified_table.index)
+    print("Despues", simplified_table.index)
     simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono"])
     for inx in range(len(table_indexs) - 1):
         items_df = pd.DataFrame(
