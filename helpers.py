@@ -69,13 +69,12 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
     table_indexs = simplified_table.index.append(pd.Index([last_index]))
     
     
-    print("Antes", simplified_table.index)
     for table in tables_to_merge:
         simplified_table = simplified_table.merge(
             table["data"], on=table["on"], how=table["how"]
         ).set_axis(simplified_table.index)
-    print("Despues", simplified_table.index)
     simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono"])
+    
     for inx in range(len(table_indexs) - 1):
         items_df = pd.DataFrame(
             detailed_table.iloc[
@@ -83,9 +82,13 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
                 [1, 2, 3, 4, 5, 6, 7, 8],
             ]
         )
+        
         # print(items_df)
         items_df.columns = items_header
-        items = df_to_list_str(items_df, ["SKU", "Descripcion"])
+        if items_df['SKU'].iloc[0] == "No hay registro":
+            items = []
+        else:
+            items = df_to_list_str(items_df, ["SKU", "Descripcion"])
         # print(sell_notes_list)
         id = simplified_table.iloc[inx, 0]
 
