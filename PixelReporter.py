@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QCompleter,
 )
-from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt
+from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt, QStringListModel
 from PySide6.QtGui import QCloseEvent, QIcon, QPixmap
 
 from ui.aftersalesui_ui import Ui_MainWindow
@@ -76,9 +76,11 @@ class MainWindow(QMainWindow):
         self._completing_client = False
         self._completing_sell_note = False
 
-        self.sell_notes_items, self.simplied_sell_notes = self.load_info()
-
-        self.completer = QCompleter(self.simplied_sell_notes)
+        self.sell_notes_items = {}
+        self.simplied_sell_notes = []
+        self.completer_model = QStringListModel()
+        self.load_info()
+        self.completer = QCompleter(self.completer_model, self)
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
         self.completer.setWidget(self.ui.TxtClientName)
@@ -118,13 +120,15 @@ class MainWindow(QMainWindow):
         self.ui.TxtNot.setText(sell_note)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
-        try:
-            items = self.sell_notes_items[sell_note]
-        except:
-            items = []
+        items = self.sell_notes_items[sell_note]
+        if items == []:
             self.ui.TxtModel.setVisible(True)
             self.ui.CbxModel.setDisabled(True)
             self.ui.TxtModel.setFocus()
+        else:
+            self.ui.TxtModel.setVisible(False)
+            self.ui.CbxModel.setDisabled(False)
+            # self.ui.TxtModel.setFocus()
         self.ui.CbxModel.clear()
         self.ui.CbxModel.addItems(items)
 
@@ -171,14 +175,16 @@ class MainWindow(QMainWindow):
     def load_info(self):
         if path.isfile('sells.pkl') and path.isfile('sell_items.pkl'):
             with open('sells.pkl', 'rb') as file:
-                sells = pickle.load(file)
+                self.simplied_sell_notes = pickle.load(file)
                 
             with open('sell_items.pkl', 'rb') as file:
-                sell_items = pickle.load(file)
-            return sell_items, sells
+                self.sell_notes_items = pickle.load(file)
+            
+            self.completer_model.setStringList(self.simplied_sell_notes);
         else:
             self.show_update_info_dialog()
             return {}, []
+        
     def save_to_trello(self):
         _, client_name, client_phone = split_client_info(self.ui.TxtClientName.text())
         user_name = self.ui.TxtUserName.text()
