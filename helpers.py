@@ -1,5 +1,5 @@
 import pandas as pd
-from tabulate import tabulate 
+# from tabulate import tabulate 
 
 def merge_dict(dict1, dict2):
     res = {**dict1, **dict2}
@@ -63,7 +63,7 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
         folio_column = simplified_table.pop('Folio')
         print("El folio está en la columna: ", folio_column_index)
         simplified_table.insert(0, folio_column.name, folio_column)
-    print(tabulate(detailed_table))
+    # print(tabulate(detailed_table))
     last_index = get_last_index(detailed_table)
 
     table_indexs = simplified_table.index.append(pd.Index([last_index]))

@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt
 
 from ui.update_data_dialog_ui import Ui_Dialog
-from tabulate import tabulate
+# from tabulate import tabulate
 
 import sys
 import pandas as pd
