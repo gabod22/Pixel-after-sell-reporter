@@ -100,32 +100,32 @@ class Ui_MainWindow(object):
         self.label_4 = QLabel(self.centralwidget)
         self.label_4.setObjectName(u"label_4")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label_4)
+        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_4)
 
         self.TxtNot = QLineEdit(self.centralwidget)
         self.TxtNot.setObjectName(u"TxtNot")
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.TxtNot)
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.TxtNot)
 
         self.label_5 = QLabel(self.centralwidget)
         self.label_5.setObjectName(u"label_5")
 
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_5)
+        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_5)
 
         self.label_6 = QLabel(self.centralwidget)
         self.label_6.setObjectName(u"label_6")
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_6)
+        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_6)
 
         self.TxtOS = QLineEdit(self.centralwidget)
         self.TxtOS.setObjectName(u"TxtOS")
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.TxtOS)
+        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.TxtOS)
 
         self.label_7 = QLabel(self.centralwidget)
         self.label_7.setObjectName(u"label_7")
 
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_7)
+        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_7)
 
         self.CbxType = QComboBox(self.centralwidget)
         self.CbxType.addItem("")
@@ -134,27 +134,37 @@ class Ui_MainWindow(object):
         self.CbxType.addItem("")
         self.CbxType.setObjectName(u"CbxType")
 
-        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.CbxType)
+        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.CbxType)
 
         self.label_8 = QLabel(self.centralwidget)
         self.label_8.setObjectName(u"label_8")
 
-        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_8)
+        self.formLayout.setWidget(6, QFormLayout.LabelRole, self.label_8)
 
         self.TxtProblem = QPlainTextEdit(self.centralwidget)
         self.TxtProblem.setObjectName(u"TxtProblem")
 
-        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.TxtProblem)
+        self.formLayout.setWidget(6, QFormLayout.FieldRole, self.TxtProblem)
 
         self.CbxModel = QComboBox(self.centralwidget)
         self.CbxModel.setObjectName(u"CbxModel")
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.CbxModel)
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.CbxModel)
 
         self.TxtModel = QLineEdit(self.centralwidget)
         self.TxtModel.setObjectName(u"TxtModel")
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.TxtModel)
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.TxtModel)
+
+        self.label = QLabel(self.centralwidget)
+        self.label.setObjectName(u"label")
+
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label)
+
+        self.TxtBuyDate = QLineEdit(self.centralwidget)
+        self.TxtBuyDate.setObjectName(u"TxtBuyDate")
+
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.TxtBuyDate)
 
 
         self.verticalLayout_2.addLayout(self.formLayout)
@@ -203,6 +213,8 @@ class Ui_MainWindow(object):
         self.CbxType.setItemText(3, QCoreApplication.translate("MainWindow", u"Soporte", None))
 
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Descripci\u00f3n del problema", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"Fecha de compra", None))
+        self.TxtBuyDate.setPlaceholderText("")
         self.BtnSave.setText(QCoreApplication.translate("MainWindow", u"Guardar registro", None))
         self.menuArchivo.setTitle(QCoreApplication.translate("MainWindow", u"Archivo", None))
     # retranslateUi

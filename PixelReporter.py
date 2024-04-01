@@ -112,12 +112,14 @@ class MainWindow(QMainWindow):
         self.ui.CbxModel.clear()
         self.ui.TxtNot.setText("")
         self.ui.TxtModel.setText("")
+        self.ui.TxtBuyDate.setText("")
 
     def handle_select_client_change(self, text):
-        sell_note, client_name, client_phone = split_client_info(text)
+        sell_note, client_name, client_phone, date = split_client_info(text)
         self.ui.TxtUserName.setText(client_name)
         self.ui.TxtUserPhone.setText(client_phone)
         self.ui.TxtNot.setText(sell_note)
+        self.ui.TxtBuyDate.setText(date)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
         items = self.sell_notes_items[sell_note]
@@ -134,7 +136,7 @@ class MainWindow(QMainWindow):
 
     def handle_same_owner_change(self):
         if self.ui.TxtClientName.text() != "":
-            _, client_name, client_phone = split_client_info(
+            _, client_name, client_phone, date= split_client_info(
                 self.ui.TxtClientName.text()
             )
 
@@ -170,6 +172,7 @@ class MainWindow(QMainWindow):
         self.ui.TxtOS.setText("")
         self.ui.TxtNot.setText("")
         self.ui.TxtProblem.setPlainText("")
+        self.ui.TxtBuyDate.setText("")
         self.ui.CbxModel.clear()
 
     def load_info(self):
@@ -186,7 +189,7 @@ class MainWindow(QMainWindow):
             return {}, []
         
     def save_to_trello(self):
-        _, client_name, client_phone = split_client_info(self.ui.TxtClientName.text())
+        _, client_name, client_phone, date = split_client_info(self.ui.TxtClientName.text())
         user_name = self.ui.TxtUserName.text()
         user_phone = self.ui.TxtUserPhone.text()
         nota = self.ui.TxtNot.text()
@@ -196,12 +199,12 @@ class MainWindow(QMainWindow):
         problem = self.ui.TxtProblem.toPlainText()
 
         if not self.ui.CheckSameUser.isChecked():
-            desc = "## Cliente \n nombre: {0} - {1} \n usuario: {2} - {3} \n ### Modelo \n {4} \n ### Problema \n {5}".format(
-                client_name, client_phone, user_name, user_phone, model, problem
+            desc = "## Cliente \n nombre: {0} - {1} \n usuario: {2} - {3} \n ### Modelo \n {4} \n ### Problema \n {5} \n Fecha de compra: {6}".format(
+                client_name, client_phone, user_name, user_phone, model, problem, date
             )
         else:
-            desc = "## Cliente \n nombre: {0} - {1} \n ### Modelo \n {2} \n ### Problema \n {3}".format(
-                client_name, client_phone, model, problem
+            desc = "## Cliente \n nombre: {0} - {1} \n ### Modelo \n {2} \n ### Problema \n {3} \n Fecha de compra: {4}".format(
+                client_name, client_phone, model, problem, date
             )
 
         query = {

@@ -12,7 +12,8 @@ def split_client_info(str):
         client_id = client_arr[0]
         client_name = client_arr[1]
         client_phone = client_arr[2]
-        return client_id, client_name, client_phone
+        date = client_arr[3]
+        return client_id, client_name, client_phone, date
 
 def array_to_string(arr):
     string = ""
@@ -73,7 +74,7 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
         simplified_table = simplified_table.merge(
             table["data"], on=table["on"], how=table["how"]
         ).set_axis(simplified_table.index)
-    simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono"])
+    simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono", "Fecha registro"])
     
     for inx in range(len(table_indexs) - 1):
         items_df = pd.DataFrame(
