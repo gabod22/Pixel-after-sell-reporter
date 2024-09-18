@@ -10,25 +10,30 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt, QStringListModel
 from PySide6.QtGui import QCloseEvent, QIcon, QPixmap
 
+
 from ui.aftersalesui_ui import Ui_MainWindow
 
 import sys
 import pandas as pd
 import requests
 import json
+import yaml
 from os import path
-
+from datetime import datetime, timedelta
 from constants import trello_url, trello_headers
 from dialogs import showSuccessDialog, showFailDialog
 from helpers import get_last_index, split_client_info, process_kor_table
 
 from update_info_dialog import UpdateInfoDialog
 
+import os
+from dotenv import load_dotenv
 
 import pickle
 
 # from gspread import *
 
+load_dotenv()
 if getattr(sys, "frozen", False):
     dirname = path.join(path.dirname(sys.executable))
 elif __file__:
@@ -57,6 +62,17 @@ items_cols = [
     "Importe",
 ]
 
+labels = {
+    "Garantía": "66db3f8a10ea602ee6292ec5",
+    "Consulta": "66db3f8a10ea602ee6292ec2",
+    "Reparación":"66db3f8a10ea602ee6292ec3",
+    "Soporte": "66db3f8a10ea602ee6292eca"
+}
+
+if getattr(sys, 'frozen', False):
+    dirname = path.dirname(sys.executable)
+elif __file__:
+    dirname = path.dirname(__file__)
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -65,16 +81,21 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         icon = QIcon()
         icon.addFile(
-            path.join(path.dirname(__file__), "icono.ico"),
+            path.join(dirname, "icono.ico"),
             QSize(),
             QIcon.Normal,
             QIcon.Off,
         )
         self.setWindowIcon(icon)
         self.ui.TxtModel.setVisible(False)
-        
+        self.ui.CbxType.addItems(labels.keys())
         self._completing_client = False
         self._completing_sell_note = False
+        
+        self.ui.userBox.setVisible(False)
+        
+        self.config = None
+        self.load_config()
 
         self.sell_notes_items = {}
         self.simplied_sell_notes = []
@@ -99,6 +120,7 @@ class MainWindow(QMainWindow):
         self.ui.CheckSameUser.setChecked(True)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
+        self.ui.CbxAgent.addItems(self.config['AGENTS'])
 
         self.ui.actionActualizar_datos.triggered.connect(self.show_update_info_dialog)
 
@@ -109,6 +131,7 @@ class MainWindow(QMainWindow):
     def handle_text_changed(self):
         self.ui.TxtUserName.setText("")
         self.ui.TxtUserPhone.setText("")
+        self.ui.TxtLeftDays.setText("")
         self.ui.CbxModel.clear()
         self.ui.TxtNot.setText("")
         self.ui.TxtModel.setText("")
@@ -119,9 +142,19 @@ class MainWindow(QMainWindow):
         self.ui.TxtUserName.setText(client_name)
         self.ui.TxtUserPhone.setText(client_phone)
         self.ui.TxtNot.setText(sell_note)
-        self.ui.TxtBuyDate.setText(date)
+        self.ui.TxtBuyDate.setText(date.strftime('%d/%m/%Y'))
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
+        
+        now = datetime.now().date()
+        one_year = timedelta(days=365)
+        
+        left_days =  date + one_year - now
+        if int(left_days.days) < 0:
+            self.ui.TxtLeftDays.setText("Sin garantía")
+        else:
+            self.ui.TxtLeftDays.setText(str(left_days.days))
+        
         items = self.sell_notes_items[sell_note]
         if items == []:
             self.ui.TxtModel.setVisible(True)
@@ -135,8 +168,9 @@ class MainWindow(QMainWindow):
         self.ui.CbxModel.addItems(items)
 
     def handle_same_owner_change(self):
+        
         if self.ui.TxtClientName.text() != "":
-            _, client_name, client_phone, date= split_client_info(
+            _, client_name, client_phone, date = split_client_info(
                 self.ui.TxtClientName.text()
             )
 
@@ -145,6 +179,7 @@ class MainWindow(QMainWindow):
                 self.ui.TxtUserPhone.setText(client_phone)
                 self.ui.TxtUserName.setEnabled(False)
                 self.ui.TxtUserPhone.setEnabled(False)
+                self.ui.userBox.setVisible(False)
                 return
 
         if not self.ui.CheckSameUser.isChecked():
@@ -152,9 +187,11 @@ class MainWindow(QMainWindow):
             self.ui.TxtUserPhone.setText("")
             self.ui.TxtUserName.setEnabled(True)
             self.ui.TxtUserPhone.setEnabled(True)
+            self.ui.userBox.setVisible(True)
         else:
             self.ui.TxtUserName.setEnabled(False)
             self.ui.TxtUserPhone.setEnabled(False)
+            self.ui.userBox.setVisible(False)
 
     def handle_completion(
         self, text, txt_line: QLineEdit, completer: QCompleter, completing
@@ -169,52 +206,62 @@ class MainWindow(QMainWindow):
         self.ui.TxtClientName.setText("")
         self.ui.TxtUserName.setText("")
         self.ui.TxtUserPhone.setText("")
-        self.ui.TxtOS.setText("")
+        self.ui.TxtLeftDays.setText("")
         self.ui.TxtNot.setText("")
         self.ui.TxtProblem.setPlainText("")
         self.ui.TxtBuyDate.setText("")
         self.ui.CbxModel.clear()
-
-    def load_info(self):
-        if path.isfile('sells.pkl') and path.isfile('sell_items.pkl'):
-            with open('sells.pkl', 'rb') as file:
-                self.simplied_sell_notes = pickle.load(file)
-                
-            with open('sell_items.pkl', 'rb') as file:
-                self.sell_notes_items = pickle.load(file)
+    def load_config(self):
+        with open('config.yml', 'r') as file:
+            self.config = yaml.safe_load(file)
             
-            self.completer_model.setStringList(self.simplied_sell_notes);
+            
+    def load_info(self):
+        if path.isfile("sells.pkl") and path.isfile("sell_items.pkl"):
+            with open("sells.pkl", "rb") as file:
+                self.simplied_sell_notes = pickle.load(file)
+
+            with open("sell_items.pkl", "rb") as file:
+                self.sell_notes_items = pickle.load(file)
+
+            self.completer_model.setStringList(self.simplied_sell_notes)
         else:
             self.show_update_info_dialog()
             return {}, []
-        
+
     def save_to_trello(self):
-        _, client_name, client_phone, date = split_client_info(self.ui.TxtClientName.text())
+        _, client_name, client_phone, date = split_client_info(
+            self.ui.TxtClientName.text()
+        )
+        
+        left_days = self.ui.TxtLeftDays.text()
+        
         user_name = self.ui.TxtUserName.text()
         user_phone = self.ui.TxtUserPhone.text()
+        
         nota = self.ui.TxtNot.text()
         model = self.ui.CbxModel.currentText()
-        os = self.ui.TxtOS.text()
         type = self.ui.CbxType.currentText()
+        
         problem = self.ui.TxtProblem.toPlainText()
 
         if not self.ui.CheckSameUser.isChecked():
-            desc = "## Cliente \n nombre: {0} - {1} \n usuario: {2} - {3} \n ### Modelo \n {4} \n ### Problema \n {5} \n Fecha de compra: {6}".format(
-                client_name, client_phone, user_name, user_phone, model, problem, date
+            desc = "## Cliente \n nombre: {0} - {1} \n usuario: {2} - {3} \n ### Modelo \n {4} \n ### Problema \n {5} \n \n Fecha de compra: {6}  \n\n Días restantes de garantía: {7}".format(
+                client_name, client_phone, user_name, user_phone, model, problem, date, left_days
             )
         else:
-            desc = "## Cliente \n nombre: {0} - {1} \n ### Modelo \n {2} \n ### Problema \n {3} \n Fecha de compra: {4}".format(
-                client_name, client_phone, model, problem, date
+            desc = "## Cliente \n nombre: {0} - {1} \n ### Modelo \n {2} \n ### Problema \n {3} \n \n Fecha de compra: {4} \n\n Días restantes de garantía: {5}".format(
+                client_name, client_phone, model, problem, date, left_days
             )
 
         query = {
-            "idList": "65e78f80936ca9a151fa2de8",
-            "key": "2c0369eb0c76fbbbf4ecf3094fd31356",
-            "token": "ATTA3bb61958d5b3506b54860df6410561d10f408ed793e46cc60846737fac06cbc07E9CEBB9",
-            "name": user_name + " - " + nota + " - " + type,
+            "idList": os.getenv('idList'),
+            "key": os.getenv('TRELLO_KEY'),
+            "token": os.getenv('TRELLO_TOKEN'),
+            "name": user_name + " - " + nota,
             "desc": desc,
             "idLabels": [
-                "65e78f83936ca9a151fa59dd",
+                labels[type]
             ],
         }
 

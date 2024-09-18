@@ -1,18 +1,19 @@
 import pandas as pd
+from datetime import datetime 
 # from tabulate import tabulate 
 
 def merge_dict(dict1, dict2):
     res = {**dict1, **dict2}
     return res
 
-def split_client_info(str):
-    if str != None or str != "":
-        print(str)
-        client_arr = str.split(" - ")
+def split_client_info(string):
+    if string != None or string != "":
+        print(string)
+        client_arr = string.split(" - ")
         client_id = client_arr[0]
         client_name = client_arr[1]
         client_phone = client_arr[2]
-        date = client_arr[3]
+        date = datetime.strptime(client_arr[3], '%Y-%m-%d %H:%M:%S').date()
         return client_id, client_name, client_phone, date
 
 def array_to_string(arr):
