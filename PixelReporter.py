@@ -255,10 +255,10 @@ class MainWindow(QMainWindow):
             )
 
         query = {
-            "idList": os.getenv('idList'),
+            "idList": os.getenv('TRELLO_ID_LIST'),
             "key": os.getenv('TRELLO_KEY'),
             "token": os.getenv('TRELLO_TOKEN'),
-            "name": user_name + " - " + nota,
+            "name": client_phone + " - " + user_name + " - " + nota,
             "desc": desc,
             "idLabels": [
                 labels[type]
