@@ -4,27 +4,6 @@ from tabulate import tabulate
 from os import path
 import sys
 
-if getattr(sys, "frozen", False):
-    dirname = path.join(path.dirname(sys.executable))
-elif __file__:
-    dirname = path.join(path.dirname(__file__))
-
-delailed_filepath = path.join(dirname, "notasdeventadetalladas.xlsx")
-simplied_filepath = path.join(dirname, "notasdeventasimplificada.xlsx")
-simplied_invoice_path = path.join(dirname, "Facturacion.xlsx")
-
-
-def get_clients_list():
-    clients_df = pd.read_excel(path.join(dirname, "Clientes.xlsx"))
-    clients_df = clients_df[["Nombre del cliente", "Teléfono"]]
-    clients_df.drop_duplicates(subset=["Nombre del cliente"], inplace=True)
-
-    return clients_df
-
-
-clients = get_clients_list()
-
-tables_to_merge = [{"data": clients, "on": "Nombre del cliente", "how": "left"}]
 
 sell_notes_columns = [
     "Folio",
@@ -36,7 +15,7 @@ sell_notes_columns = [
     "Descuento",
     "Impuestos",
     "Importe del total",
-    "Ejecutivo",
+    "Vendedor",
 ]
 sell_notes_columns_view = [
     "Folio",
@@ -63,6 +42,47 @@ items_cols = [
 ]
 
 
+if getattr(sys, "frozen", False):
+    dirname = path.join(path.dirname(sys.executable))
+elif __file__:
+    dirname = path.join(path.dirname(__file__))
+
+delailed_filepath = path.join(dirname, "notasdeventadetalladas.xlsx")
+simplied_filepath = path.join(dirname, "notasdeventasimplificada.xlsx")
+simplied_invoice_path = path.join(dirname, "Facturacion.xlsx")
+
+
+def get_clients_list():
+    clients_df = pd.read_excel(path.join(dirname, "Clientes.xlsx"))
+    clients_df = clients_df[["Nombre del cliente", "Teléfono"]]
+    clients_df.drop_duplicates(subset=["Nombre del cliente"], inplace=True)
+
+    return clients_df
+
+def get_notes_list():
+    
+    try:
+        detailed_table = pd.read_excel(path.join(dirname, "notas_venta.xlsx"))
+    except Exception as e:
+        raise "No se pudo abrir el documento:" + e
+
+    detailed_table.drop(detailed_table.index[0:7], inplace=True)
+    detailed_table = detailed_table.reset_index(drop=True)
+    detailed_table = detailed_table.set_axis(sell_notes_columns, axis=1)
+    folio_column_index = detailed_table.columns.get_loc('Folio')
+    
+    
+    simplified_table = detailed_table.dropna(subset=detailed_table.columns[0], inplace=False)
+
+    return simplified_table
+
+# clients = get_clients_list()
+
+notes = get_notes_list()
+
+# tables_to_merge = [{"data": clients, "on": "Nombre del cliente", "how": "left"}]
+
+
 def df_to_list_str(df, headers: list):
     lista = []
     sell_notes_list = list(df[headers].to_dict("list").values())
@@ -84,6 +104,25 @@ def df_to_list_str(df, headers: list):
     #     )
     # ]
     return lista
+
+def df_to_dict_by_id(df, headers: list):
+    result = {}
+    {
+        'NOT01234' : {
+            'HEADER ' : "VALOR" ,
+            'HEADER 2' : "VALOR2"
+        }
+    }
+    sell_notes_list = []
+    for row in range(len(sell_notes_list[0])):
+        
+        for col in range(len(sell_notes_list)):
+            text = text + str(sell_notes_list[col][row])
+            if col != len(sell_notes_list) - 1:
+                text = text + " - "
+        text = text.replace("\n", "").replace("\r", "").strip()
+        result.append(text)
+    
 
 
 def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
@@ -123,17 +162,19 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
     return id_items, simplified_table
 
 
-id_items, simplified_table = process_kor_table(
-    delailed_filepath, sell_notes_columns, items_cols, tables_to_merge
-)
-print(tabulate(simplified_table, headers=sell_notes_columns_view))
-print(
-    df_to_list_str(
-        simplified_table,
-        [
-            "Folio",
-            "Nombre del cliente",
-            "Teléfono",
-        ],
-    )
-)
+# id_items, simplified_table = process_kor_table(
+#     delailed_filepath, sell_notes_columns, items_cols, tables_to_merge
+# )
+
+simplified_table = get_notes_list()
+print(tabulate(simplified_table, headers=sell_notes_columns))
+# print(
+#     df_to_dict_by_id(
+#         simplified_table,
+#         [
+#             "Folio",
+#             "Nombre del cliente",
+#             "Teléfono",
+#         ],
+#     )
+# )

@@ -51,7 +51,7 @@ sell_notes_columns = [
     "Descuento",
     "Impuestos",
     "Importe del total",
-    "Ejecutivo",
+    "Vendedor",
 ]
 items_cols = [
     "SKU",

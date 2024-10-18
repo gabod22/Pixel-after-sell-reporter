@@ -55,7 +55,7 @@ def df_to_dict_by_id(df, headers: list):
             'HEADER 2' : "VALOR2"
         }
     }
-    sell_notes_list = 
+    sell_notes_list = []
     for row in range(len(sell_notes_list[0])):
         
         for col in range(len(sell_notes_list)):
@@ -94,7 +94,7 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
         simplified_table = simplified_table.merge(
             table["data"], on=table["on"], how=table["how"]
         ).set_axis(simplified_table.index)
-    simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono", "Fecha registro"])
+    simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono", "Fecha registro", "Vendedor"])
     
     
     
