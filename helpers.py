@@ -55,7 +55,7 @@ def df_to_dict_by_id(df, headers: list):
             'HEADER 2' : "VALOR2"
         }
     }
-    sell_notes_list = []
+    sell_notes_list = 
     for row in range(len(sell_notes_list[0])):
         
         for col in range(len(sell_notes_list)):
