@@ -47,6 +47,25 @@ def df_to_list_str(df, headers: list):
     # ]
     return result
 
+def df_to_dict_by_id(df, headers: list):
+    result = {}
+    {
+        'NOT01234' : {
+            'HEADER ' : "VALOR" ,
+            'HEADER 2' : "VALOR2"
+        }
+    }
+    sell_notes_list = []
+    for row in range(len(sell_notes_list[0])):
+        
+        for col in range(len(sell_notes_list)):
+            text = text + str(sell_notes_list[col][row])
+            if col != len(sell_notes_list) - 1:
+                text = text + " - "
+        text = text.replace("\n", "").replace("\r", "").strip()
+        result.append(text)
+    
+
 def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
     id_items = {}
     try:
@@ -76,6 +95,8 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
             table["data"], on=table["on"], how=table["how"]
         ).set_axis(simplified_table.index)
     simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono", "Fecha registro"])
+    
+    
     
     for inx in range(len(table_indexs) - 1):
         items_df = pd.DataFrame(

@@ -39,7 +39,7 @@ sell_notes_columns = [
     "Descuento",
     "Impuestos",
     "Importe del total",
-    "Ejecutivo",
+    "Vendedor",
 ]
 invoices_columns = [
     "Sucursal",
@@ -53,6 +53,7 @@ invoices_columns = [
     "Impuestos",
     "Importe total",
     "Saldo"
+    "Vendedor"
 
 ]
 items_cols = [
@@ -132,6 +133,8 @@ class UpdateInfoDialog(QDialog):
         self.ui.PlantextLog.appendPlainText("Juntando la información")
         info_sells = sell_notes + invoices
         info_items = merge_dict(sell_notes_items, invoices_items)
+        
+        info_sells = info_sells.sort(reverse=True)
 
         try:
             if path.isfile('sells.pkl') and path.isfile('sell_items.pkl'):

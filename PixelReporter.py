@@ -24,6 +24,8 @@ from constants import trello_url, trello_headers
 from dialogs import showSuccessDialog, showFailDialog
 from helpers import get_last_index, split_client_info, process_kor_table
 
+from gspread_helpers import *
+
 from update_info_dialog import UpdateInfoDialog
 
 import os
@@ -67,6 +69,12 @@ labels = {
     "Consulta": "66db3f8a10ea602ee6292ec2",
     "Reparación":"66db3f8a10ea602ee6292ec3",
     "Soporte": "66db3f8a10ea602ee6292eca"
+}
+
+members = {
+    "GABRIEL": "64ece20aae1eb29dbbdeae66",
+    "CENTRO SERVICIO": "613199d8efadf1307693adda",
+    "CORAL": "6446fd35f1f734d3ec6183bd"
 }
 
 if getattr(sys, 'frozen', False):
@@ -235,15 +243,13 @@ class MainWindow(QMainWindow):
         )
         
         left_days = self.ui.TxtLeftDays.text()
-        
         user_name = self.ui.TxtUserName.text()
         user_phone = self.ui.TxtUserPhone.text()
-        
         nota = self.ui.TxtNot.text()
         model = self.ui.CbxModel.currentText()
         type = self.ui.CbxType.currentText()
-        
         problem = self.ui.TxtProblem.toPlainText()
+        employee = self.ui.CbxAgent.currentText()
 
         if not self.ui.CheckSameUser.isChecked():
             desc = "## Cliente \n nombre: {0} - {1} \n usuario: {2} - {3} \n ### Modelo \n {4} \n ### Problema \n {5} \n \n Fecha de compra: {6}  \n\n Días restantes de garantía: {7}".format(
@@ -263,6 +269,9 @@ class MainWindow(QMainWindow):
             "idLabels": [
                 labels[type]
             ],
+            "idMembers": [
+                members[employee]
+            ]
         }
 
         response = requests.request(
@@ -272,6 +281,7 @@ class MainWindow(QMainWindow):
         if response.status_code == 200:
             showSuccessDialog(self, "Se agregó correctamente")
             print("todo correcto")
+            self.save_to_google()
             self.clean_inputs()
 
         elif response.status_code == 401:
@@ -280,6 +290,50 @@ class MainWindow(QMainWindow):
         else:
             showFailDialog(self, "Algo salió mal, contacta con el administrador")
 
+    def save_to_google(self):
+        _, client_name, client_phone, date = split_client_info(
+            self.ui.TxtClientName.text()
+        )
+        hoy = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        date= date.strftime("%d/%m/%Y")
+        
+        left_days = self.ui.TxtLeftDays.text()
+        
+        user_name = self.ui.TxtUserName.text()
+        user_phone = self.ui.TxtUserPhone.text()
+        
+        nota = self.ui.TxtNot.text()
+        model = self.ui.CbxModel.currentText()
+        type = self.ui.CbxType.currentText()
+        
+        problem = self.ui.TxtProblem.toPlainText()
+        
+        employee = self.ui.CbxAgent.currentText()
+        
+        sheet = get_worksheet()
+        
+        data = [[
+            nota,##Nota / factura
+            user_name,##Cliente
+            user_phone,##Contacto
+            date,##Fecha de compra
+            hoy,##INICIO
+            "",##FIN
+            True,##ACTIVO
+            employee,
+            "Aquí va el vendedor",##VENDEDOR
+            "",##NUEVA NOTA /FACTURA
+            model,##MODELO DEL EQUIPO
+            "",##NUMERO DE SERIE
+            "",##ORDEN DE SERVICIO
+            problem,
+            "",##Solucion brindada
+            "",##Recursos, tiempo
+            "",##Costos
+            "",#Envios,
+            type
+        ]]
+        write_in_last_row(data, sheet)
 
 if __name__ == "__main__":
 
