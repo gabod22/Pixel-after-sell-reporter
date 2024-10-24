@@ -1,6 +1,9 @@
 import pandas as pd
+from pandas import DataFrame
 from datetime import datetime 
 # from tabulate import tabulate 
+
+# pd.set_option('mode.chained_assignment', None)
 
 def merge_dict(dict1, dict2):
     res = {**dict1, **dict2}
@@ -24,7 +27,13 @@ def array_to_string(arr):
         else:
             string += item
     return string
-
+def df_to_dict_by_folio(df:DataFrame):
+    records = df.to_dict('records')
+    result = {}
+    for record in records:
+        result[record['Folio']] = record
+        
+    return result
 def df_to_list_str(df, headers: list):
     result = []
     sell_notes_list = list(df[headers].to_dict("list").values())
@@ -46,24 +55,6 @@ def df_to_list_str(df, headers: list):
     #     )
     # ]
     return result
-
-def df_to_dict_by_id(df, headers: list):
-    result = {}
-    {
-        'NOT01234' : {
-            'HEADER ' : "VALOR" ,
-            'HEADER 2' : "VALOR2"
-        }
-    }
-    sell_notes_list = []
-    for row in range(len(sell_notes_list[0])):
-        
-        for col in range(len(sell_notes_list)):
-            text = text + str(sell_notes_list[col][row])
-            if col != len(sell_notes_list) - 1:
-                text = text + " - "
-        text = text.replace("\n", "").replace("\r", "").strip()
-        result.append(text)
     
 
 def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
@@ -76,6 +67,7 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
     detailed_table.drop(detailed_table.index[0:7], inplace=True)
     detailed_table = detailed_table.reset_index(drop=True)
     detailed_table = detailed_table.set_axis(header, axis=1)
+   
     folio_column_index = detailed_table.columns.get_loc('Folio')
     
     
@@ -88,14 +80,22 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
     last_index = get_last_index(detailed_table)
 
     table_indexs = simplified_table.index.append(pd.Index([last_index]))
+    # for (i,row) in simplified_table["Vendedor"]:
+    #     row[i] = replace_nan(row[i], "Sin vendedor")
     
+    # for (i,row) in simplified_table["Teléfono"]:
+    #     row[i] = replace_nan(row[i], "no registrado")
+    
+    # simplified_table["Vendedor"] = simplified_table["Vendedor"].fillna("Sin vendedor")
+    # simplified_table["Vendedor"] = simplified_table["Telefono"].fillna('No registrado')
     
     for table in tables_to_merge:
         simplified_table = simplified_table.merge(
             table["data"], on=table["on"], how=table["how"]
         ).set_axis(simplified_table.index)
-    simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono", "Fecha registro", "Vendedor"])
-    
+    simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono", "Fecha registro"])
+    dict_by_folio = df_to_dict_by_folio(simplified_table)
+    # print(simplified_table_list)
     
     
     for inx in range(len(table_indexs) - 1):
@@ -105,18 +105,17 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
                 [1, 2, 3, 4, 5, 6, 7, 8],
             ]
         )
-        
-        # print(items_df)
-        items_df.columns = items_header
-        if items_df['SKU'].iloc[0] == "No hay registro":
-            items = []
-        else:
-            items = df_to_list_str(items_df, ["SKU", "Descripcion"])
-        # print(sell_notes_list)
-        id = simplified_table.iloc[inx, 0]
+        if(not items_df.empty):
+            items_df.columns = items_header
+            if items_df['SKU'].iloc[0] == "No hay registro":
+                items = []
+            else:
+                items = df_to_list_str(items_df, ["SKU", "Descripcion"])
+            # print(sell_notes_list)
+            id = simplified_table.iloc[inx, 0]
 
-        id_items[id] = items
-    return id_items, simplified_table_list
+            id_items[id] = items
+    return id_items, simplified_table_list, dict_by_folio
 
 
 def get_last_index(dataframe: pd.DataFrame):
@@ -142,10 +141,10 @@ def save_excel(df: pd.DataFrame, book_name: str, sheet_name: str):
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
 
-def replace_nan(string):
+def replace_nan(string, replace= ""):
     if type(string) == float:
         print(string, type(string))
-        return ""
-    return f"({string})"
+        return replace
+    return f"{string}"
 
 

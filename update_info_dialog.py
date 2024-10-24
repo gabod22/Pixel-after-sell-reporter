@@ -52,7 +52,7 @@ invoices_columns = [
     "Descuento",
     "Impuestos",
     "Importe total",
-    "Saldo"
+    "Saldo",
     "Vendedor"
 
 ]
@@ -115,46 +115,56 @@ class UpdateInfoDialog(QDialog):
         try:
             
             self.ui.PlantextLog.appendPlainText("Procesando las notas de venta")
-            sell_notes_items, sell_notes = process_kor_table(
+            print("procesando notas de venta")
+            sell_notes_items, sell_notes, notes_dict = process_kor_table(
                 self.ui.TxtSellnotePath.text(), sell_notes_columns, items_cols, tables_to_merge
             )
         except Exception as e:
-            showFailDialog('Hubo un problema al cargar las notas de venta, revise que el archivo sea el correcto')
+            showFailDialog(self,'Hubo un problema al cargar las notas de venta, revise que el archivo sea el correcto')
+            print(e)
         
         try:
             self.ui.PlantextLog.appendPlainText("Procesando las facturas")
-            invoices_items, invoices = process_kor_table(
+            invoices_items, invoices, invoices_dict = process_kor_table(
                 self.ui.TxtInvoicesPath.text(), invoices_columns, items_cols, tables_to_merge
             )
         except Exception as e:
-            showFailDialog('Hubo un problema al cargar las notas de venta, revise que el archivo sea el correcto')
-        
+            showFailDialog(self,'Hubo un problema al cargar las facturas, revise que el archivo sea el correcto')
+            print(e)
+        print("Notas de venta", sell_notes)
         
         self.ui.PlantextLog.appendPlainText("Juntando la información")
         info_sells = sell_notes + invoices
         info_items = merge_dict(sell_notes_items, invoices_items)
-        
-        info_sells = info_sells.sort(reverse=True)
+        info_sells = sorted(info_sells, reverse=True)
+        sales_dict = invoices_dict | notes_dict
 
         try:
-            if path.isfile('sells.pkl') and path.isfile('sell_items.pkl'):
+            if path.isfile('sells.pkl') and path.isfile('sell_items.pkl') and path.isfile('sales_dict.pkl'):
                 with open('sells.pkl', 'rb') as file:
                     sells:list[str] = list(pickle.load(file))
                 
-                
                 with open('sell_items.pkl', 'rb') as file:
-                    sell_items = dict(pickle.load(file))
+                    sell_items_file = dict(pickle.load(file))
+                    
+                with open('sales_dict.pkl', 'rb') as file:
+                    sales_dict_file = dict(pickle.load(file))
                 
                 sells.extend(info_sells)
                 sells = list(set(sells))
+                
+                new_sales_dict = sales_dict_file | sales_dict
             
-                sell_items.update(info_items)
+                sell_items_file.update(info_items)
             
                 with open('sells.pkl', 'wb') as file:
                     pickle.dump(sells,file)
                     
                 with open('sell_items.pkl', 'wb') as file:
-                    pickle.dump(sell_items,file)
+                    pickle.dump(sell_items_file,file)
+                
+                with open('sales_dict.pkl', 'wb') as file:
+                    pickle.dump(new_sales_dict,file)
                     
             else:
                 with open('sells.pkl', 'wb') as file:  
@@ -162,6 +172,11 @@ class UpdateInfoDialog(QDialog):
                     
                 with open('sell_items.pkl', 'wb') as file:
                     pickle.dump(info_items,file)
+                    
+                with open('sales_dict.pkl', 'wb') as file:
+                    pickle.dump(sales_dict,file)
+                    
+            
             showSuccessDialog(self,"Se actualizó la información correctamente")
             self.parent.load_info()
             self.close()

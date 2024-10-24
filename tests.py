@@ -1,4 +1,5 @@
 import pandas as pd
+from pandas import DataFrame
 from helpers import get_last_index, split_client_info
 from tabulate import tabulate
 from os import path
@@ -83,7 +84,7 @@ notes = get_notes_list()
 # tables_to_merge = [{"data": clients, "on": "Nombre del cliente", "how": "left"}]
 
 
-def df_to_list_str(df, headers: list):
+def df_to_list_str(df:DataFrame, headers: list):
     lista = []
     sell_notes_list = list(df[headers].to_dict("list").values())
     for row in range(len(sell_notes_list[0])):
@@ -105,23 +106,14 @@ def df_to_list_str(df, headers: list):
     # ]
     return lista
 
-def df_to_dict_by_id(df, headers: list):
+def df_to_dict_by_folio(df:DataFrame):
+    records = df.to_dict('records')
     result = {}
-    {
-        'NOT01234' : {
-            'HEADER ' : "VALOR" ,
-            'HEADER 2' : "VALOR2"
-        }
-    }
-    sell_notes_list = []
-    for row in range(len(sell_notes_list[0])):
+    for record in records:
+        result[record['Folio']] = record
         
-        for col in range(len(sell_notes_list)):
-            text = text + str(sell_notes_list[col][row])
-            if col != len(sell_notes_list) - 1:
-                text = text + " - "
-        text = text.replace("\n", "").replace("\r", "").strip()
-        result.append(text)
+    return result
+    
     
 
 
@@ -167,7 +159,8 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
 # )
 
 simplified_table = get_notes_list()
-print(tabulate(simplified_table, headers=sell_notes_columns))
+print(df_to_dict_by_folio(simplified_table)['NOT03495'])
+# print(tabulate(simplified_table, headers=sell_notes_columns))
 # print(
 #     df_to_dict_by_id(
 #         simplified_table,

@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
-    <height>622</height>
+    <width>533</width>
+    <height>703</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Registro de postventas</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -45,6 +45,13 @@
          </spacer>
         </item>
         <item>
+         <widget class="QCheckBox" name="CheckManualMode">
+          <property name="text">
+           <string>Modo manual</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QCheckBox" name="CheckSameUser">
           <property name="text">
            <string>Mismo dueño</string>
@@ -54,7 +61,7 @@
        </layout>
       </item>
       <item>
-       <widget class="QLineEdit" name="TxtClientName"/>
+       <widget class="QLineEdit" name="TxtSearch"/>
       </item>
      </layout>
     </item>
@@ -101,76 +108,208 @@
        <string>Información</string>
       </property>
       <layout class="QFormLayout" name="formLayout">
-       <item row="1" column="0">
-        <widget class="QLabel" name="label">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_12">
          <property name="text">
-          <string>Fecha de compra</string>
+          <string>Nombre Cliente</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLineEdit" name="TxtClientName"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="BtnCopyClientName">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Telefono</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="TxtBuyDate">
-         <property name="placeholderText">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Modelo del equipo</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QComboBox" name="CbxModel"/>
-       </item>
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="TxtModel"/>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Tipo de postventa</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QComboBox" name="CbxType"/>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>Descripción del problema</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QPlainTextEdit" name="TxtProblem"/>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLineEdit" name="TxtClientPhone"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="BtnCopyClientPhone">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Días restantes </string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="TxtLeftDays"/>
-       </item>
-       <item row="0" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
           <string>Nota de venta</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="TxtNot">
-         <property name="placeholderText">
-          <string>NOT00000</string>
+       <item row="2" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLineEdit" name="TxtNot">
+           <property name="placeholderText">
+            <string>NOT00000</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="BtnCopyNote">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Vendedor</string>
          </property>
         </widget>
+       </item>
+       <item row="3" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLineEdit" name="TxtSeller"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="BtnCopySeller">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Fecha de compra</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QLineEdit" name="TxtBuyDate">
+           <property name="placeholderText">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="BtnCopyBuyDate">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Días restantes </string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QLineEdit" name="TxtLeftDays"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="BtnCopyLeftDays">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Modelo del equipo</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QComboBox" name="CbxModel"/>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="TxtModel"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPushButton" name="BtnCopyModel">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Tipo de postventa</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QComboBox" name="CbxType"/>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Descripción del problema</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QPlainTextEdit" name="TxtProblem"/>
        </item>
       </layout>
      </widget>
@@ -201,7 +340,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>576</width>
+     <width>533</width>
      <height>33</height>
     </rect>
    </property>

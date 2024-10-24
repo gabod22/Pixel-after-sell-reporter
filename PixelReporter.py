@@ -106,23 +106,24 @@ class MainWindow(QMainWindow):
         self.load_config()
 
         self.sell_notes_items = {}
+        self.sales_dict = {}
         self.simplied_sell_notes = []
         self.completer_model = QStringListModel()
         self.load_info()
         self.completer = QCompleter(self.completer_model, self)
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
-        self.completer.setWidget(self.ui.TxtClientName)
+        self.completer.setWidget(self.ui.TxtSearch)
         self.completer.activated.connect(
             lambda text: self.handle_completion(
-                text, self.ui.TxtClientName, self.completer, self._completing_client
+                text, self.ui.TxtSearch, self.completer, self._completing_client
             )
         )
         self.completer.highlighted.connect(
             lambda text: self.handle_select_client_change(text)
         )
-        self.ui.TxtClientName.setCompleter(self.completer)
-        self.ui.TxtClientName.textEdited.connect(self.handle_text_changed)
+        self.ui.TxtSearch.setCompleter(self.completer)
+        self.ui.TxtSearch.textEdited.connect(self.handle_text_changed)
         self.ui.BtnSave.clicked.connect(lambda: self.save_to_trello())
         self.ui.CheckSameUser.stateChanged.connect(self.handle_same_owner_change)
         self.ui.CheckSameUser.setChecked(True)
@@ -144,20 +145,30 @@ class MainWindow(QMainWindow):
         self.ui.TxtNot.setText("")
         self.ui.TxtModel.setText("")
         self.ui.TxtBuyDate.setText("")
+        self.ui.TxtClientName.setText("")
+        self.ui.TxtClientPhone.setText("")
+        self.ui.TxtSeller.setText("")
 
     def handle_select_client_change(self, text):
-        sell_note, client_name, client_phone, date = split_client_info(text)
-        self.ui.TxtUserName.setText(client_name)
-        self.ui.TxtUserPhone.setText(client_phone)
-        self.ui.TxtNot.setText(sell_note)
+        sell_note, _, _, _ = split_client_info(text)
+        date = self.sales_dict[sell_note]['Fecha registro']
+        client_name = self.sales_dict[sell_note]['Nombre del cliente']
+        seller = self.sales_dict[sell_note]['Vendedor']
+        
+        self.ui.TxtUserName.setText(str(client_name))
+        self.ui.TxtUserPhone.setText(str(self.sales_dict[sell_note]['Teléfono']))
+        self.ui.TxtClientName.setText(client_name)
+        self.ui.TxtClientPhone.setText(str(self.sales_dict[sell_note]['Teléfono']))
+        self.ui.TxtNot.setText(str(sell_note))
         self.ui.TxtBuyDate.setText(date.strftime('%d/%m/%Y'))
+        self.ui.TxtSeller.setText(str(seller))
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
         
         now = datetime.now().date()
         one_year = timedelta(days=365)
         
-        left_days =  date + one_year - now
+        left_days =  date.date() + one_year - now
         if int(left_days.days) < 0:
             self.ui.TxtLeftDays.setText("Sin garantía")
         else:
@@ -177,9 +188,9 @@ class MainWindow(QMainWindow):
 
     def handle_same_owner_change(self):
         
-        if self.ui.TxtClientName.text() != "":
+        if self.ui.TxtSearch.text() != "":
             _, client_name, client_phone, date = split_client_info(
-                self.ui.TxtClientName.text()
+                self.ui.TxtSearch.text()
             )
 
             if self.ui.CheckSameUser.isChecked():
@@ -211,7 +222,7 @@ class MainWindow(QMainWindow):
             completing = False
 
     def clean_inputs(self):
-        self.ui.TxtClientName.setText("")
+        self.ui.TxtSearch.setText("")
         self.ui.TxtUserName.setText("")
         self.ui.TxtUserPhone.setText("")
         self.ui.TxtLeftDays.setText("")
@@ -228,9 +239,11 @@ class MainWindow(QMainWindow):
         if path.isfile("sells.pkl") and path.isfile("sell_items.pkl"):
             with open("sells.pkl", "rb") as file:
                 self.simplied_sell_notes = pickle.load(file)
-
             with open("sell_items.pkl", "rb") as file:
                 self.sell_notes_items = pickle.load(file)
+            with open("sales_dict.pkl", "rb") as file:
+                self.sales_dict = pickle.load(file)
+                # print(self.sales_dict)
 
             self.completer_model.setStringList(self.simplied_sell_notes)
         else:
@@ -239,7 +252,7 @@ class MainWindow(QMainWindow):
 
     def save_to_trello(self):
         _, client_name, client_phone, date = split_client_info(
-            self.ui.TxtClientName.text()
+            self.ui.TxtSearch.text()
         )
         
         left_days = self.ui.TxtLeftDays.text()
@@ -264,7 +277,7 @@ class MainWindow(QMainWindow):
             "idList": os.getenv('TRELLO_ID_LIST'),
             "key": os.getenv('TRELLO_KEY'),
             "token": os.getenv('TRELLO_TOKEN'),
-            "name": client_phone + " - " + user_name + " - " + nota,
+            "name": user_phone + " - " + user_name + " - " + nota,
             "desc": desc,
             "idLabels": [
                 labels[type]
@@ -292,12 +305,12 @@ class MainWindow(QMainWindow):
 
     def save_to_google(self):
         _, client_name, client_phone, date = split_client_info(
-            self.ui.TxtClientName.text()
+            self.ui.TxtSearch.text()
         )
         hoy = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         date= date.strftime("%d/%m/%Y")
         
-        left_days = self.ui.TxtLeftDays.text()
+        # left_days = self.ui.TxtLeftDays.text()
         
         user_name = self.ui.TxtUserName.text()
         user_phone = self.ui.TxtUserPhone.text()
@@ -309,6 +322,7 @@ class MainWindow(QMainWindow):
         problem = self.ui.TxtProblem.toPlainText()
         
         employee = self.ui.CbxAgent.currentText()
+        seller = self.ui.TxtSeller.text()
         
         sheet = get_worksheet()
         
@@ -317,11 +331,13 @@ class MainWindow(QMainWindow):
             user_name,##Cliente
             user_phone,##Contacto
             date,##Fecha de compra
+            "",##Dias Restantes
             hoy,##INICIO
             "",##FIN
             True,##ACTIVO
+            type,
             employee,
-            "Aquí va el vendedor",##VENDEDOR
+            seller,##VENDEDOR
             "",##NUEVA NOTA /FACTURA
             model,##MODELO DEL EQUIPO
             "",##NUMERO DE SERIE
@@ -330,8 +346,7 @@ class MainWindow(QMainWindow):
             "",##Solucion brindada
             "",##Recursos, tiempo
             "",##Costos
-            "",#Envios,
-            type
+            ""#Envios,
         ]]
         write_in_last_row(data, sheet)
 
