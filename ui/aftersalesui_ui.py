@@ -29,6 +29,8 @@ class Ui_MainWindow(object):
         MainWindow.resize(533, 703)
         self.actionActualizar_datos = QAction(MainWindow)
         self.actionActualizar_datos.setObjectName(u"actionActualizar_datos")
+        self.actionGuardar_contacto = QAction(MainWindow)
+        self.actionGuardar_contacto.setObjectName(u"actionGuardar_contacto")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_4 = QVBoxLayout(self.centralwidget)
@@ -157,7 +159,7 @@ class Ui_MainWindow(object):
         self.label_4 = QLabel(self.groupBox)
         self.label_4.setObjectName(u"label_4")
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_4)
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_4)
 
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
@@ -173,12 +175,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.addWidget(self.BtnCopyNote)
 
 
-        self.formLayout.setLayout(2, QFormLayout.FieldRole, self.horizontalLayout_7)
+        self.formLayout.setLayout(3, QFormLayout.FieldRole, self.horizontalLayout_7)
 
         self.label_6 = QLabel(self.groupBox)
         self.label_6.setObjectName(u"label_6")
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_6)
+        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_6)
 
         self.horizontalLayout_8 = QHBoxLayout()
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
@@ -194,12 +196,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.addWidget(self.BtnCopySeller)
 
 
-        self.formLayout.setLayout(3, QFormLayout.FieldRole, self.horizontalLayout_8)
+        self.formLayout.setLayout(4, QFormLayout.FieldRole, self.horizontalLayout_8)
 
         self.label = QLabel(self.groupBox)
         self.label.setObjectName(u"label")
 
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label)
+        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label)
 
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
@@ -215,12 +217,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_9.addWidget(self.BtnCopyBuyDate)
 
 
-        self.formLayout.setLayout(4, QFormLayout.FieldRole, self.horizontalLayout_9)
+        self.formLayout.setLayout(5, QFormLayout.FieldRole, self.horizontalLayout_9)
 
         self.label_2 = QLabel(self.groupBox)
         self.label_2.setObjectName(u"label_2")
 
-        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_2)
+        self.formLayout.setWidget(6, QFormLayout.LabelRole, self.label_2)
 
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
@@ -236,12 +238,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_10.addWidget(self.BtnCopyLeftDays)
 
 
-        self.formLayout.setLayout(5, QFormLayout.FieldRole, self.horizontalLayout_10)
+        self.formLayout.setLayout(6, QFormLayout.FieldRole, self.horizontalLayout_10)
 
         self.label_5 = QLabel(self.groupBox)
         self.label_5.setObjectName(u"label_5")
 
-        self.formLayout.setWidget(6, QFormLayout.LabelRole, self.label_5)
+        self.formLayout.setWidget(7, QFormLayout.LabelRole, self.label_5)
 
         self.horizontalLayout_11 = QHBoxLayout()
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
@@ -262,32 +264,39 @@ class Ui_MainWindow(object):
 
         self.BtnCopyModel = QPushButton(self.groupBox)
         self.BtnCopyModel.setObjectName(u"BtnCopyModel")
+        self.BtnCopyModel.setMaximumSize(QSize(28, 24))
         self.BtnCopyModel.setIcon(icon)
 
         self.horizontalLayout_11.addWidget(self.BtnCopyModel)
 
 
-        self.formLayout.setLayout(6, QFormLayout.FieldRole, self.horizontalLayout_11)
+        self.formLayout.setLayout(7, QFormLayout.FieldRole, self.horizontalLayout_11)
 
         self.label_7 = QLabel(self.groupBox)
         self.label_7.setObjectName(u"label_7")
 
-        self.formLayout.setWidget(7, QFormLayout.LabelRole, self.label_7)
+        self.formLayout.setWidget(8, QFormLayout.LabelRole, self.label_7)
 
         self.CbxType = QComboBox(self.groupBox)
         self.CbxType.setObjectName(u"CbxType")
 
-        self.formLayout.setWidget(7, QFormLayout.FieldRole, self.CbxType)
+        self.formLayout.setWidget(8, QFormLayout.FieldRole, self.CbxType)
 
         self.label_8 = QLabel(self.groupBox)
         self.label_8.setObjectName(u"label_8")
 
-        self.formLayout.setWidget(8, QFormLayout.LabelRole, self.label_8)
+        self.formLayout.setWidget(9, QFormLayout.LabelRole, self.label_8)
 
         self.TxtProblem = QPlainTextEdit(self.groupBox)
         self.TxtProblem.setObjectName(u"TxtProblem")
 
-        self.formLayout.setWidget(8, QFormLayout.FieldRole, self.TxtProblem)
+        self.formLayout.setWidget(9, QFormLayout.FieldRole, self.TxtProblem)
+
+        self.CheckRegisterContact = QCheckBox(self.groupBox)
+        self.CheckRegisterContact.setObjectName(u"CheckRegisterContact")
+        self.CheckRegisterContact.setChecked(True)
+
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.CheckRegisterContact)
 
 
         self.verticalLayout_4.addWidget(self.groupBox)
@@ -322,6 +331,7 @@ class Ui_MainWindow(object):
 
         self.menubar.addAction(self.menuArchivo.menuAction())
         self.menuArchivo.addAction(self.actionActualizar_datos)
+        self.menuArchivo.addAction(self.actionGuardar_contacto)
 
         self.retranslateUi(MainWindow)
 
@@ -331,6 +341,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Registro de postventas", None))
         self.actionActualizar_datos.setText(QCoreApplication.translate("MainWindow", u"Actualizar datos", None))
+        self.actionGuardar_contacto.setText(QCoreApplication.translate("MainWindow", u"Guardar contacto", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"NOTA O FACTURA", None))
         self.CheckManualMode.setText(QCoreApplication.translate("MainWindow", u"Modo manual", None))
         self.CheckSameUser.setText(QCoreApplication.translate("MainWindow", u"Mismo due\u00f1o", None))
@@ -356,6 +367,7 @@ class Ui_MainWindow(object):
         self.BtnCopyModel.setText("")
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"Tipo de postventa", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Descripci\u00f3n del problema", None))
+        self.CheckRegisterContact.setText(QCoreApplication.translate("MainWindow", u"Guardar contacto", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"AGENTE", None))
         self.BtnSave.setText(QCoreApplication.translate("MainWindow", u"Guardar registro", None))
         self.menuArchivo.setTitle(QCoreApplication.translate("MainWindow", u"Archivo", None))

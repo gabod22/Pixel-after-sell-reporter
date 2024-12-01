@@ -15,8 +15,8 @@ def split_client_info(string):
         client_arr = string.split(" - ")
         client_id = client_arr[0]
         client_name = client_arr[1]
-        client_phone = client_arr[2]
-        date = datetime.strptime(client_arr[3], '%Y-%m-%d %H:%M:%S').date()
+        client_phone = client_arr[-2]
+        date = datetime.strptime(client_arr[-1], '%Y-%m-%d %H:%M:%S').date()
         return client_id, client_name, client_phone, date
 
 def array_to_string(arr):
