@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'aftersalesui.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -127,7 +127,7 @@ class Ui_MainWindow(object):
 
         self.BtnCopyClientName = QPushButton(self.groupBox)
         self.BtnCopyClientName.setObjectName(u"BtnCopyClientName")
-        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.EditCopy))
+        icon = QIcon(QIcon.fromTheme(u"QIcon::ThemeIcon::EditCopy"))
         self.BtnCopyClientName.setIcon(icon)
 
         self.horizontalLayout_5.addWidget(self.BtnCopyClientName)
