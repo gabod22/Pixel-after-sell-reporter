@@ -28,7 +28,7 @@ from gspread_helpers import *
 from google_contacts import get_credentials_people_api
 from googleapiclient.discovery import build
 
-from update_info_dialog import UpdateInfoDialog
+from get_info_dialog import GetInfoDialog
 from add_contact_dialog import AddContactDialog
 import os
 from dotenv import load_dotenv
@@ -79,10 +79,6 @@ members = {
     "CORAL": "6446fd35f1f734d3ec6183bd",
 }
 
-if getattr(sys, "frozen", False):
-    dirname = path.dirname(sys.executable)
-elif __file__:
-    dirname = path.dirname(__file__)
 
 
 class MainWindow(QMainWindow):
@@ -143,12 +139,14 @@ class MainWindow(QMainWindow):
         self.assign_copy_buttons()
         
         try:
-            self.creds_people = get_credentials_people_api()
+            credentials_path = path.join(dirname,'credentials.json')
+            token_path = path.join(dirname,'token.json')
+            self.creds_people = get_credentials_people_api(token_path, credentials_path)
         except:
             showFailDialog(self, "No se pudo obtener la información de inicio de sesión")
             
     def show_update_info_dialog(self):
-        updateDialog = UpdateInfoDialog(parent=self)
+        updateDialog = GetInfoDialog(parent=self)
         updateDialog.show()
         
     def show_add_contact_dialog(self):
@@ -196,15 +194,17 @@ class MainWindow(QMainWindow):
         self.clear_inputs()
 
     def handle_select_client_change(self, text):
-        sell_note, _, _, _ = split_client_info(text)
-        date = self.sales_dict[sell_note]["Fecha registro"]
-        client_name = self.sales_dict[sell_note]["Nombre del cliente"]
-        seller = self.sales_dict[sell_note]["Vendedor"]
+        sell_note, _, _, date = split_client_info(text)
+        sell_note_data = self.sales_dict[sell_note]
+        
+        # date = sell_note_data["Fecha registro"]
+        client_name = sell_note_data["Cliente - Nombre del cliente"]
+        seller = sell_note_data["Vendedor"]
 
         self.ui.TxtUserName.setText(str(client_name))
-        self.ui.TxtUserPhone.setText(str(self.sales_dict[sell_note]["Teléfono"]))
+        self.ui.TxtUserPhone.setText(str(sell_note_data["phone"]))
         self.ui.TxtClientName.setText(client_name)
-        self.ui.TxtClientPhone.setText(str(self.sales_dict[sell_note]["Teléfono"]))
+        self.ui.TxtClientPhone.setText(str(sell_note_data["phone"]))
         self.ui.TxtNot.setText(str(sell_note))
         self.ui.TxtBuyDate.setText(date.strftime("%d/%m/%Y"))
         self.ui.TxtSeller.setText(str(seller))
@@ -213,14 +213,17 @@ class MainWindow(QMainWindow):
 
         now = datetime.now().date()
         one_year = timedelta(days=365)
-
-        left_days = date.date() + one_year - now
+        
+        left_days = date + one_year - now
         if int(left_days.days) < 0:
             self.ui.TxtLeftDays.setText("Sin garantía")
         else:
             self.ui.TxtLeftDays.setText(str(left_days.days))
 
-        items = self.sell_notes_items[sell_note]
+        items = sell_note_data['items']
+        items_description = []
+        for item in items:
+            items_description.append(item['Descripcion'])
         if items == []:
             self.ui.TxtModel.setVisible(True)
             self.ui.CbxModel.setDisabled(True)
@@ -230,7 +233,7 @@ class MainWindow(QMainWindow):
             self.ui.CbxModel.setDisabled(False)
             # self.ui.TxtModel.setFocus()
         self.ui.CbxModel.clear()
-        self.ui.CbxModel.addItems(items)
+        self.ui.CbxModel.addItems(items_description)
 
     def handle_manual_mode_change(self):
         if self.ui.CheckManualMode.isChecked():
@@ -297,12 +300,10 @@ class MainWindow(QMainWindow):
             self.config = yaml.safe_load(file)
 
     def load_info(self):
-        if path.isfile("sells.pkl") and path.isfile("sell_items.pkl"):
-            with open("sells.pkl", "rb") as file:
+        if path.isfile("search_data.pkl") and path.isfile("sells.pkl"):
+            with open("search_data.pkl", "rb") as file:
                 self.simplied_sell_notes = pickle.load(file)
-            with open("sell_items.pkl", "rb") as file:
-                self.sell_notes_items = pickle.load(file)
-            with open("sales_dict.pkl", "rb") as file:
+            with open("sells.pkl", "rb") as file:
                 self.sales_dict = pickle.load(file)
                 # print(self.sales_dict)
 
@@ -422,8 +423,8 @@ class MainWindow(QMainWindow):
         hoy = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         data = {
             "left_days":self.ui.TxtLeftDays.text(),
-            "user_name" : self.ui.TxtUserName.text(),
-            "user_phone" : self.ui.TxtUserPhone.text(),
+            "user_name" : self.ui.TxtClientName.text(),
+            "user_phone" : self.ui.TxtClientPhone.text(),
             "hoy": hoy,
             "buydate" : self.ui.TxtSearch.text() if self.ui.CheckManualMode.isChecked() else date,
             "nota" : self.ui.TxtNot.text(),

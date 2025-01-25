@@ -1,10 +1,16 @@
 import pandas as pd
 from pandas import DataFrame
 from datetime import datetime 
+from os import path
+import sys
 # from tabulate import tabulate 
 
 # pd.set_option('mode.chained_assignment', None)
-
+if getattr(sys, "frozen", False):
+    dirname = path.join(path.dirname(sys.executable))
+elif __file__:
+    dirname = path.join(path.dirname(__file__))
+    
 def merge_dict(dict1, dict2):
     res = {**dict1, **dict2}
     return res
@@ -16,7 +22,7 @@ def split_client_info(string):
         client_id = client_arr[0]
         client_name = client_arr[1]
         client_phone = client_arr[-2]
-        date = datetime.strptime(client_arr[-1], '%Y-%m-%d %H:%M:%S').date()
+        date = datetime.strptime(client_arr[-1], '%Y-%m-%d %H:%M:%S.%f').date()
         return client_id, client_name, client_phone, date
 
 def array_to_string(arr):
@@ -148,3 +154,9 @@ def replace_nan(string, replace= ""):
     return f"{string}"
 
 
+def get_current_token():
+    try:
+        f = open(path.join(dirname,"token.txt"), "r")
+        return f.read()
+    except:
+        print('No pude obtener el token')
