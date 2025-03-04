@@ -365,16 +365,19 @@ class MainWindow(QMainWindow):
         response = requests.request(
             "POST", trello_url, headers=trello_headers, params=query
         )
-        # print(response.status_code,response.text)
+        print(response.status_code,response.json().get('shortUrl'))
         if response.status_code == 200:
             print("todo correcto")
+            return response.json().get('shortUrl')
             
 
         elif response.status_code == 401:
             showFailDialog(self, "Error, no se pudo agregar, no tiene los permisos.")
+            return None
 
         else:
             showFailDialog(self, "Algo salió mal, contacta con el administrador")
+            None
 
     def save_to_google(self, info):
         self.statusBar().showMessage("Guardando el Google")
@@ -404,6 +407,8 @@ class MainWindow(QMainWindow):
                 "",  ##Recursos, tiempo
                 "",  ##Costos
                 "",  # Envios,
+                None,
+                info['card_url'],  ##URL trello
             ]
         ]
         try:
@@ -435,7 +440,10 @@ class MainWindow(QMainWindow):
             "seller" : self.ui.TxtSeller.text(),
         }
         self.statusBar().showMessage("Guardando registros...")
-        self.save_to_trello(data)
+        trello_card_url = self.save_to_trello(data)
+        
+        data['card_url'] = trello_card_url
+        
         self.statusBar().showMessage("Guardado en trello")
         self.save_to_google(data)
         self.statusBar().showMessage("Guardado en google sheets")
