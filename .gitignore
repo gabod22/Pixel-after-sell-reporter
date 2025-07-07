@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 /programs
 pixel-json.json
+token.json
 # C extensions
 *.so
 
