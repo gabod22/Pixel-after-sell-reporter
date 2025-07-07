@@ -23,7 +23,7 @@ import pickle
 # from gspread import *
 
 if getattr(sys, "frozen", False):
-    dirname = path.join(path.dirname(sys.executable))
+    dirname = path.join(path.dirname(sys.executable), '_internal')
 elif __file__:
     dirname = path.join(path.dirname(__file__))
 
@@ -37,7 +37,7 @@ K_MASIVE_LOGOUT_ENDPOINT = "https://one.kordata.mx/api/commons/cerrar-sesion-mas
 class LoginDialog(QDialog):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+        # self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
         self.parent = parent
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
@@ -71,9 +71,9 @@ class LoginDialog(QDialog):
         json = response.json()
         print(json)
         if json["token"]:
-            currentToken = json["token"]
+            currentToken = json
             # print(currentToken)
-            f = open("token.txt", "w")
+            f = open(path.join(dirname,"token_kordata.json"), "w")
             f.write(currentToken)
             print("sesion iniciada")
         else:
@@ -87,10 +87,10 @@ class LoginDialog(QDialog):
             if result:
                 self.masive_logout(json)
                 print("Sesiones cerradas")
-                # email = self.ui.TxtEmail.text()
-                # password = self.ui.TxtPassword.text()
+                email = self.ui.TxtEmail.text()
+                password = self.ui.TxtPassword.text()
                 
-                # self.login(email,password)
+                self.login(email,password)
             else:
                 self.close()
                 print("no se han cerrado las sesiones")

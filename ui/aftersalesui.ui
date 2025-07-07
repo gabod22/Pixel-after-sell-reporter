@@ -63,7 +63,7 @@
       <item>
        <widget class="QLineEdit" name="TxtSearch">
         <property name="styleSheet">
-         <string notr="true">background: rgb(75, 75, 75)</string>
+         <string notr="true"/>
         </property>
        </widget>
       </item>
@@ -87,7 +87,7 @@
          <item>
           <widget class="QLineEdit" name="TxtUserName">
            <property name="styleSheet">
-            <string notr="true">background: rgb(75, 75, 75)</string>
+            <string notr="true"/>
            </property>
           </widget>
          </item>
@@ -105,7 +105,7 @@
          <item>
           <widget class="QLineEdit" name="TxtUserPhone">
            <property name="styleSheet">
-            <string notr="true">background: rgb(75, 75, 75)</string>
+            <string notr="true"/>
            </property>
           </widget>
          </item>
@@ -117,7 +117,7 @@
     <item>
      <widget class="QScrollArea" name="scrollArea">
       <property name="styleSheet">
-       <string notr="true">background :rgb(20, 20, 20)</string>
+       <string notr="true"/>
       </property>
       <property name="widgetResizable">
        <bool>true</bool>
@@ -144,7 +144,7 @@
           <item>
            <widget class="QLineEdit" name="TxtClientName">
             <property name="styleSheet">
-             <string notr="true">background: rgb(75, 75, 75)</string>
+             <string notr="true"/>
             </property>
            </widget>
           </item>
@@ -172,7 +172,7 @@
           <item>
            <widget class="QLineEdit" name="TxtClientPhone">
             <property name="styleSheet">
-             <string notr="true">background: rgb(75, 75, 75)</string>
+             <string notr="true"/>
             </property>
            </widget>
           </item>
@@ -210,7 +210,7 @@
           <item>
            <widget class="QLineEdit" name="TxtNot">
             <property name="styleSheet">
-             <string notr="true">background: rgb(75, 75, 75)</string>
+             <string notr="true"/>
             </property>
             <property name="placeholderText">
              <string>NOT00000</string>
@@ -241,7 +241,7 @@
           <item>
            <widget class="QLineEdit" name="TxtSeller">
             <property name="styleSheet">
-             <string notr="true">background: rgb(75, 75, 75)</string>
+             <string notr="true"/>
             </property>
            </widget>
           </item>
@@ -269,7 +269,7 @@
           <item>
            <widget class="QLineEdit" name="TxtBuyDate">
             <property name="styleSheet">
-             <string notr="true">background: rgb(75, 75, 75)</string>
+             <string notr="true"/>
             </property>
             <property name="placeholderText">
              <string/>
@@ -300,7 +300,7 @@
           <item>
            <widget class="QLineEdit" name="TxtLeftDays">
             <property name="styleSheet">
-             <string notr="true">background: rgb(75, 75, 75)</string>
+             <string notr="true"/>
             </property>
            </widget>
           </item>
@@ -330,14 +330,14 @@
             <item>
              <widget class="QComboBox" name="CbxModel">
               <property name="styleSheet">
-               <string notr="true">background: rgb(75, 75, 75)</string>
+               <string notr="true"/>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLineEdit" name="TxtModel">
               <property name="styleSheet">
-               <string notr="true">background: rgb(75, 75, 75)</string>
+               <string notr="true"/>
               </property>
              </widget>
             </item>
@@ -371,7 +371,7 @@
         <item row="8" column="1">
          <widget class="QComboBox" name="CbxType">
           <property name="styleSheet">
-           <string notr="true">background: rgb(75, 75, 75)</string>
+           <string notr="true"/>
           </property>
          </widget>
         </item>
@@ -385,7 +385,7 @@
         <item row="9" column="1">
          <widget class="QPlainTextEdit" name="TxtProblem">
           <property name="styleSheet">
-           <string notr="true">background: rgb(75, 75, 75)</string>
+           <string notr="true"/>
           </property>
          </widget>
         </item>
@@ -402,7 +402,7 @@
        <item>
         <widget class="QComboBox" name="CbxAgent">
          <property name="styleSheet">
-          <string notr="true">background: rgb(75, 75, 75)</string>
+          <string notr="true"/>
          </property>
         </widget>
        </item>

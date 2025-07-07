@@ -24,7 +24,7 @@ import pickle
 # from gspread import *
 
 if getattr(sys, "frozen", False):
-    dirname = path.join(path.dirname(sys.executable))
+    dirname = path.join(path.dirname(sys.executable), '_internal')
 elif __file__:
     dirname = path.join(path.dirname(__file__))
 
@@ -42,26 +42,20 @@ K_MASIVE_LOGOUT_ENDPOINT = "https://one.kordata.mx/api/commons/cerrar-sesion-mas
 class GetInfoDialog(QDialog):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+        # self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
         self.parent = parent
         self.ui = Ui_GetInfoDialog()
         self.ui.setupUi(self)
-        dirname = path.dirname(__file__)
         try:
             self.join_notes_and_items()
         except:
             print('No se pudo obtener la info debido a tal')
-            self.show_login_dialog()
+            self.parent.show_login_dialog()
         finally:
             self.close()
 
 
-    
 
-    
-    def show_login_dialog(self):
-        updateDialog = LoginDialog(parent=self)
-        updateDialog.show()
     
     def get_sales_invoices(self):
         currentToken = get_current_token()
@@ -211,9 +205,9 @@ class GetInfoDialog(QDialog):
     def save_info(self, data_hash, array):
         try:
             
-            with open("sells.pkl", "wb") as file:
+            with open(path.join(dirname,"sells.pkl"), "wb") as file:
                 pickle.dump(data_hash, file)
-            with open('search_data.pkl', 'wb') as file:
+            with open(path.join(dirname,'search_data.pkl'), 'wb') as file:
                 pickle.dump(array,file)
 
             showSuccessDialog(self,"Se actualizó la información correctamente")

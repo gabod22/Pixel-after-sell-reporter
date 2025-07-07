@@ -2,12 +2,13 @@ import pandas as pd
 from pandas import DataFrame
 from datetime import datetime 
 from os import path
+import json
 import sys
 # from tabulate import tabulate 
 
 # pd.set_option('mode.chained_assignment', None)
 if getattr(sys, "frozen", False):
-    dirname = path.join(path.dirname(sys.executable))
+    dirname = path.join(path.dirname(sys.executable), '_internal')
 elif __file__:
     dirname = path.join(path.dirname(__file__))
     
@@ -156,7 +157,8 @@ def replace_nan(string, replace= ""):
 
 def get_current_token():
     try:
-        f = open(path.join(dirname,"token.txt"), "r")
-        return f.read()
+        f = open(path.join(dirname,"token_kordata.json"), "r")
+        json = json.parse(f.read())
+        return 
     except:
         print('No pude obtener el token')

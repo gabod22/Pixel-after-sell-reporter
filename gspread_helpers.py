@@ -3,7 +3,7 @@ import os.path
 import gspread, google.auth.exceptions, requests
 from gspread import Worksheet
 
-from constants import gspread_file
+from constants import gspread_file, GOOGLE_SHEET_NAME, GOOGLE_WOTKSHEET_ID
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -11,8 +11,8 @@ load_dotenv()
 letters = ["N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X"]
 
 def get_worksheet():
-    worksheet = os.getenv('GOOGLE_SHEET_NAME')
-    sheet = os.getenv('GOOGLE_WOTKSHEET_ID')
+    worksheet = GOOGLE_SHEET_NAME
+    sheet = GOOGLE_WOTKSHEET_ID
     print("Obteniendo worksheet")
     return get_spreadsheet(gspread_file, sheet, worksheet)
 

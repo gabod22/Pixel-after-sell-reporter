@@ -20,7 +20,7 @@ import json
 import yaml
 from os import path
 from datetime import datetime, timedelta
-from constants import trello_url, trello_headers
+from constants import TRELLO_ENDPOINT, TRELLO_HEADERS, config_file, TRELLO_ID_LIST, TRELLO_KEY, TRELLO_TOKEN
 from dialogs import showSuccessDialog, showFailDialog
 from helpers import get_last_index, split_client_info, process_kor_table
 
@@ -32,6 +32,9 @@ from get_info_dialog import GetInfoDialog
 from add_contact_dialog import AddContactDialog
 import os
 from dotenv import load_dotenv
+from ui.get_info_dialog_ui import Ui_GetInfoDialog
+from login_dialog import LoginDialog
+
 
 import pickle
 
@@ -39,7 +42,7 @@ import pickle
 
 load_dotenv()
 if getattr(sys, "frozen", False):
-    dirname = path.join(path.dirname(sys.executable))
+    dirname = path.join(path.dirname(sys.executable), '_internal')
 elif __file__:
     dirname = path.join(path.dirname(__file__))
 
@@ -77,8 +80,8 @@ members = {
     "GABRIEL": "64ece20aae1eb29dbbdeae66",
     "CENTRO SERVICIO": "613199d8efadf1307693adda",
     "CORAL": "6446fd35f1f734d3ec6183bd",
+    "DAMARIS": '662fc3c7444178dbf67e6d27'
 }
-
 
 
 class MainWindow(QMainWindow):
@@ -137,18 +140,24 @@ class MainWindow(QMainWindow):
         self.ui.actionGuardar_contacto.triggered.connect(self.show_add_contact_dialog)
         self.clipboard = QGuiApplication.clipboard()
         self.assign_copy_buttons()
-        
+
         try:
-            credentials_path = path.join(dirname,'credentials.json')
-            token_path = path.join(dirname,'token.json')
+            credentials_path = path.join(dirname, "credentials.json")
+            token_path = path.join(dirname, "token.json")
             self.creds_people = get_credentials_people_api(token_path, credentials_path)
         except:
-            showFailDialog(self, "No se pudo obtener la información de inicio de sesión")
-            
+            showFailDialog(
+                self, "No se pudo obtener la información de inicio de sesión"
+            )
+
+    def show_login_dialog(self):
+        updateDialog = LoginDialog(parent=self)
+        updateDialog.show()
+
     def show_update_info_dialog(self):
         updateDialog = GetInfoDialog(parent=self)
         updateDialog.show()
-        
+
     def show_add_contact_dialog(self):
         AddContact = AddContactDialog(parent=self)
         AddContact.show()
@@ -158,9 +167,8 @@ class MainWindow(QMainWindow):
 
     def copy_text(self, text):
         self.clipboard.setText(text)
-        self.statusBar().showMessage(f"Se ha copiado al portapapeles {text}",3000 )
-        
-        
+        self.statusBar().showMessage(f"Se ha copiado al portapapeles {text}", 3000)
+
     def assign_copy_buttons(self):
         self.ui.BtnCopyBuyDate.clicked.connect(
             lambda: self.copy_text(self.ui.TxtBuyDate.text())
@@ -196,7 +204,7 @@ class MainWindow(QMainWindow):
     def handle_select_client_change(self, text):
         sell_note, _, _, date = split_client_info(text)
         sell_note_data = self.sales_dict[sell_note]
-        
+
         # date = sell_note_data["Fecha registro"]
         client_name = sell_note_data["Cliente - Nombre del cliente"]
         seller = sell_note_data["Vendedor"]
@@ -213,17 +221,17 @@ class MainWindow(QMainWindow):
 
         now = datetime.now().date()
         one_year = timedelta(days=365)
-        
+
         left_days = date + one_year - now
         if int(left_days.days) < 0:
             self.ui.TxtLeftDays.setText("Sin garantía")
         else:
             self.ui.TxtLeftDays.setText(str(left_days.days))
 
-        items = sell_note_data['items']
+        items = sell_note_data["items"]
         items_description = []
         for item in items:
-            items_description.append(item['Descripcion'])
+            items_description.append(item["Descripcion"])
         if items == []:
             self.ui.TxtModel.setVisible(True)
             self.ui.CbxModel.setDisabled(True)
@@ -296,24 +304,33 @@ class MainWindow(QMainWindow):
         # self.ui.TxtSearch.setText("")
 
     def load_config(self):
-        with open("config.yml", "r") as file:
+        with open(config_file, "r") as file:
             self.config = yaml.safe_load(file)
 
     def load_info(self):
-        if path.isfile("search_data.pkl") and path.isfile("sells.pkl"):
-            with open("search_data.pkl", "rb") as file:
+        print(
+            path.join(dirname, "search_data.pkl"),
+            path.isfile(path.join(dirname, "search_data.pkl")),
+        )
+        print(
+            path.join(dirname, "sells.pkl"),
+            path.isfile(path.join(dirname, "sells.pkl")),
+        )
+        if path.isfile(path.join(dirname, "search_data.pkl")) and path.isfile(
+            path.join(dirname, "sells.pkl")
+        ):
+            with open(path.join(dirname, "search_data.pkl"), "rb") as file:
                 self.simplied_sell_notes = pickle.load(file)
-            with open("sells.pkl", "rb") as file:
+            with open(path.join(dirname, "sells.pkl"), "rb") as file:
                 self.sales_dict = pickle.load(file)
                 # print(self.sales_dict)
 
             self.completer_model.setStringList(self.simplied_sell_notes)
         else:
-            self.show_update_info_dialog()
+            showFailDialog(self, "No se pudo cargar la información de ventas")
             return {}, []
 
     def save_to_trello(self, info):
-
 
         if not self.ui.CheckSameUser.isChecked():
             desc = (
@@ -348,28 +365,37 @@ class MainWindow(QMainWindow):
                 "Fecha de compra: {4} \n "
                 "Vendedor: {5} \n"
                 "Días restantes de garantía: {6}".format(
-                    info["user_name"], info["user_phone"], info["model"], info["problem"], info["buydate"], info["seller"], info["left_days"]
+                    info["user_name"],
+                    info["user_phone"],
+                    info["model"],
+                    info["problem"],
+                    info["buydate"],
+                    info["seller"],
+                    info["left_days"],
                 )
             )
 
         query = {
-            "idList": os.getenv("TRELLO_ID_LIST"),
-            "key": os.getenv("TRELLO_KEY"),
-            "token": os.getenv("TRELLO_TOKEN"),
-            "name": info["user_phone"] + " - " + info["user_name"] + " - " + info["nota"],
+            "idList": TRELLO_ID_LIST,
+            "key": TRELLO_KEY,
+            "token": TRELLO_TOKEN,
+            "name": info["user_phone"]
+            + " - "
+            + info["user_name"]
+            + " - "
+            + info["nota"],
             "desc": desc,
             "idLabels": [labels[info["type"]]],
             "idMembers": [members[info["employee"]]],
         }
 
         response = requests.request(
-            "POST", trello_url, headers=trello_headers, params=query
+            "POST", TRELLO_ENDPOINT, headers=TRELLO_HEADERS, params=query
         )
-        print(response.status_code,response.json().get('shortUrl'))
+        print(response.status_code, response.json().get("shortUrl"))
         if response.status_code == 200:
             print("todo correcto")
-            return response.json().get('shortUrl')
-            
+            return response.json().get("shortUrl")
 
         elif response.status_code == 401:
             showFailDialog(self, "Error, no se pudo agregar, no tiene los permisos.")
@@ -381,7 +407,6 @@ class MainWindow(QMainWindow):
 
     def save_to_google(self, info):
         self.statusBar().showMessage("Guardando el Google")
-        
 
         sheet = get_worksheet()
 
@@ -408,7 +433,7 @@ class MainWindow(QMainWindow):
                 "",  ##Costos
                 "",  # Envios,
                 None,
-                info['card_url'],  ##URL trello
+                info["card_url"],  ##URL trello
             ]
         ]
         try:
@@ -427,51 +452,49 @@ class MainWindow(QMainWindow):
             date = date.strftime("%d/%m/%Y")
         hoy = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         data = {
-            "left_days":self.ui.TxtLeftDays.text(),
-            "user_name" : self.ui.TxtClientName.text(),
-            "user_phone" : self.ui.TxtClientPhone.text(),
+            "left_days": self.ui.TxtLeftDays.text(),
+            "user_name": self.ui.TxtClientName.text(),
+            "user_phone": self.ui.TxtClientPhone.text(),
             "hoy": hoy,
-            "buydate" : self.ui.TxtSearch.text() if self.ui.CheckManualMode.isChecked() else date,
-            "nota" : self.ui.TxtNot.text(),
-            "model" : self.ui.CbxModel.currentText(),
-            "type" : self.ui.CbxType.currentText(),
-            "problem" : self.ui.TxtProblem.toPlainText(),
-            "employee" : self.ui.CbxAgent.currentText(),
-            "seller" : self.ui.TxtSeller.text(),
+            "buydate": (
+                self.ui.TxtSearch.text()
+                if self.ui.CheckManualMode.isChecked()
+                else date
+            ),
+            "nota": self.ui.TxtNot.text(),
+            "model": self.ui.CbxModel.currentText(),
+            "type": self.ui.CbxType.currentText(),
+            "problem": self.ui.TxtProblem.toPlainText(),
+            "employee": self.ui.CbxAgent.currentText(),
+            "seller": self.ui.TxtSeller.text(),
         }
         self.statusBar().showMessage("Guardando registros...")
         trello_card_url = self.save_to_trello(data)
-        
-        data['card_url'] = trello_card_url
-        
+
+        data["card_url"] = trello_card_url
+
         self.statusBar().showMessage("Guardado en trello")
         self.save_to_google(data)
         self.statusBar().showMessage("Guardado en google sheets")
         if self.ui.CheckRegisterContact.isChecked():
             self.register_contact(data)
             self.statusBar().showMessage("Guardado en Google Contacts")
-            
-        self.statusBar().showMessage("Registro guardado exitosamente",4000)
+
+        self.statusBar().showMessage("Registro guardado exitosamente", 4000)
         self.clear_inputs()
-        showSuccessDialog(self,"Registrado correctamente")
+        showSuccessDialog(self, "Registrado correctamente")
         # except Exception as e:
         #     print("Error al registrar")
-            
+
     def register_contact(self, info):
         service = build("people", "v1", credentials=self.creds_people)
-        service.people().createContact( body={
-        "names": [
-            {
-                "givenName": info["user_name"]
+        service.people().createContact(
+            body={
+                "names": [{"givenName": info["user_name"]}],
+                "phoneNumbers": [{"value": info["user_phone"]}],
             }
-        ],
-        "phoneNumbers": [
-            {
-                'value': info["user_phone"]
-            }
-        ],
-    }).execute()
-        
+        ).execute()
+
 
 if __name__ == "__main__":
 

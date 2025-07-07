@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'aftersalesui.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.2
+## Created by: Qt User Interface Compiler version 6.7.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -66,7 +66,7 @@ class Ui_MainWindow(object):
 
         self.TxtSearch = QLineEdit(self.centralwidget)
         self.TxtSearch.setObjectName(u"TxtSearch")
-        self.TxtSearch.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtSearch.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.TxtSearch)
 
@@ -86,7 +86,7 @@ class Ui_MainWindow(object):
 
         self.TxtUserName = QLineEdit(self.userBox)
         self.TxtUserName.setObjectName(u"TxtUserName")
-        self.TxtUserName.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtUserName.setStyleSheet(u"")
 
         self.horizontalLayout.addWidget(self.TxtUserName)
 
@@ -102,7 +102,7 @@ class Ui_MainWindow(object):
 
         self.TxtUserPhone = QLineEdit(self.userBox)
         self.TxtUserPhone.setObjectName(u"TxtUserPhone")
-        self.TxtUserPhone.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtUserPhone.setStyleSheet(u"")
 
         self.horizontalLayout_2.addWidget(self.TxtUserPhone)
 
@@ -114,7 +114,7 @@ class Ui_MainWindow(object):
 
         self.scrollArea = QScrollArea(self.centralwidget)
         self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setStyleSheet(u"background :rgb(20, 20, 20)")
+        self.scrollArea.setStyleSheet(u"")
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
@@ -130,13 +130,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.TxtClientName = QLineEdit(self.scrollAreaWidgetContents)
         self.TxtClientName.setObjectName(u"TxtClientName")
-        self.TxtClientName.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtClientName.setStyleSheet(u"")
 
         self.horizontalLayout_5.addWidget(self.TxtClientName)
 
         self.BtnCopyClientName = QPushButton(self.scrollAreaWidgetContents)
         self.BtnCopyClientName.setObjectName(u"BtnCopyClientName")
-        icon = QIcon(QIcon.fromTheme(u"QIcon::ThemeIcon::EditCopy"))
+        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.EditCopy))
         self.BtnCopyClientName.setIcon(icon)
 
         self.horizontalLayout_5.addWidget(self.BtnCopyClientName)
@@ -153,7 +153,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.TxtClientPhone = QLineEdit(self.scrollAreaWidgetContents)
         self.TxtClientPhone.setObjectName(u"TxtClientPhone")
-        self.TxtClientPhone.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtClientPhone.setStyleSheet(u"")
 
         self.horizontalLayout_6.addWidget(self.TxtClientPhone)
 
@@ -181,7 +181,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.TxtNot = QLineEdit(self.scrollAreaWidgetContents)
         self.TxtNot.setObjectName(u"TxtNot")
-        self.TxtNot.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtNot.setStyleSheet(u"")
 
         self.horizontalLayout_7.addWidget(self.TxtNot)
 
@@ -203,7 +203,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.TxtSeller = QLineEdit(self.scrollAreaWidgetContents)
         self.TxtSeller.setObjectName(u"TxtSeller")
-        self.TxtSeller.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtSeller.setStyleSheet(u"")
 
         self.horizontalLayout_8.addWidget(self.TxtSeller)
 
@@ -225,7 +225,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.TxtBuyDate = QLineEdit(self.scrollAreaWidgetContents)
         self.TxtBuyDate.setObjectName(u"TxtBuyDate")
-        self.TxtBuyDate.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtBuyDate.setStyleSheet(u"")
 
         self.horizontalLayout_9.addWidget(self.TxtBuyDate)
 
@@ -247,7 +247,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
         self.TxtLeftDays = QLineEdit(self.scrollAreaWidgetContents)
         self.TxtLeftDays.setObjectName(u"TxtLeftDays")
-        self.TxtLeftDays.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtLeftDays.setStyleSheet(u"")
 
         self.horizontalLayout_10.addWidget(self.TxtLeftDays)
 
@@ -271,13 +271,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.CbxModel = QComboBox(self.scrollAreaWidgetContents)
         self.CbxModel.setObjectName(u"CbxModel")
-        self.CbxModel.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.CbxModel.setStyleSheet(u"")
 
         self.verticalLayout_2.addWidget(self.CbxModel)
 
         self.TxtModel = QLineEdit(self.scrollAreaWidgetContents)
         self.TxtModel.setObjectName(u"TxtModel")
-        self.TxtModel.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtModel.setStyleSheet(u"")
 
         self.verticalLayout_2.addWidget(self.TxtModel)
 
@@ -301,7 +301,7 @@ class Ui_MainWindow(object):
 
         self.CbxType = QComboBox(self.scrollAreaWidgetContents)
         self.CbxType.setObjectName(u"CbxType")
-        self.CbxType.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.CbxType.setStyleSheet(u"")
 
         self.formLayout.setWidget(8, QFormLayout.FieldRole, self.CbxType)
 
@@ -312,7 +312,7 @@ class Ui_MainWindow(object):
 
         self.TxtProblem = QPlainTextEdit(self.scrollAreaWidgetContents)
         self.TxtProblem.setObjectName(u"TxtProblem")
-        self.TxtProblem.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.TxtProblem.setStyleSheet(u"")
 
         self.formLayout.setWidget(9, QFormLayout.FieldRole, self.TxtProblem)
 
@@ -326,7 +326,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.CbxAgent = QComboBox(self.groupBox_2)
         self.CbxAgent.setObjectName(u"CbxAgent")
-        self.CbxAgent.setStyleSheet(u"background: rgb(75, 75, 75)")
+        self.CbxAgent.setStyleSheet(u"")
 
         self.verticalLayout_3.addWidget(self.CbxAgent)
 
