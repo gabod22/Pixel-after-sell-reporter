@@ -17,7 +17,7 @@ import sys
 import pandas as pd
 from os import path
 
-from google_contacts import get_credentials_people_api
+from modules.Google.contactsApi import get_credentials_people_api
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from dialogs import showSuccessDialog, showFailDialog
