@@ -4,13 +4,11 @@ from datetime import datetime
 from os import path
 import json
 import sys
+from globals import get_current_directory
 # from tabulate import tabulate 
 
 # pd.set_option('mode.chained_assignment', None)
-if getattr(sys, "frozen", False):
-    dirname = path.join(path.dirname(sys.executable), '_internal')
-elif __file__:
-    dirname = path.join(path.dirname(__file__))
+dirname = get_current_directory()
     
 def merge_dict(dict1, dict2):
     res = {**dict1, **dict2}
@@ -156,9 +154,10 @@ def replace_nan(string, replace= ""):
 
 
 def get_current_token():
-    try:
-        f = open(path.join(dirname,"token_kordata.json"), "r")
-        json = json.parse(f.read())
-        return 
-    except:
-        print('No pude obtener el token')
+    # try:
+    f = open(path.join(dirname,"token_kordata.json"), "r")
+    kordata_session = json.loads(f.read())
+    print(kordata_session)
+    return kordata_session["token"]
+    # except:
+    #     print('No pude obtener el token')
