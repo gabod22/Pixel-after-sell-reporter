@@ -25,7 +25,7 @@ from dialogs import showSuccessDialog, showFailDialog
 from helpers import get_last_index, split_client_info, process_kor_table
 
 from gspread_helpers import *
-from google_contacts import get_credentials_people_api
+from modules.Google.contactsApi import get_credentials_people_api
 from googleapiclient.discovery import build
 
 from get_info_dialog import GetInfoDialog
@@ -35,16 +35,16 @@ from dotenv import load_dotenv
 from ui.get_info_dialog_ui import Ui_GetInfoDialog
 from login_dialog import LoginDialog
 
+from globals import get_current_directory
 
 import pickle
 
 # from gspread import *
 
+from modules.Trello.trelloConfig import labels, members
+
 load_dotenv()
-if getattr(sys, "frozen", False):
-    dirname = path.join(path.dirname(sys.executable), '_internal')
-elif __file__:
-    dirname = path.join(path.dirname(__file__))
+dirname = get_current_directory()
 
 sell_notes_columns = [
     "Folio",
@@ -68,20 +68,10 @@ items_cols = [
     "Subtotal",
     "Importe",
 ]
+from helpers import (
+    get_current_token
+)
 
-labels = {
-    "Garantía": "66db3f8a10ea602ee6292ec5",
-    "Consulta": "66db3f8a10ea602ee6292ec2",
-    "Reparación": "66db3f8a10ea602ee6292ec3",
-    "Soporte": "66db3f8a10ea602ee6292eca",
-}
-
-members = {
-    "GABRIEL": "64ece20aae1eb29dbbdeae66",
-    "CENTRO SERVICIO": "613199d8efadf1307693adda",
-    "CORAL": "6446fd35f1f734d3ec6183bd",
-    "DAMARIS": '662fc3c7444178dbf67e6d27'
-}
 
 
 class MainWindow(QMainWindow):
@@ -140,6 +130,8 @@ class MainWindow(QMainWindow):
         self.ui.actionGuardar_contacto.triggered.connect(self.show_add_contact_dialog)
         self.clipboard = QGuiApplication.clipboard()
         self.assign_copy_buttons()
+        
+        print(get_current_token())
 
         try:
             credentials_path = path.join(dirname, "credentials.json")

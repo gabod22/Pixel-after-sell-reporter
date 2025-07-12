@@ -107,6 +107,12 @@ class Ui_ConfigDialog(object):
 
         self.groupBox_2 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_2.setObjectName(u"groupBox_2")
+        self.checkBox = QCheckBox(self.groupBox_2)
+        self.checkBox.setObjectName(u"checkBox")
+        self.checkBox.setGeometry(QRect(10, 20, 78, 20))
+        self.checkBox_2 = QCheckBox(self.groupBox_2)
+        self.checkBox_2.setObjectName(u"checkBox_2")
+        self.checkBox_2.setGeometry(QRect(10, 60, 78, 20))
 
         self.verticalLayout_3.addWidget(self.groupBox_2)
 
@@ -136,7 +142,9 @@ class Ui_ConfigDialog(object):
         self.CheckAutologin.setText(QCoreApplication.translate("ConfigDialog", u"Autologin", None))
         self.BtnConfigDiagSaveKordataInfo.setText(QCoreApplication.translate("ConfigDialog", u"Guardar info", None))
         self.BtnConfigDiagEditKordataInfo.setText(QCoreApplication.translate("ConfigDialog", u"Editar Info", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("ConfigDialog", u"GroupBox", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("ConfigDialog", u"Funcionalidad", None))
+        self.checkBox.setText(QCoreApplication.translate("ConfigDialog", u"CheckBox", None))
+        self.checkBox_2.setText(QCoreApplication.translate("ConfigDialog", u"CheckBox", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("ConfigDialog", u"Kordata", None))
     # retranslateUi
 
