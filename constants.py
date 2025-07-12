@@ -3,12 +3,7 @@ from dotenv import load_dotenv
 import sys
 from os import path
 
-#Trello API constants
-TRELLO_ENDPOINT = "https://api.trello.com/1/cards"
-TRELLO_HEADERS = {"Accept": "application/json"}
-TRELLO_TOKEN="ATTA3bb61958d5b3506b54860df6410561d10f408ed793e46cc60846737fac06cbc07E9CEBB9"
-TRELLO_KEY="2c0369eb0c76fbbbf4ecf3094fd31356"
-TRELLO_ID_LIST="66db40b0006d1f0947656dec"
+
 
 GOOGLE_JSON="aftersales-438922-93709469aa37.json"
 GOOGLE_WOTKSHEET_ID ="12Vmae8o_54a-pQg7LgqMkWnSkx6s9dy7016tq3i-_Rw"
