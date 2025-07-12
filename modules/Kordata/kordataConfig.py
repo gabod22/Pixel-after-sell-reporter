@@ -1,3 +1,4 @@
+START_DATE = "2024-01-01"
 K_ENDPOING = "https://biz.kordata.mx/graphql"
 K_LOGIN_ENDPOINT = "https://one.kordata.mx/api/commons/iniciar-sesion"
 K_LOGOUT_ENDPOINT = "https://one.kordata.mx/api/commons/cerrar-sesion"

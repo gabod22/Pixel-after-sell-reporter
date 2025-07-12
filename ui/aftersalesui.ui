@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1019</width>
-    <height>901</height>
+    <width>520</width>
+    <height>695</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -127,8 +127,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>999</width>
-         <height>608</height>
+         <width>500</width>
+         <height>402</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout">
@@ -423,7 +423,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1019</width>
+     <width>520</width>
      <height>33</height>
     </rect>
    </property>
@@ -433,6 +433,9 @@
     </property>
     <addaction name="actionActualizar_datos"/>
     <addaction name="actionGuardar_contacto"/>
+    <addaction name="separator"/>
+    <addaction name="actionConfiguracion"/>
+    <addaction name="accionLoginKordata"/>
    </widget>
    <addaction name="menuArchivo"/>
   </widget>
@@ -445,6 +448,16 @@
   <action name="actionGuardar_contacto">
    <property name="text">
     <string>Guardar contacto</string>
+   </property>
+  </action>
+  <action name="actionConfiguracion">
+   <property name="text">
+    <string>Configuración</string>
+   </property>
+  </action>
+  <action name="accionLoginKordata">
+   <property name="text">
+    <string>Iniciar sesión</string>
    </property>
   </action>
  </widget>

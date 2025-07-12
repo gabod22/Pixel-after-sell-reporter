@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QGroupBox,
-    QHBoxLayout, QLabel, QLineEdit, QPushButton,
-    QScrollArea, QSizePolicy, QSpacerItem, QTabWidget,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDateEdit, QDialog,
+    QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QTabWidget, QVBoxLayout, QWidget)
 
 class Ui_ConfigDialog(object):
     def setupUi(self, ConfigDialog):
@@ -113,6 +113,9 @@ class Ui_ConfigDialog(object):
         self.checkBox_2 = QCheckBox(self.groupBox_2)
         self.checkBox_2.setObjectName(u"checkBox_2")
         self.checkBox_2.setGeometry(QRect(10, 60, 78, 20))
+        self.dateKordataStartDate = QDateEdit(self.groupBox_2)
+        self.dateKordataStartDate.setObjectName(u"dateKordataStartDate")
+        self.dateKordataStartDate.setGeometry(QRect(169, 20, 161, 22))
 
         self.verticalLayout_3.addWidget(self.groupBox_2)
 

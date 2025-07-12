@@ -3,7 +3,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt
-from helpers import get_current_token
+
 from ui.update_data_dialog_ui import Ui_Dialog
 
 # from tabulate import tabulate
@@ -13,14 +13,7 @@ import pandas as pd
 from os import path
 
 from dialogs import showSuccessDialog, showFailDialog, show_yes_no_dialog
-
-import requests
-import time
-import json
-import pickle
-
 from globals import get_current_directory
-
 # from gspread import *
 dirname = get_current_directory()
 

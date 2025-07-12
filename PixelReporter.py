@@ -14,13 +14,11 @@ from PySide6.QtGui import QGuiApplication
 from ui.aftersalesui_ui import Ui_MainWindow
 
 import sys
-import pandas as pd
 import requests
-import json
 import yaml
 from os import path
 from datetime import datetime, timedelta
-from constants import TRELLO_ENDPOINT, TRELLO_HEADERS, config_file, TRELLO_ID_LIST, TRELLO_KEY, TRELLO_TOKEN
+from constants import config_file
 from dialogs import showSuccessDialog, showFailDialog
 from helpers import get_last_index, split_client_info, process_kor_table
 
@@ -28,16 +26,18 @@ from gspread_helpers import *
 from modules.Google.contactsApi import get_credentials_people_api
 from googleapiclient.discovery import build
 
-from get_info_dialog import GetInfoDialog
-from add_contact_dialog import AddContactDialog
-import os
 from dotenv import load_dotenv
-from ui.get_info_dialog_ui import Ui_GetInfoDialog
-from login_dialog import LoginDialog
 
 from globals import get_current_directory
 
 import pickle
+
+from dialogs.showDialogs import (
+    show_update_info_dialog,
+    show_add_contact_dialog,
+    show_config_dialog,
+    show_login_dialog
+)
 
 # from gspread import *
 
@@ -68,7 +68,8 @@ items_cols = [
     "Subtotal",
     "Importe",
 ]
-from helpers import (
+
+from modules.Kordata.auth import (
     get_current_token
 )
 
@@ -126,8 +127,10 @@ class MainWindow(QMainWindow):
         self.ui.TxtUserPhone.setEnabled(False)
         self.ui.CbxAgent.addItems(self.config["AGENTS"])
 
-        self.ui.actionActualizar_datos.triggered.connect(self.show_update_info_dialog)
-        self.ui.actionGuardar_contacto.triggered.connect(self.show_add_contact_dialog)
+        self.ui.actionActualizar_datos.triggered.connect(lambda:show_update_info_dialog(self))
+        self.ui.actionGuardar_contacto.triggered.connect(lambda:show_add_contact_dialog(self))
+        self.ui.actionConfiguracion.triggered.connect(lambda:show_config_dialog(self))
+        self.ui.accionLoginKordata.triggered.connect(lambda:show_login_dialog(self))
         self.clipboard = QGuiApplication.clipboard()
         self.assign_copy_buttons()
         
@@ -142,17 +145,7 @@ class MainWindow(QMainWindow):
                 self, "No se pudo obtener la información de inicio de sesión"
             )
 
-    def show_login_dialog(self):
-        updateDialog = LoginDialog(parent=self)
-        updateDialog.show()
-
-    def show_update_info_dialog(self):
-        updateDialog = GetInfoDialog(parent=self)
-        updateDialog.show()
-
-    def show_add_contact_dialog(self):
-        AddContact = AddContactDialog(parent=self)
-        AddContact.show()
+    
 
     def assing_copy_functions(self):
         self.ui.BtnCopyBuyDate.connect()
@@ -322,170 +315,170 @@ class MainWindow(QMainWindow):
             showFailDialog(self, "No se pudo cargar la información de ventas")
             return {}, []
 
-    def save_to_trello(self, info):
+    # def save_to_trello(self, info):
 
-        if not self.ui.CheckSameUser.isChecked():
-            desc = (
-                "## Cliente \n nombre: {0} - {1} \n"
-                "usuario: {2} - {3} \n"
-                "### Modelo \n {4} \n"
-                "### Problema \n {5} \n \n "
-                "### Dirección \n [Dirección] \n"
-                "### Información \n"
-                "Fecha de compra: {6}  \n\n"
-                "Vendedor: {7}"
-                "Días restantes de garantía: {8}".format(
-                    info["user_name"],
-                    info["user_phone"],
-                    info["user_name"],
-                    info["user_phone"],
-                    info["model"],
-                    info["problem"],
-                    info["buydate"],
-                    info["seller"],
-                    info["left_days"],
-                )
-            )
-        else:
-            desc = (
-                "## Cliente \n "
-                "nombre: {0} - {1} \n "
-                "### Modelo \n {2} \n"
-                "### Problema \n {3} \n"
-                "### Dirección: \n [Dirección] \n"
-                "### Información \n"
-                "Fecha de compra: {4} \n "
-                "Vendedor: {5} \n"
-                "Días restantes de garantía: {6}".format(
-                    info["user_name"],
-                    info["user_phone"],
-                    info["model"],
-                    info["problem"],
-                    info["buydate"],
-                    info["seller"],
-                    info["left_days"],
-                )
-            )
+    #     if not self.ui.CheckSameUser.isChecked():
+    #         desc = (
+    #             "## Cliente \n nombre: {0} - {1} \n"
+    #             "usuario: {2} - {3} \n"
+    #             "### Modelo \n {4} \n"
+    #             "### Problema \n {5} \n \n "
+    #             "### Dirección \n [Dirección] \n"
+    #             "### Información \n"
+    #             "Fecha de compra: {6}  \n\n"
+    #             "Vendedor: {7}"
+    #             "Días restantes de garantía: {8}".format(
+    #                 info["user_name"],
+    #                 info["user_phone"],
+    #                 info["user_name"],
+    #                 info["user_phone"],
+    #                 info["model"],
+    #                 info["problem"],
+    #                 info["buydate"],
+    #                 info["seller"],
+    #                 info["left_days"],
+    #             )
+    #         )
+    #     else:
+    #         desc = (
+    #             "## Cliente \n "
+    #             "nombre: {0} - {1} \n "
+    #             "### Modelo \n {2} \n"
+    #             "### Problema \n {3} \n"
+    #             "### Dirección: \n [Dirección] \n"
+    #             "### Información \n"
+    #             "Fecha de compra: {4} \n "
+    #             "Vendedor: {5} \n"
+    #             "Días restantes de garantía: {6}".format(
+    #                 info["user_name"],
+    #                 info["user_phone"],
+    #                 info["model"],
+    #                 info["problem"],
+    #                 info["buydate"],
+    #                 info["seller"],
+    #                 info["left_days"],
+    #             )
+    #         )
 
-        query = {
-            "idList": TRELLO_ID_LIST,
-            "key": TRELLO_KEY,
-            "token": TRELLO_TOKEN,
-            "name": info["user_phone"]
-            + " - "
-            + info["user_name"]
-            + " - "
-            + info["nota"],
-            "desc": desc,
-            "idLabels": [labels[info["type"]]],
-            "idMembers": [members[info["employee"]]],
-        }
+    #     query = {
+    #         "idList": TRELLO_ID_LIST,
+    #         "key": TRELLO_KEY,
+    #         "token": TRELLO_TOKEN,
+    #         "name": info["user_phone"]
+    #         + " - "
+    #         + info["user_name"]
+    #         + " - "
+    #         + info["nota"],
+    #         "desc": desc,
+    #         "idLabels": [labels[info["type"]]],
+    #         "idMembers": [members[info["employee"]]],
+    #     }
 
-        response = requests.request(
-            "POST", TRELLO_ENDPOINT, headers=TRELLO_HEADERS, params=query
-        )
-        print(response.status_code, response.json().get("shortUrl"))
-        if response.status_code == 200:
-            print("todo correcto")
-            return response.json().get("shortUrl")
+    #     response = requests.request(
+    #         "POST", TRELLO_ENDPOINT, headers=TRELLO_HEADERS, params=query
+    #     )
+    #     print(response.status_code, response.json().get("shortUrl"))
+    #     if response.status_code == 200:
+    #         print("todo correcto")
+    #         return response.json().get("shortUrl")
 
-        elif response.status_code == 401:
-            showFailDialog(self, "Error, no se pudo agregar, no tiene los permisos.")
-            return None
+    #     elif response.status_code == 401:
+    #         showFailDialog(self, "Error, no se pudo agregar, no tiene los permisos.")
+    #         return None
 
-        else:
-            showFailDialog(self, "Algo salió mal, contacta con el administrador")
-            None
+    #     else:
+    #         showFailDialog(self, "Algo salió mal, contacta con el administrador")
+    #         None
 
-    def save_to_google(self, info):
-        self.statusBar().showMessage("Guardando el Google")
+    # def save_to_google(self, info):
+    #     self.statusBar().showMessage("Guardando el Google")
 
-        sheet = get_worksheet()
+    #     sheet = get_worksheet()
 
-        data = [
-            [
-                info["nota"],  ##Nota / factura
-                info["user_name"],  ##Cliente
-                info["user_phone"],  ##Contacto
-                info["buydate"],  ##Fecha de compra
-                "",  ##Dias Restantes
-                info["hoy"],  ##INICIO
-                "",  ##FIN
-                True,  ##ACTIVO
-                info["type"],
-                info["employee"],
-                info["seller"],  ##VENDEDOR
-                "",  ##NUEVA NOTA /FACTURA
-                info["model"],  ##MODELO DEL EQUIPO
-                "",  ##NUMERO DE SERIE
-                "",  ##ORDEN DE SERVICIO
-                info["problem"],
-                "",  ##Solucion brindada
-                "",  ##Recursos, tiempo
-                "",  ##Costos
-                "",  # Envios,
-                None,
-                info["card_url"],  ##URL trello
-            ]
-        ]
-        try:
-            write_in_last_row(data, sheet)
-        except Exception as e:
-            print("No se puede guardar en google")
-            print(e)
-            showFailDialog(self, "Ocurrió un error al guardar en Google")
-            self.statusBar().showMessage("Error al guardar en Google")
+    #     data = [
+    #         [
+    #             info["nota"],  ##Nota / factura
+    #             info["user_name"],  ##Cliente
+    #             info["user_phone"],  ##Contacto
+    #             info["buydate"],  ##Fecha de compra
+    #             "",  ##Dias Restantes
+    #             info["hoy"],  ##INICIO
+    #             "",  ##FIN
+    #             True,  ##ACTIVO
+    #             info["type"],
+    #             info["employee"],
+    #             info["seller"],  ##VENDEDOR
+    #             "",  ##NUEVA NOTA /FACTURA
+    #             info["model"],  ##MODELO DEL EQUIPO
+    #             "",  ##NUMERO DE SERIE
+    #             "",  ##ORDEN DE SERVICIO
+    #             info["problem"],
+    #             "",  ##Solucion brindada
+    #             "",  ##Recursos, tiempo
+    #             "",  ##Costos
+    #             "",  # Envios,
+    #             None,
+    #             info["card_url"],  ##URL trello
+    #         ]
+    #     ]
+    #     try:
+    #         write_in_last_row(data, sheet)
+    #     except Exception as e:
+    #         print("No se puede guardar en google")
+    #         print(e)
+    #         showFailDialog(self, "Ocurrió un error al guardar en Google")
+    #         self.statusBar().showMessage("Error al guardar en Google")
 
-    def save_report(self):
-        if not self.ui.CheckManualMode.isChecked():
-            _, client_name, client_phone, date = split_client_info(
-                self.ui.TxtSearch.text()
-            )
-            date = date.strftime("%d/%m/%Y")
-        hoy = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        data = {
-            "left_days": self.ui.TxtLeftDays.text(),
-            "user_name": self.ui.TxtClientName.text(),
-            "user_phone": self.ui.TxtClientPhone.text(),
-            "hoy": hoy,
-            "buydate": (
-                self.ui.TxtSearch.text()
-                if self.ui.CheckManualMode.isChecked()
-                else date
-            ),
-            "nota": self.ui.TxtNot.text(),
-            "model": self.ui.CbxModel.currentText(),
-            "type": self.ui.CbxType.currentText(),
-            "problem": self.ui.TxtProblem.toPlainText(),
-            "employee": self.ui.CbxAgent.currentText(),
-            "seller": self.ui.TxtSeller.text(),
-        }
-        self.statusBar().showMessage("Guardando registros...")
-        trello_card_url = self.save_to_trello(data)
+    # def save_report(self):
+    #     if not self.ui.CheckManualMode.isChecked():
+    #         _, client_name, client_phone, date = split_client_info(
+    #             self.ui.TxtSearch.text()
+    #         )
+    #         date = date.strftime("%d/%m/%Y")
+    #     hoy = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    #     data = {
+    #         "left_days": self.ui.TxtLeftDays.text(),
+    #         "user_name": self.ui.TxtClientName.text(),
+    #         "user_phone": self.ui.TxtClientPhone.text(),
+    #         "hoy": hoy,
+    #         "buydate": (
+    #             self.ui.TxtSearch.text()
+    #             if self.ui.CheckManualMode.isChecked()
+    #             else date
+    #         ),
+    #         "nota": self.ui.TxtNot.text(),
+    #         "model": self.ui.CbxModel.currentText(),
+    #         "type": self.ui.CbxType.currentText(),
+    #         "problem": self.ui.TxtProblem.toPlainText(),
+    #         "employee": self.ui.CbxAgent.currentText(),
+    #         "seller": self.ui.TxtSeller.text(),
+    #     }
+    #     self.statusBar().showMessage("Guardando registros...")
+    #     trello_card_url = self.save_to_trello(data)
 
-        data["card_url"] = trello_card_url
+    #     data["card_url"] = trello_card_url
 
-        self.statusBar().showMessage("Guardado en trello")
-        self.save_to_google(data)
-        self.statusBar().showMessage("Guardado en google sheets")
-        if self.ui.CheckRegisterContact.isChecked():
-            self.register_contact(data)
-            self.statusBar().showMessage("Guardado en Google Contacts")
+    #     self.statusBar().showMessage("Guardado en trello")
+    #     self.save_to_google(data)
+    #     self.statusBar().showMessage("Guardado en google sheets")
+    #     if self.ui.CheckRegisterContact.isChecked():
+    #         self.register_contact(data)
+    #         self.statusBar().showMessage("Guardado en Google Contacts")
 
-        self.statusBar().showMessage("Registro guardado exitosamente", 4000)
-        self.clear_inputs()
-        showSuccessDialog(self, "Registrado correctamente")
-        # except Exception as e:
-        #     print("Error al registrar")
+    #     self.statusBar().showMessage("Registro guardado exitosamente", 4000)
+    #     self.clear_inputs()
+    #     showSuccessDialog(self, "Registrado correctamente")
+    #     # except Exception as e:
+    #     #     print("Error al registrar")
 
-    def register_contact(self, info):
-        service = build("people", "v1", credentials=self.creds_people)
-        service.people().createContact(
-            body={
-                "names": [{"givenName": info["user_name"]}],
-                "phoneNumbers": [{"value": info["user_phone"]}],
-            }
-        ).execute()
+    # def register_contact(self, info):
+    #     service = build("people", "v1", credentials=self.creds_people)
+    #     service.people().createContact(
+    #         body={
+    #             "names": [{"givenName": info["user_name"]}],
+    #             "phoneNumbers": [{"value": info["user_phone"]}],
+    #         }
+    #     ).execute()
 
 
 if __name__ == "__main__":

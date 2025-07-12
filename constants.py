@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import sys
 from os import path
 
-
+START_DATE = "2022-01-01"
 
 GOOGLE_JSON="aftersales-438922-93709469aa37.json"
 GOOGLE_WOTKSHEET_ID ="12Vmae8o_54a-pQg7LgqMkWnSkx6s9dy7016tq3i-_Rw"

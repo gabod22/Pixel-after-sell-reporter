@@ -153,11 +153,3 @@ def replace_nan(string, replace= ""):
     return f"{string}"
 
 
-def get_current_token():
-    # try:
-    f = open(path.join(dirname,"token_kordata.json"), "r")
-    kordata_session = json.loads(f.read())
-    print(kordata_session)
-    return kordata_session["token"]
-    # except:
-    #     print('No pude obtener el token')
