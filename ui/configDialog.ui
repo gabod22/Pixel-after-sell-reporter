@@ -23,6 +23,37 @@
       <attribute name="title">
        <string>General</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Agente por defecto</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QComboBox" name="CbxAgents">
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>331</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -40,7 +71,7 @@
             <x>0</x>
             <y>0</y>
             <width>356</width>
-            <height>396</height>
+            <height>366</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -55,64 +86,12 @@
                 <item>
                  <widget class="QLabel" name="label">
                   <property name="text">
-                   <string>Usuario</string>
+                   <string>Correo Kordata</string>
                   </property>
                  </widget>
                 </item>
                 <item>
                  <widget class="QLineEdit" name="TxtKordataUser"/>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_5">
-                <item>
-                 <widget class="QLabel" name="label_2">
-                  <property name="text">
-                   <string>Contraseña</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="TxtKordataPass"/>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout">
-                <item>
-                 <widget class="QCheckBox" name="CheckAutologin">
-                  <property name="text">
-                   <string>Autologin</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="BtnConfigDiagSaveKordataInfo">
-                  <property name="text">
-                   <string>Guardar info</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="BtnConfigDiagEditKordataInfo">
-                  <property name="text">
-                   <string>Editar Info</string>
-                  </property>
-                 </widget>
                 </item>
                </layout>
               </item>
@@ -124,43 +103,39 @@
              <property name="title">
               <string>Funcionalidad</string>
              </property>
-             <widget class="QCheckBox" name="checkBox">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>20</y>
-                <width>78</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>CheckBox</string>
-              </property>
-             </widget>
-             <widget class="QCheckBox" name="checkBox_2">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>60</y>
-                <width>78</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>CheckBox</string>
-              </property>
-             </widget>
-             <widget class="QDateEdit" name="dateKordataStartDate">
-              <property name="geometry">
-               <rect>
-                <x>169</x>
-                <y>20</y>
-                <width>161</width>
-                <height>22</height>
-               </rect>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <widget class="QDateEdit" name="dateKordataStartDate"/>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_2">
+                <property name="text">
+                 <string>CheckBox</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox">
+                <property name="text">
+                 <string>CheckBox</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
@@ -168,6 +143,13 @@
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="BtnSaveConfig">
+     <property name="text">
+      <string>Guardar</string>
+     </property>
     </widget>
    </item>
   </layout>

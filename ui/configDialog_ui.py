@@ -15,8 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QDateEdit, QDialog,
-    QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateEdit,
+    QDialog, QGroupBox, QLabel, QLineEdit,
     QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
     QTabWidget, QVBoxLayout, QWidget)
 
@@ -31,6 +31,25 @@ class Ui_ConfigDialog(object):
         self.tabWidget.setObjectName(u"tabWidget")
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
+        self.verticalLayout_7 = QVBoxLayout(self.tab_2)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.groupBox_3 = QGroupBox(self.tab_2)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.verticalLayout_8 = QVBoxLayout(self.groupBox_3)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.CbxAgents = QComboBox(self.groupBox_3)
+        self.CbxAgents.setObjectName(u"CbxAgents")
+        self.CbxAgents.setStyleSheet(u"")
+
+        self.verticalLayout_8.addWidget(self.CbxAgents)
+
+
+        self.verticalLayout_7.addWidget(self.groupBox_3)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 331, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_7.addItem(self.verticalSpacer_2)
+
         self.tabWidget.addTab(self.tab_2, "")
         self.tab = QWidget()
         self.tab.setObjectName(u"tab")
@@ -41,7 +60,7 @@ class Ui_ConfigDialog(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 356, 396))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 356, 366))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.groupBox = QGroupBox(self.scrollAreaWidgetContents)
@@ -63,61 +82,34 @@ class Ui_ConfigDialog(object):
 
         self.verticalLayout_6.addLayout(self.verticalLayout_4)
 
-        self.verticalLayout_5 = QVBoxLayout()
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.label_2 = QLabel(self.groupBox)
-        self.label_2.setObjectName(u"label_2")
-
-        self.verticalLayout_5.addWidget(self.label_2)
-
-        self.TxtKordataPass = QLineEdit(self.groupBox)
-        self.TxtKordataPass.setObjectName(u"TxtKordataPass")
-
-        self.verticalLayout_5.addWidget(self.TxtKordataPass)
-
-
-        self.verticalLayout_6.addLayout(self.verticalLayout_5)
-
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.CheckAutologin = QCheckBox(self.groupBox)
-        self.CheckAutologin.setObjectName(u"CheckAutologin")
-
-        self.horizontalLayout.addWidget(self.CheckAutologin)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer)
-
-        self.BtnConfigDiagSaveKordataInfo = QPushButton(self.groupBox)
-        self.BtnConfigDiagSaveKordataInfo.setObjectName(u"BtnConfigDiagSaveKordataInfo")
-
-        self.horizontalLayout.addWidget(self.BtnConfigDiagSaveKordataInfo)
-
-        self.BtnConfigDiagEditKordataInfo = QPushButton(self.groupBox)
-        self.BtnConfigDiagEditKordataInfo.setObjectName(u"BtnConfigDiagEditKordataInfo")
-
-        self.horizontalLayout.addWidget(self.BtnConfigDiagEditKordataInfo)
-
-
-        self.verticalLayout_6.addLayout(self.horizontalLayout)
-
 
         self.verticalLayout_3.addWidget(self.groupBox)
 
         self.groupBox_2 = QGroupBox(self.scrollAreaWidgetContents)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.checkBox = QCheckBox(self.groupBox_2)
-        self.checkBox.setObjectName(u"checkBox")
-        self.checkBox.setGeometry(QRect(10, 20, 78, 20))
-        self.checkBox_2 = QCheckBox(self.groupBox_2)
-        self.checkBox_2.setObjectName(u"checkBox_2")
-        self.checkBox_2.setGeometry(QRect(10, 60, 78, 20))
+        self.verticalLayout_5 = QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.dateKordataStartDate = QDateEdit(self.groupBox_2)
         self.dateKordataStartDate.setObjectName(u"dateKordataStartDate")
-        self.dateKordataStartDate.setGeometry(QRect(169, 20, 161, 22))
+
+        self.verticalLayout_5.addWidget(self.dateKordataStartDate)
+
+        self.checkBox_2 = QCheckBox(self.groupBox_2)
+        self.checkBox_2.setObjectName(u"checkBox_2")
+
+        self.verticalLayout_5.addWidget(self.checkBox_2)
+
+        self.checkBox = QCheckBox(self.groupBox_2)
+        self.checkBox.setObjectName(u"checkBox")
+
+        self.verticalLayout_5.addWidget(self.checkBox)
+
 
         self.verticalLayout_3.addWidget(self.groupBox_2)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_3.addItem(self.verticalSpacer)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
@@ -126,6 +118,11 @@ class Ui_ConfigDialog(object):
         self.tabWidget.addTab(self.tab, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
+
+        self.BtnSaveConfig = QPushButton(ConfigDialog)
+        self.BtnSaveConfig.setObjectName(u"BtnSaveConfig")
+
+        self.verticalLayout.addWidget(self.BtnSaveConfig)
 
 
         self.retranslateUi(ConfigDialog)
@@ -138,16 +135,14 @@ class Ui_ConfigDialog(object):
 
     def retranslateUi(self, ConfigDialog):
         ConfigDialog.setWindowTitle(QCoreApplication.translate("ConfigDialog", u"Configuraci\u00f3n", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("ConfigDialog", u"Agente por defecto", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("ConfigDialog", u"General", None))
         self.groupBox.setTitle(QCoreApplication.translate("ConfigDialog", u"Informaci\u00f3n inicio Kordata", None))
-        self.label.setText(QCoreApplication.translate("ConfigDialog", u"Usuario", None))
-        self.label_2.setText(QCoreApplication.translate("ConfigDialog", u"Contrase\u00f1a", None))
-        self.CheckAutologin.setText(QCoreApplication.translate("ConfigDialog", u"Autologin", None))
-        self.BtnConfigDiagSaveKordataInfo.setText(QCoreApplication.translate("ConfigDialog", u"Guardar info", None))
-        self.BtnConfigDiagEditKordataInfo.setText(QCoreApplication.translate("ConfigDialog", u"Editar Info", None))
+        self.label.setText(QCoreApplication.translate("ConfigDialog", u"Correo Kordata", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ConfigDialog", u"Funcionalidad", None))
-        self.checkBox.setText(QCoreApplication.translate("ConfigDialog", u"CheckBox", None))
         self.checkBox_2.setText(QCoreApplication.translate("ConfigDialog", u"CheckBox", None))
+        self.checkBox.setText(QCoreApplication.translate("ConfigDialog", u"CheckBox", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("ConfigDialog", u"Kordata", None))
+        self.BtnSaveConfig.setText(QCoreApplication.translate("ConfigDialog", u"Guardar", None))
     # retranslateUi
 
