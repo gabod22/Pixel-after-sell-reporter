@@ -16,17 +16,17 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
-    QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
-    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QStatusBar, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
+    QGroupBox, QHBoxLayout, QLabel, QLayout,
+    QLineEdit, QMainWindow, QMenu, QMenuBar,
+    QPlainTextEdit, QPushButton, QScrollArea, QSizePolicy,
+    QSpacerItem, QStatusBar, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(520, 695)
+        MainWindow.resize(567, 622)
         self.actionActualizar_datos = QAction(MainWindow)
         self.actionActualizar_datos.setObjectName(u"actionActualizar_datos")
         self.actionGuardar_contacto = QAction(MainWindow)
@@ -79,7 +79,71 @@ class Ui_MainWindow(object):
 
         self.userBox = QGroupBox(self.centralwidget)
         self.userBox.setObjectName(u"userBox")
-        self.horizontalLayout_3 = QHBoxLayout(self.userBox)
+        self.userBox.setEnabled(True)
+        self.userBox.setFlat(False)
+        self.verticalLayout_15 = QVBoxLayout(self.userBox)
+        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.horizontalLayout_12 = QHBoxLayout()
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.verticalLayout_5 = QVBoxLayout()
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.label_12 = QLabel(self.userBox)
+        self.label_12.setObjectName(u"label_12")
+
+        self.verticalLayout_5.addWidget(self.label_12)
+
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.TxtClientName = QLineEdit(self.userBox)
+        self.TxtClientName.setObjectName(u"TxtClientName")
+        self.TxtClientName.setStyleSheet(u"")
+
+        self.horizontalLayout_5.addWidget(self.TxtClientName)
+
+        self.BtnCopyClientName = QPushButton(self.userBox)
+        self.BtnCopyClientName.setObjectName(u"BtnCopyClientName")
+        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.EditCopy))
+        self.BtnCopyClientName.setIcon(icon)
+
+        self.horizontalLayout_5.addWidget(self.BtnCopyClientName)
+
+
+        self.verticalLayout_5.addLayout(self.horizontalLayout_5)
+
+
+        self.horizontalLayout_12.addLayout(self.verticalLayout_5)
+
+        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.label_11 = QLabel(self.userBox)
+        self.label_11.setObjectName(u"label_11")
+
+        self.verticalLayout_6.addWidget(self.label_11)
+
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.TxtClientPhone = QLineEdit(self.userBox)
+        self.TxtClientPhone.setObjectName(u"TxtClientPhone")
+        self.TxtClientPhone.setStyleSheet(u"")
+
+        self.horizontalLayout_6.addWidget(self.TxtClientPhone)
+
+        self.BtnCopyClientPhone = QPushButton(self.userBox)
+        self.BtnCopyClientPhone.setObjectName(u"BtnCopyClientPhone")
+        self.BtnCopyClientPhone.setIcon(icon)
+
+        self.horizontalLayout_6.addWidget(self.BtnCopyClientPhone)
+
+
+        self.verticalLayout_6.addLayout(self.horizontalLayout_6)
+
+
+        self.horizontalLayout_12.addLayout(self.verticalLayout_6)
+
+
+        self.verticalLayout_15.addLayout(self.horizontalLayout_12)
+
+        self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -106,12 +170,22 @@ class Ui_MainWindow(object):
 
         self.TxtUserPhone = QLineEdit(self.userBox)
         self.TxtUserPhone.setObjectName(u"TxtUserPhone")
+        self.TxtUserPhone.setMaximumSize(QSize(100, 16777215))
         self.TxtUserPhone.setStyleSheet(u"")
 
         self.horizontalLayout_2.addWidget(self.TxtUserPhone)
 
+        self.CheckRegisterContact = QCheckBox(self.userBox)
+        self.CheckRegisterContact.setObjectName(u"CheckRegisterContact")
+        self.CheckRegisterContact.setChecked(True)
+
+        self.horizontalLayout_2.addWidget(self.CheckRegisterContact)
+
 
         self.horizontalLayout_3.addLayout(self.horizontalLayout_2)
+
+
+        self.verticalLayout_15.addLayout(self.horizontalLayout_3)
 
 
         self.verticalLayout_4.addWidget(self.userBox)
@@ -122,64 +196,101 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 500, 402))
-        self.formLayout = QFormLayout(self.scrollAreaWidgetContents)
-        self.formLayout.setObjectName(u"formLayout")
-        self.label_12 = QLabel(self.scrollAreaWidgetContents)
-        self.label_12.setObjectName(u"label_12")
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 535, 270))
+        self.verticalLayout_14 = QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.frame = QFrame(self.scrollAreaWidgetContents)
+        self.frame.setObjectName(u"frame")
+        self.frame.setStyleSheet(u"#frame{\n"
+"	border: 2px solid red;\n"
+"}\n"
+"+++++")
+        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_14 = QHBoxLayout(self.frame)
+        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.verticalLayout_10 = QVBoxLayout()
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.label_5 = QLabel(self.frame)
+        self.label_5.setObjectName(u"label_5")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label_12)
+        self.verticalLayout_10.addWidget(self.label_5)
 
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.TxtClientName = QLineEdit(self.scrollAreaWidgetContents)
-        self.TxtClientName.setObjectName(u"TxtClientName")
-        self.TxtClientName.setStyleSheet(u"")
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.CbxModel = QComboBox(self.frame)
+        self.CbxModel.setObjectName(u"CbxModel")
+        self.CbxModel.setStyleSheet(u"")
 
-        self.horizontalLayout_5.addWidget(self.TxtClientName)
+        self.verticalLayout_2.addWidget(self.CbxModel)
 
-        self.BtnCopyClientName = QPushButton(self.scrollAreaWidgetContents)
-        self.BtnCopyClientName.setObjectName(u"BtnCopyClientName")
-        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.EditCopy))
-        self.BtnCopyClientName.setIcon(icon)
+        self.TxtModel = QLineEdit(self.frame)
+        self.TxtModel.setObjectName(u"TxtModel")
+        self.TxtModel.setStyleSheet(u"")
 
-        self.horizontalLayout_5.addWidget(self.BtnCopyClientName)
-
-
-        self.formLayout.setLayout(0, QFormLayout.FieldRole, self.horizontalLayout_5)
-
-        self.label_11 = QLabel(self.scrollAreaWidgetContents)
-        self.label_11.setObjectName(u"label_11")
-
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_11)
-
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.TxtClientPhone = QLineEdit(self.scrollAreaWidgetContents)
-        self.TxtClientPhone.setObjectName(u"TxtClientPhone")
-        self.TxtClientPhone.setStyleSheet(u"")
-
-        self.horizontalLayout_6.addWidget(self.TxtClientPhone)
-
-        self.BtnCopyClientPhone = QPushButton(self.scrollAreaWidgetContents)
-        self.BtnCopyClientPhone.setObjectName(u"BtnCopyClientPhone")
-        self.BtnCopyClientPhone.setIcon(icon)
-
-        self.horizontalLayout_6.addWidget(self.BtnCopyClientPhone)
+        self.verticalLayout_2.addWidget(self.TxtModel)
 
 
-        self.formLayout.setLayout(1, QFormLayout.FieldRole, self.horizontalLayout_6)
+        self.horizontalLayout_11.addLayout(self.verticalLayout_2)
 
-        self.CheckRegisterContact = QCheckBox(self.scrollAreaWidgetContents)
-        self.CheckRegisterContact.setObjectName(u"CheckRegisterContact")
-        self.CheckRegisterContact.setChecked(True)
+        self.BtnCopyModel = QPushButton(self.frame)
+        self.BtnCopyModel.setObjectName(u"BtnCopyModel")
+        self.BtnCopyModel.setMaximumSize(QSize(28, 24))
+        self.BtnCopyModel.setIcon(icon)
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.CheckRegisterContact)
+        self.horizontalLayout_11.addWidget(self.BtnCopyModel)
 
+
+        self.verticalLayout_10.addLayout(self.horizontalLayout_11)
+
+
+        self.horizontalLayout_14.addLayout(self.verticalLayout_10)
+
+        self.verticalLayout_11 = QVBoxLayout()
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.verticalLayout_11.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+        self.label_2 = QLabel(self.frame)
+        self.label_2.setObjectName(u"label_2")
+
+        self.verticalLayout_11.addWidget(self.label_2)
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.horizontalLayout_10.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        self.LbLeftDays = QLabel(self.frame)
+        self.LbLeftDays.setObjectName(u"LbLeftDays")
+        font1 = QFont()
+        font1.setPointSize(18)
+        self.LbLeftDays.setFont(font1)
+
+        self.horizontalLayout_10.addWidget(self.LbLeftDays)
+
+        self.BtnCopyLeftDays = QPushButton(self.frame)
+        self.BtnCopyLeftDays.setObjectName(u"BtnCopyLeftDays")
+        self.BtnCopyLeftDays.setMaximumSize(QSize(30, 16777215))
+        self.BtnCopyLeftDays.setIcon(icon)
+
+        self.horizontalLayout_10.addWidget(self.BtnCopyLeftDays)
+
+
+        self.verticalLayout_11.addLayout(self.horizontalLayout_10)
+
+
+        self.horizontalLayout_14.addLayout(self.verticalLayout_11)
+
+
+        self.verticalLayout_14.addWidget(self.frame)
+
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.verticalLayout_7 = QVBoxLayout()
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.label_4 = QLabel(self.scrollAreaWidgetContents)
         self.label_4.setObjectName(u"label_4")
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_4)
+        self.verticalLayout_7.addWidget(self.label_4)
 
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
@@ -196,12 +307,17 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.addWidget(self.BtnCopyNote)
 
 
-        self.formLayout.setLayout(3, QFormLayout.FieldRole, self.horizontalLayout_7)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_7)
 
+
+        self.horizontalLayout_13.addLayout(self.verticalLayout_7)
+
+        self.verticalLayout_8 = QVBoxLayout()
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.label_6 = QLabel(self.scrollAreaWidgetContents)
         self.label_6.setObjectName(u"label_6")
 
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_6)
+        self.verticalLayout_8.addWidget(self.label_6)
 
         self.horizontalLayout_8 = QHBoxLayout()
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
@@ -218,12 +334,17 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.addWidget(self.BtnCopySeller)
 
 
-        self.formLayout.setLayout(4, QFormLayout.FieldRole, self.horizontalLayout_8)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_8)
 
+
+        self.horizontalLayout_13.addLayout(self.verticalLayout_8)
+
+        self.verticalLayout_9 = QVBoxLayout()
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
         self.label = QLabel(self.scrollAreaWidgetContents)
         self.label.setObjectName(u"label")
 
-        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label)
+        self.verticalLayout_9.addWidget(self.label)
 
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
@@ -240,85 +361,58 @@ class Ui_MainWindow(object):
         self.horizontalLayout_9.addWidget(self.BtnCopyBuyDate)
 
 
-        self.formLayout.setLayout(5, QFormLayout.FieldRole, self.horizontalLayout_9)
-
-        self.label_2 = QLabel(self.scrollAreaWidgetContents)
-        self.label_2.setObjectName(u"label_2")
-
-        self.formLayout.setWidget(6, QFormLayout.LabelRole, self.label_2)
-
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.TxtLeftDays = QLineEdit(self.scrollAreaWidgetContents)
-        self.TxtLeftDays.setObjectName(u"TxtLeftDays")
-        self.TxtLeftDays.setStyleSheet(u"")
-
-        self.horizontalLayout_10.addWidget(self.TxtLeftDays)
-
-        self.BtnCopyLeftDays = QPushButton(self.scrollAreaWidgetContents)
-        self.BtnCopyLeftDays.setObjectName(u"BtnCopyLeftDays")
-        self.BtnCopyLeftDays.setIcon(icon)
-
-        self.horizontalLayout_10.addWidget(self.BtnCopyLeftDays)
+        self.verticalLayout_9.addLayout(self.horizontalLayout_9)
 
 
-        self.formLayout.setLayout(6, QFormLayout.FieldRole, self.horizontalLayout_10)
-
-        self.label_5 = QLabel(self.scrollAreaWidgetContents)
-        self.label_5.setObjectName(u"label_5")
-
-        self.formLayout.setWidget(7, QFormLayout.LabelRole, self.label_5)
-
-        self.horizontalLayout_11 = QHBoxLayout()
-        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.CbxModel = QComboBox(self.scrollAreaWidgetContents)
-        self.CbxModel.setObjectName(u"CbxModel")
-        self.CbxModel.setStyleSheet(u"")
-
-        self.verticalLayout_2.addWidget(self.CbxModel)
-
-        self.TxtModel = QLineEdit(self.scrollAreaWidgetContents)
-        self.TxtModel.setObjectName(u"TxtModel")
-        self.TxtModel.setStyleSheet(u"")
-
-        self.verticalLayout_2.addWidget(self.TxtModel)
+        self.horizontalLayout_13.addLayout(self.verticalLayout_9)
 
 
-        self.horizontalLayout_11.addLayout(self.verticalLayout_2)
+        self.verticalLayout_14.addLayout(self.horizontalLayout_13)
 
-        self.BtnCopyModel = QPushButton(self.scrollAreaWidgetContents)
-        self.BtnCopyModel.setObjectName(u"BtnCopyModel")
-        self.BtnCopyModel.setMaximumSize(QSize(28, 24))
-        self.BtnCopyModel.setIcon(icon)
+        self.horizontalLayout_15 = QHBoxLayout()
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.verticalLayout_13 = QVBoxLayout()
+        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.horizontalLayout_11.addWidget(self.BtnCopyModel)
-
-
-        self.formLayout.setLayout(7, QFormLayout.FieldRole, self.horizontalLayout_11)
+        self.verticalLayout_13.addItem(self.verticalSpacer)
 
         self.label_7 = QLabel(self.scrollAreaWidgetContents)
         self.label_7.setObjectName(u"label_7")
 
-        self.formLayout.setWidget(8, QFormLayout.LabelRole, self.label_7)
+        self.verticalLayout_13.addWidget(self.label_7)
 
         self.CbxType = QComboBox(self.scrollAreaWidgetContents)
         self.CbxType.setObjectName(u"CbxType")
         self.CbxType.setStyleSheet(u"")
 
-        self.formLayout.setWidget(8, QFormLayout.FieldRole, self.CbxType)
+        self.verticalLayout_13.addWidget(self.CbxType)
 
+
+        self.horizontalLayout_15.addLayout(self.verticalLayout_13)
+
+        self.verticalLayout_12 = QVBoxLayout()
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
         self.label_8 = QLabel(self.scrollAreaWidgetContents)
         self.label_8.setObjectName(u"label_8")
 
-        self.formLayout.setWidget(9, QFormLayout.LabelRole, self.label_8)
+        self.verticalLayout_12.addWidget(self.label_8)
 
         self.TxtProblem = QPlainTextEdit(self.scrollAreaWidgetContents)
         self.TxtProblem.setObjectName(u"TxtProblem")
         self.TxtProblem.setStyleSheet(u"")
 
-        self.formLayout.setWidget(9, QFormLayout.FieldRole, self.TxtProblem)
+        self.verticalLayout_12.addWidget(self.TxtProblem)
+
+
+        self.horizontalLayout_15.addLayout(self.verticalLayout_12)
+
+
+        self.verticalLayout_14.addLayout(self.horizontalLayout_15)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_14.addItem(self.verticalSpacer_2)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
@@ -345,7 +439,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 520, 33))
+        self.menubar.setGeometry(QRect(0, 0, 567, 33))
         self.menuArchivo = QMenu(self.menubar)
         self.menuArchivo.setObjectName(u"menuArchivo")
         MainWindow.setMenuBar(self.menubar)
@@ -374,14 +468,20 @@ class Ui_MainWindow(object):
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"NOTA O FACTURA", None))
         self.CheckManualMode.setText(QCoreApplication.translate("MainWindow", u"Modo manual", None))
         self.CheckSameUser.setText(QCoreApplication.translate("MainWindow", u"Mismo due\u00f1o", None))
-        self.userBox.setTitle(QCoreApplication.translate("MainWindow", u"Usuario del dispositivo", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Nombre", None))
-        self.label_10.setText(QCoreApplication.translate("MainWindow", u"Telefono", None))
+        self.userBox.setTitle(QCoreApplication.translate("MainWindow", u"Cliente", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"Nombre Cliente", None))
         self.BtnCopyClientName.setText("")
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Telefono", None))
         self.BtnCopyClientPhone.setText("")
-        self.CheckRegisterContact.setText(QCoreApplication.translate("MainWindow", u"Guardar contacto", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Usuruario", None))
+        self.label_10.setText(QCoreApplication.translate("MainWindow", u"Telefono", None))
+        self.TxtUserPhone.setPlaceholderText(QCoreApplication.translate("MainWindow", u"4424993420", None))
+        self.CheckRegisterContact.setText(QCoreApplication.translate("MainWindow", u"Guardar", None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Modelo del equipo", None))
+        self.BtnCopyModel.setText("")
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"D\u00edas restantes ", None))
+        self.LbLeftDays.setText(QCoreApplication.translate("MainWindow", u"365", None))
+        self.BtnCopyLeftDays.setText("")
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"Nota de venta", None))
         self.TxtNot.setPlaceholderText(QCoreApplication.translate("MainWindow", u"NOT00000", None))
         self.BtnCopyNote.setText("")
@@ -390,10 +490,6 @@ class Ui_MainWindow(object):
         self.label.setText(QCoreApplication.translate("MainWindow", u"Fecha de compra", None))
         self.TxtBuyDate.setPlaceholderText("")
         self.BtnCopyBuyDate.setText("")
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"D\u00edas restantes ", None))
-        self.BtnCopyLeftDays.setText("")
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Modelo del equipo", None))
-        self.BtnCopyModel.setText("")
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"Tipo de postventa", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Descripci\u00f3n del problema", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"AGENTE", None))
