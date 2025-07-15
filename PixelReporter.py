@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         self._completing_client = False
         self._completing_sell_note = False
 
-        self.ui.userBox.setVisible(False)
+        self.ui.userBox.setVisible(True)
 
         self.config = None
         self.load_config()
@@ -250,7 +250,7 @@ class MainWindow(QMainWindow):
                 self.ui.TxtUserPhone.setText(client_phone)
                 self.ui.TxtUserName.setEnabled(False)
                 self.ui.TxtUserPhone.setEnabled(False)
-                self.ui.userBox.setVisible(False)
+                # self.ui.userBox.setVisible(False)
                 return
 
         if not self.ui.CheckSameUser.isChecked():
@@ -262,7 +262,7 @@ class MainWindow(QMainWindow):
         else:
             self.ui.TxtUserName.setEnabled(False)
             self.ui.TxtUserPhone.setEnabled(False)
-            self.ui.userBox.setVisible(False)
+            # self.ui.userBox.setVisible(False)
 
     def handle_completion(
         self, text, txt_line: QLineEdit, completer: QCompleter, completing
