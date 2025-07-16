@@ -69,4 +69,7 @@ class AddContactDialog(QDialog):
             showFailDialog(self.parent, "No se pudo registrar el contacto")
             
     
-    
+    @staticmethod
+    def launch(parent):
+        dialog = AddContactDialog(parent=parent)
+        dialog.show()

@@ -33,5 +33,26 @@ class KordataApi:
             json=query,
             headers=self.headers,
         )
+        status_code = response.status_code
+        print(f"Response status code: {status_code}")
+        if status_code == 401:
+            print("Unauthorized access. Please check your token.")
+            raise Exception("Unauthorized access. Please check your token.")
+        elif status_code == 403:
+            print("Forbidden access. You do not have permission to access this resource.")
+            raise Exception("Forbidden access. You do not have permission to access this resource.")
+        elif status_code == 500:
+            response_json = response.json()
+            print(response_json)
+            if "messageError" in response_json:
+                if response_json["messageError"] == "jwt-expiret":
+                    print("La session ha expirado. Por favor, inicie sesión de nuevo.")
+                    raise Exception("La session ha expirado. Por favor, inicie sesión de nuevo.")
+                else:
+                    print(f"Server error: {response_json['message']}")
+                    raise Exception(f"Server error: {response_json['message']}")
+            else:
+                raise Exception("Error en el servidor.")
+        
         response.raise_for_status()
         return response.json()

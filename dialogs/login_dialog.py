@@ -1,61 +1,68 @@
-from PySide6.QtWidgets import (
-    QDialog,
-)
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt
-
+from PySide6.QtWidgets import QDialog
 from ui.update_data_dialog_ui import Ui_Dialog
-
-# from tabulate import tabulate
-
-import sys
-import pandas as pd
-from os import path
-
 from dialogs import showSuccessDialog, showFailDialog, show_yes_no_dialog
-from globals import get_current_directory
-# from gspread import *
-dirname = get_current_directory()
-
 from modules.Kordata.auth import login, masive_logout
-
-
-
+from globals import getConfig
 
 class LoginDialog(QDialog):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        # self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
         self.parent = parent
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        self.ui.BtnSubmit.clicked.connect(self.action_login)
-        
-    def action_login(self):
-        email = self.ui.TxtEmail.text()
-        password = self.ui.TxtPassword.text()
-        logged, session = login(email,password)
-        
-        if logged:
-            showSuccessDialog(self, "Sesión iniciada correctamente")
-            self.close()
-            self.parent.update_data()
-        else:
-            logoff = show_yes_no_dialog(self, "Hay sesiones abiertas", "¿Deseas cerrar todas las sesiones?")
-            if logoff:
-                masive_logout(session)
-                print("Sesiones cerradas")
-                login(email,password)
-            else:
-                self.close()
-                print("no se han cerrado las sesiones")
-                return
-        self.close()
-        
-        
-    
+        self.ui.BtnSubmit.clicked.connect(self.attempt_login)
+        self.config = getConfig()
+        self.ui.TxtEmail.setText(self.config['KORDATA']['USERNAME'])
 
-    
-    
-    
-    
+    def attempt_login(self):
+        email = self.ui.TxtEmail.text().strip()
+        password = self.ui.TxtPassword.text().strip()
+
+        if not email or not password:
+            showFailDialog(self, "Por favor, ingresa el correo y la contraseña.")
+            return
+
+        self.ui.BtnSubmit.setEnabled(False)
+        session = login(email, password)
+
+        if self.is_successful(session):
+            self.handle_success(session)
+        elif self.is_already_logged(session):
+            self.handle_already_logged(session, email, password)
+        else:
+            self.handle_failure(session)
+
+        self.ui.BtnSubmit.setEnabled(True)
+
+    def is_successful(self, session):
+        return session.get("success", False) is True
+
+    def is_already_logged(self, session):
+        return session.get("error", {}).get("type") == "already_logged"
+
+    def handle_success(self, session):
+        username = session.get("username", "usuario")
+        showSuccessDialog(self, f"Sesión iniciada correctamente. Bienvenido {username}")
+        self.close()
+
+    def handle_failure(self, session):
+        error = session.get("error", {})
+        message = error.get("message", "Ocurrió un error desconocido al iniciar sesión.")
+        showFailDialog(self, message)
+
+    def handle_already_logged(self, session, email, password):
+        confirm = show_yes_no_dialog(self, "Sesiones activas detectadas", "Ya hay sesiones abiertas. ¿Deseas cerrarlas?")
+        if confirm:
+            masive_logout(session["error"]["data"])
+            retry_session = login(email, password)
+            if self.is_successful(retry_session):
+                self.handle_success(retry_session)
+            else:
+                self.handle_failure(retry_session)
+        else:
+            self.close()
+
+    @staticmethod
+    def launch(parent):
+        dialog = LoginDialog(parent=parent)
+        dialog.show()

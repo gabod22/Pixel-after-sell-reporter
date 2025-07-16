@@ -13,6 +13,13 @@ dirname = get_current_directory()
 
 headers = {"user-agent": "pixel-reporter/0.0.1", "Content-Type": "application/json"}
 
+error_messages = {
+    "pass_email_wrong": "Correo electrónico y/o la contraseña son incorrectos.",
+    "invalid_format": "El correo no es valido. Por favor intente de nuevo. Ejemplo: Abc123@dominio.com.mx",
+    "already_logged": "Ya hay sesiones iniciadas, por favor cierre las sesiones activas",
+    "void_input": "El parámetro username no debe ser vacío"
+}
+
 def login(username, password):
 
     payload = {
@@ -27,19 +34,23 @@ def login(username, password):
         headers=headers,
     )
     data_response = response.json()
-    if data_response["token"]:        
+    print(data_response)
+    if "token" in data_response and data_response["token"] != None:        
         with open(path.join(dirname,"token_kordata.json"), 'w', encoding='utf-8') as f:
             json.dump(data_response, f, ensure_ascii=False, indent=4)
-        print("sesion iniciada")
-        return True, data_response
+        return {"success": True, "username": data_response["nombre"]}
     else:
+        if "idUsuario" in data_response:
+        # Verifica si ya hay sesiones iniciadas
+            if len(data_response["bitacoraAccesoDto"]["secciones"]) > 0:
+                return {"error": {"type": "already_logged", "message":error_messages["already_logged"], "data": data_response}}
         
-        # print(payload)
-        print(
-            "No se ha podido iniciar sesión, revise si no hay una sesión iniciada"
-        )
-
-        return False, data_response
+        elif "errorMessage" in data_response["errorMessage"]:
+            return {"error": {"type": "pass_email_wrong", "message":data_response["errorMessage"]}}
+        else:
+            return {"error": {"type": "unknown", "message": data_response["errorMessage"]}}
+        
+        
     
 def masive_logout(response):
     print('Cerrando sesiones masivamente')

@@ -2,13 +2,33 @@ import pandas as pd
 from pandas import DataFrame
 from datetime import datetime 
 from os import path
-import json
+import yaml
 import sys
-from globals import get_current_directory
 # from tabulate import tabulate 
 
 # pd.set_option('mode.chained_assignment', None)
-dirname = get_current_directory()
+
+
+"""get the directory of the current script or executable"""
+def get_current_directory():
+    if getattr(sys, "frozen", False):
+        return path.join(path.dirname(sys.executable), '_internal')
+    elif __file__:
+        return path.join(path.dirname(__file__))
+    else:
+        return path.abspath('.')
+
+def load_yaml_file(file=None):
+    with open(file, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
+    
+def write_yaml(file_path, data):
+    with open(file_path, "w") as file:
+        yaml.dump(data, file)
+        
+def copy_text(self,clipboard, text):
+        clipboard.setText(text)
+        self.statusBar().showMessage(f"Se ha copiado al portapapeles {text}", 3000)
     
 def merge_dict(dict1, dict2):
     res = {**dict1, **dict2}
