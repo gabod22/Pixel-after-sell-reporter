@@ -46,7 +46,7 @@ class Ui_ConfigDialog(object):
 
         self.verticalLayout_7.addWidget(self.groupBox_3)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 331, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer_2 = QSpacerItem(20, 301, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_7.addItem(self.verticalSpacer_2)
 

@@ -334,7 +334,7 @@
                     <string>AAA09999</string>
                    </property>
                    <property name="text">
-                    <string>NOT</string>
+                    <string/>
                    </property>
                    <property name="placeholderText">
                     <string>NOT00000</string>
@@ -525,7 +525,7 @@
                     </font>
                    </property>
                    <property name="text">
-                    <string>365</string>
+                    <string>-</string>
                    </property>
                   </widget>
                  </item>

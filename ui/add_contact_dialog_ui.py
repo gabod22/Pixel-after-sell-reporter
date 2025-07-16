@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'add_contact_dialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.2
+## Created by: Qt User Interface Compiler version 6.7.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,13 +17,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButtonBox,
     QFormLayout, QHBoxLayout, QLabel, QLineEdit,
-    QSizePolicy, QWidget)
+    QPushButton, QSizePolicy, QVBoxLayout, QWidget)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(426, 72)
+        Dialog.setWindowModality(Qt.WindowModality.NonModal)
+        Dialog.resize(478, 74)
         self.horizontalLayout = QHBoxLayout(Dialog)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.formLayout = QFormLayout()
@@ -51,10 +52,24 @@ class Ui_Dialog(object):
 
         self.horizontalLayout.addLayout(self.formLayout)
 
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.BtnSaveContact = QPushButton(Dialog)
+        self.BtnSaveContact.setObjectName(u"BtnSaveContact")
+
+        self.verticalLayout.addWidget(self.BtnSaveContact)
+
+        self.BtnCancel = QPushButton(Dialog)
+        self.BtnCancel.setObjectName(u"BtnCancel")
+
+        self.verticalLayout.addWidget(self.BtnCancel)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout)
+
         self.buttonBox = QDialogButtonBox(Dialog)
         self.buttonBox.setObjectName(u"buttonBox")
         self.buttonBox.setOrientation(Qt.Orientation.Vertical)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(False)
 
         self.horizontalLayout.addWidget(self.buttonBox)
@@ -71,5 +86,7 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Agregar Contacto", None))
         self.label.setText(QCoreApplication.translate("Dialog", u"Nombre contacto", None))
         self.label_2.setText(QCoreApplication.translate("Dialog", u"Telefono", None))
+        self.BtnSaveContact.setText(QCoreApplication.translate("Dialog", u"Guardar", None))
+        self.BtnCancel.setText(QCoreApplication.translate("Dialog", u"Cancelar", None))
     # retranslateUi
 

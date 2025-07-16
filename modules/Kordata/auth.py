@@ -98,3 +98,12 @@ def get_current_token():
         return kordata_session["token"]
     except:
         print('No pude obtener el token')
+        
+def get_current_user():
+    try:
+        f = open(path.join(dirname,"token_kordata.json"), "r")
+        kordata_session = json.loads(f.read())
+        return kordata_session
+    except:
+        print('No pude obtener el usuario actual')
+        return None

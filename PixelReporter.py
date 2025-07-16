@@ -14,8 +14,6 @@ from PySide6.QtGui import QGuiApplication
 from ui.aftersalesui_ui import Ui_MainWindow
 
 import sys
-import requests
-import yaml
 from os import path
 from datetime import datetime, timedelta
 from constants import config_file
@@ -23,7 +21,6 @@ from dialogs import showSuccessDialog, showFailDialog
 from helpers import get_last_index, split_client_info, process_kor_table
 
 from gspread_helpers import *
-from modules.Google.contactsApi import get_credentials_people_api
 from googleapiclient.discovery import build
 
 from dotenv import load_dotenv
@@ -47,33 +44,18 @@ from modules.Trello.trello_text_templates import (
     TRELLO_CARD_NAME_TEMPLATE,
 )
 
+from modules.Kordata.kordataConfig import items_cols, sell_notes_columns
+from modules.Kordata.auth import get_current_token
+
+
+from modules.Google.contactsApi import GoogleContactsApi
+
+
 load_dotenv()
 dirname = get_current_directory()
 
-sell_notes_columns = [
-    "Folio",
-    "Sucursal",
-    "Nombre del cliente",
-    "Fecha registro",
-    "Estado",
-    "Subtotal",
-    "Descuento",
-    "Impuestos",
-    "Importe del total",
-    "Vendedor",
-]
-items_cols = [
-    "SKU",
-    "Descripcion",
-    "Cantidad",
-    "Precio unitario",
-    "Impuestos",
-    "Porcentaje de descuento",
-    "Subtotal",
-    "Importe",
-]
 
-from modules.Kordata.auth import get_current_token
+
 
 
 class MainWindow(QMainWindow):
@@ -81,7 +63,6 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.creds_people = None
         icon = QIcon()
         icon.addFile(
             path.join(dirname, "icono.ico"),
@@ -98,13 +79,13 @@ class MainWindow(QMainWindow):
         self.ui.userInfoFrame.setVisible(False)
 
         self.config = getConfig()
-        self.creds_people = None
-
+        
+        self.assign_copy_buttons()
+        
         self.sell_notes_items = {}
         self.sales_dict = {}
         self.simplied_sell_notes = []
         self.completer_model = QStringListModel()
-        self.load_info()
         self.completer = QCompleter(self.completer_model, self)
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
@@ -140,19 +121,16 @@ class MainWindow(QMainWindow):
         self.ui.accionLoginKordata.triggered.connect(lambda: LoginDialog.launch(self))
         self.clipboard = QGuiApplication.clipboard()
 
-        self.assign_copy_buttons()
-
+        
+        self.load_info()
         try:
             credentials_path = path.join(dirname, "credentials.json")
             token_path = path.join(dirname, "token.json")
-            self.creds_people = get_credentials_people_api(token_path, credentials_path)
+            self.googleContacts = GoogleContactsApi(token_path, credentials_path)
         except:
             showFailDialog(
                 self, "No se pudo obtener la información de inicio de sesión"
             )
-
-    def assing_copy_functions(self):
-        self.ui.BtnCopyBuyDate.connect()
 
     def copy_text(self, text):
         self.clipboard.setText(text)
@@ -418,8 +396,12 @@ class MainWindow(QMainWindow):
             
         # Registrar Usuario en Google Contacts
         if self.ui.CheckSameUser.isChecked() and self.ui.CheckRegisterUser.isChecked():
-            self.register_contact(name=data["user_name"], phone=data["user_phone"])
-            self.statusBar().showMessage(f"Guardado {data["user_name"]} en Google Contacts")
+            if self.googleContacts.verify_connection():
+                self.googleContacts.register_contact(name=data["user_name"], phone=data["user_phone"])
+                self.statusBar().showMessage(f"Contacto {data["user_name"]} guardado en Google Contacts")
+            else:
+                showFailDialog(self, "No se pudo conectar a Google Contacts")
+                self.statusBar().showMessage("Error al conectar con Google Contacts")
 
         self.statusBar().showMessage("Registro guardado exitosamente", 4000)
         self.clear_inputs()
@@ -427,25 +409,7 @@ class MainWindow(QMainWindow):
         # except Exception as e:
         #     print("Error al registrar")
 
-    def register_contact(self, name, phone):
-        try:
-            if not self.creds_people:
-                self.creds_people = get_credentials_people_api(
-                    path.join(dirname, "token.json"),
-                    path.join(dirname, "credentials.json"),
-                )
-            service = build("people", "v1", credentials=self.creds_people)
-            service.people().createContact(
-                body={
-                    "names": [{"givenName": name}],
-                    "phoneNumbers": [{"value": phone}],
-                }
-            ).execute()
-        except Exception as e:
-            print("Error al registrar contacto en Google Contacts")
-            print(e)
-            showFailDialog(self, "No se pudo registrar el contacto en Google Contacts")
-            return False
+    
     def update_config(self):
         self.config = getConfig()
         self.ui.CbxAgent.clear()

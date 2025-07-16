@@ -1,35 +1,9 @@
-from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QTableWidgetItem,
-    QFileDialog,
-    QLineEdit,
-    QApplication,
-    QCompleter,
-    QDialog,
-)
-from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt
+from PySide6.QtWidgets import QDialog
+from PySide6.QtCore import Qt
 
 from ui.add_contact_dialog_ui import Ui_Dialog
-# from tabulate import tabulate
-
-import sys
-import pandas as pd
-from os import path
-
-from modules.Google.contactsApi import get_credentials_people_api
-from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from dialogs import showSuccessDialog, showFailDialog
-
-import pickle
-
-# from gspread import *
-
-if getattr(sys, "frozen", False):
-    dirname = path.join(path.dirname(sys.executable))
-elif __file__:
-    dirname = path.join(path.dirname(__file__))
 
 
 class AddContactDialog(QDialog):
@@ -39,35 +13,32 @@ class AddContactDialog(QDialog):
         self.parent = parent
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        dirname = path.dirname(__file__)
-        self.exe_dirname = path.dirname(sys.executable)
-        self.accepted.connect(self.save_contact)
+        self.googleContacts = self.parent.googleContacts
+        self.ui.BtnSaveContact.clicked.connect(self.save_contact)
+        self.ui.BtnCancel.clicked.connect(self.close)
+        self.setFixedHeight(74)
         
-        self.creds_people = self.parent.creds_people
 
         
 
     def save_contact(self):
-        try:
-            if (self.ui.TxtContactName.text() == "" or self.ui.TxtContactName.text() == ""):
-                return
-            
-            service = build("people", "v1", credentials=self.creds_people)
-            service.people().createContact( body={
-            "names": [
-                {
-                    "givenName": self.ui.TxtContactName.text()
-                }
-            ],
-            "phoneNumbers": [
-                {
-                    'value': self.ui.TxtContactPhone.text()
-                }
-            ],}).execute()
-        except HttpError as err:
-            print(err)
-            showFailDialog(self.parent, "No se pudo registrar el contacto")
-            
+        name = self.ui.TxtContactName.text().strip()
+        phone = self.ui.TxtContactPhone.text().strip()
+        if (self.ui.TxtContactName.text() != "" or self.ui.TxtContactName.text() != ""):
+
+            try:
+                if self.googleContacts.verify_connection():
+                    self.googleContacts.register_contact(name=name, phone=phone)
+                    showSuccessDialog(self, "Contacto registrado correctamente")
+                    self.close()
+                else:
+                    showFailDialog(self, "No se pudo conectar a Google Contacts")
+                    self.statusBar().showMessage("Error al conectar con Google Contacts")
+            except HttpError as err:
+                print(err)
+                showFailDialog(self, "No se pudo registrar el contacto")
+        else:
+            showFailDialog(self, "Por favor, complete todos los campos")
     
     @staticmethod
     def launch(parent):

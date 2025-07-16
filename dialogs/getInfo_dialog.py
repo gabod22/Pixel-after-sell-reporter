@@ -106,7 +106,7 @@ class GetInfoDialog(QDialog):
                     "Errores detectados",
                     f"Ocurrieron los siguientes errores:\n\n{error_msg}",
                 )
-                LoginDialog.show_login_dialog(self.parent)
+                LoginDialog.launch(self.parent)
                 self.close()
             else:
                 print("Todos los threads terminaron correctamente")
