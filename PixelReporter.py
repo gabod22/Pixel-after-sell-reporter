@@ -14,13 +14,13 @@ from PySide6.QtGui import QGuiApplication
 from ui.aftersalesui_ui import Ui_MainWindow
 
 import sys
-from os import path
+from pathlib import Path
 from datetime import datetime, timedelta
-from constants import config_file
+import logging
+
 from dialogs import showSuccessDialog, showFailDialog
 from helpers import get_last_index, split_client_info, process_kor_table
 
-from gspread_helpers import *
 from googleapiclient.discovery import build
 
 from dotenv import load_dotenv
@@ -44,135 +44,153 @@ from modules.Trello.trello_text_templates import (
     TRELLO_CARD_NAME_TEMPLATE,
 )
 
-from modules.Kordata.kordataConfig import items_cols, sell_notes_columns
-from modules.Kordata.auth import get_current_token
-
-
 from modules.Google.contactsApi import GoogleContactsApi
+from modules.Google.sheetsApi import GoogleSpreadsheetApi
 
 
 load_dotenv()
 dirname = get_current_directory()
 
 
-
-
-
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
+        
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        
+        icon_path = Path(dirname) / "assets/icono.ico"
         icon = QIcon()
         icon.addFile(
-            path.join(dirname, "icono.ico"),
+            str(icon_path),
             QSize(),
             QIcon.Normal,
             QIcon.Off,
         )
         self.setWindowIcon(icon)
-        self.ui.TxtModel.setVisible(False)
-        self.ui.CbxType.addItems(trello_labels.keys())
+        
+        log_path = Path(dirname) / "app.log"
+        logging.basicConfig(
+            filename=str(log_path),
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+
+        
         self._completing_client = False
         self._completing_sell_note = False
-
-        self.ui.userInfoFrame.setVisible(False)
-
-        self.config = getConfig()
-        
-        self.assign_copy_buttons()
-        
         self.sell_notes_items = {}
         self.sales_dict = {}
         self.simplied_sell_notes = []
-        self.completer_model = QStringListModel()
-        self.completer = QCompleter(self.completer_model, self)
-        self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        self.completer.setFilterMode(Qt.MatchFlag.MatchContains)
-        self.completer.setWidget(self.ui.TxtSearch)
-        self.completer.activated.connect(
-            lambda text: self.handle_completion(
-                text, self.ui.TxtSearch, self.completer, self._completing_client
-            )
-        )
-        self.completer.highlighted.connect(
-            lambda text: self.handle_select_client_change(text)
-        )
+
+
+        self.completer = self.set_autocomplete()
         self.ui.TxtSearch.setCompleter(self.completer)
-        self.ui.TxtSearch.textEdited.connect(self.handle_text_changed)
-        self.ui.BtnSave.clicked.connect(lambda: self.save_report())
+        self.config = getConfig()
 
-        self.ui.CheckSameUser.stateChanged.connect(self.handle_same_owner_change)
-        self.ui.CheckSameUser.setChecked(True)
-
-        self.ui.CheckManualMode.stateChanged.connect(self.handle_manual_mode_change)
-        self.ui.TxtUserName.setEnabled(False)
-        self.ui.TxtUserPhone.setEnabled(False)
-        self.ui.CbxAgent.addItems(trello_members.keys())
-        self.ui.CbxAgent.setCurrentText(self.config["TRELLO_DEFAULT_AGENT"])
-
-        self.ui.actionActualizar_datos.triggered.connect(
-            lambda: GetInfoDialog.launch(self)
-        )
-        self.ui.actionGuardar_contacto.triggered.connect(
-            lambda: AddContactDialog.launch(self)
-        )
-        self.ui.actionConfiguracion.triggered.connect(lambda: ConfigDialog.launch(self))
-        self.ui.accionLoginKordata.triggered.connect(lambda: LoginDialog.launch(self))
         self.clipboard = QGuiApplication.clipboard()
-
-        
+        self.setup_init_state()
+        self.setup_connections()
         self.load_info()
         try:
-            credentials_path = path.join(dirname, "credentials.json")
-            token_path = path.join(dirname, "token.json")
-            self.googleContacts = GoogleContactsApi(token_path, credentials_path)
+            credentials_path = Path(dirname) / "credentials.json"
+            token_path =Path(dirname) / "token.json"
+            self.googleContacts = GoogleContactsApi(str(token_path), str(credentials_path))
         except:
             showFailDialog(
                 self, "No se pudo obtener la información de inicio de sesión"
             )
+            
+        google_api = GoogleSpreadsheetApi()
+        google_api.get_email()
+        try:
+            worksheet = google_api.get_worksheet()
+        except Exception as e:
+            worksheet = None
+            showFailDialog(self,str(e))
+            "☑️ Error al guardar en google"
+        print(worksheet)
+        
+        
+            
+    def setup_init_state(self):
+        
+        self.ui.TxtModel.setVisible(False)
+        self.ui.userInfoFrame.setVisible(False)
+        self.ui.CbxType.addItems(trello_labels.keys())
+        self.ui.CheckSameUser.setChecked(True)
+        self.ui.TxtUserName.setEnabled(False)
+        self.ui.TxtUserPhone.setEnabled(False)
+        self.ui.CbxAgent.addItems(trello_members.keys())
+        self.ui.CbxAgent.setCurrentText(self.config["TRELLO_DEFAULT_AGENT"])
+        
+    def setup_connections(self):
+        # Conexiones de botones para copiar texto
+        copy_map = [
+            (self.ui.BtnCopyBuyDate, self.ui.TxtBuyDate.text),
+            (self.ui.BtnCopyClientName, self.ui.TxtClientName.text),
+            (self.ui.BtnCopyClientPhone, self.ui.TxtClientPhone.text),
+            (self.ui.BtnCopyUser, self.ui.TxtUserName.text),
+            (self.ui.BtnCopyUserPhone, self.ui.TxtUserPhone.text),
+            (self.ui.BtnCopySeller, self.ui.TxtSeller.text),
+            (self.ui.BtnCopyLeftDays, self.ui.LbLeftDays.text),
+            (self.ui.BtnCopyModel, self.ui.CbxModel.currentText),
+            (self.ui.BtnCopyNote, self.ui.TxtNot.text),
+        ]
+
+        for button, get_text in copy_map:
+            button.clicked.connect(lambda _, g=get_text: self.copy_text(g()))
+
+        # Conexiones de señales generales
+        signals = [
+            (self.ui.TxtSearch.textEdited, self.clear_inputs),
+            (self.ui.CheckSameUser.stateChanged, self.handle_same_owner_change),
+            (self.ui.CheckManualMode.stateChanged, self.handle_manual_mode_change),
+            (self.ui.BtnSave.clicked, lambda: self.save_report()),
+        ]
+        for signal, slot in signals:
+            signal.connect(slot)
+
+        # Conexiones del menú
+        menu_actions = [
+            (self.ui.actionActualizar_datos.triggered, lambda: GetInfoDialog.launch(self)),
+            (self.ui.actionGuardar_contacto.triggered, lambda: AddContactDialog.launch(self)),
+            (self.ui.actionConfiguracion.triggered, lambda: ConfigDialog.launch(self)),
+            (self.ui.accionLoginKordata.triggered, lambda: LoginDialog.launch(self)),
+        ]
+        for action, func in menu_actions:
+            action.connect(func)
+            
+        connections = [
+            (self.ui.TxtSearch.textEdited, self.clear_inputs),
+            (self.ui.CheckSameUser.stateChanged, self.handle_same_owner_change),
+            (self.ui.CheckManualMode.stateChanged, self.handle_manual_mode_change),
+            (self.ui.BtnSave.clicked, lambda: self.save_report()),
+        ]
+
+        for signal, slot in connections:
+            signal.connect(slot)
+
+    def set_autocomplete(self):
+        self.completer_model = QStringListModel()
+        completer = QCompleter(self.completer_model, self)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        completer.setFilterMode(Qt.MatchFlag.MatchContains)
+        completer.setWidget(self.ui.TxtSearch)
+        completer.activated.connect(
+            lambda text: self.handle_completion(
+                text, self.ui.TxtSearch, self.completer, self._completing_client
+            )
+        )
+        completer.highlighted.connect(
+            lambda text: self.handle_select_client_change(text)
+        )
+        return completer
 
     def copy_text(self, text):
         self.clipboard.setText(text)
         self.statusBar().showMessage(f"Se ha copiado al portapapeles {text}", 3000)
-
-    def assign_copy_buttons(self):
-        self.ui.BtnCopyBuyDate.clicked.connect(
-            lambda: self.copy_text(self.ui.TxtBuyDate.text())
-        )
-
-        self.ui.BtnCopyClientName.clicked.connect(
-            lambda: self.copy_text(self.ui.TxtClientName.text())
-        )
-
-        self.ui.BtnCopyClientPhone.clicked.connect(
-            lambda: self.copy_text(self.ui.TxtClientPhone.text())
-        )
-        self.ui.BtnCopyUser.clicked.connect(
-            lambda: self.copy_text(self.ui.TxtUserName.text())
-        )
-        self.ui.BtnCopyUserPhone.clicked.connect(
-            lambda: self.copy_text(self.ui.TxtUserPhone.text())
-        )
-
-        self.ui.BtnCopySeller.clicked.connect(
-            lambda: self.copy_text(self.ui.TxtSeller.text())
-        )
-
-        self.ui.BtnCopyLeftDays.clicked.connect(
-            lambda: self.copy_text(self.ui.LbLeftDays.text())
-        )
-
-        self.ui.BtnCopyModel.clicked.connect(
-            lambda: self.copy_text(self.ui.CbxModel.currentText())
-        )
-
-        self.ui.BtnCopyNote.clicked.connect(
-            lambda: self.copy_text(self.ui.TxtNot.text())
-        )
-
-    def handle_text_changed(self):
-        self.clear_inputs()
 
     def handle_select_client_change(self, text):
         sell_note, _, _, date = split_client_info(text)
@@ -228,7 +246,6 @@ class MainWindow(QMainWindow):
 
     def handle_same_owner_change(self):
 
-
         if not self.ui.CheckSameUser.isChecked():
             self.ui.TxtUserName.setText("")
             self.ui.TxtUserPhone.setText("")
@@ -264,29 +281,32 @@ class MainWindow(QMainWindow):
         self.ui.TxtProblem.setPlainText("")
         # self.ui.TxtSearch.setText("")
 
-
     def load_info(self):
-        print(
-            path.join(dirname, "search_data.pkl"),
-            path.isfile(path.join(dirname, "search_data.pkl")),
-        )
-        print(
-            path.join(dirname, "sells.pkl"),
-            path.isfile(path.join(dirname, "sells.pkl")),
-        )
-        if path.isfile(path.join(dirname, "search_data.pkl")) and path.isfile(
-            path.join(dirname, "sells.pkl")
-        ):
-            with open(path.join(dirname, "search_data.pkl"), "rb") as file:
-                self.simplied_sell_notes = pickle.load(file)
-            with open(path.join(dirname, "sells.pkl"), "rb") as file:
-                self.sales_dict = pickle.load(file)
-                # print(self.sales_dict)
+        data_dir = Path(dirname)  # Asumiendo que `dirname` ya está definido correctamente
+        search_data_file = data_dir / "search_data.pkl"
+        sells_file = data_dir / "sells.pkl"
 
-            self.completer_model.setStringList(self.simplied_sell_notes)
+        print(search_data_file, search_data_file.is_file())
+        print(sells_file, sells_file.is_file())
+
+        if search_data_file.is_file() and sells_file.is_file():
+            try:
+                with search_data_file.open("rb") as f:
+                    self.simplied_sell_notes = pickle.load(f)
+
+                with sells_file.open("rb") as f:
+                    self.sales_dict = pickle.load(f)
+
+                self.completer_model.setStringList(self.simplied_sell_notes)
+
+            except Exception as e:
+                showFailDialog(self, f"Error al cargar los datos: {e}")
+                self.simplied_sell_notes = []
+                self.sales_dict = {}
         else:
             showFailDialog(self, "No se pudo cargar la información de ventas")
-            return {}, []
+            self.simplied_sell_notes = []
+            self.sales_dict = {}
 
     def save_to_trello(self, info):
         trello = TrelloApi()
@@ -305,26 +325,34 @@ class MainWindow(QMainWindow):
         card_name = TRELLO_CARD_NAME_TEMPLATE.format(
             phone=info["user_phone"], name=info["user_name"], buy_date=info["buydate"]
         )
-        card_url = trello.add_card(
-            cardName=card_name,
-            desc=desc,
-            labels=[info["type"]],
-            members=[info["employee"]],
-        )
+        try:
+            card_url = trello.add_card(
+                cardName=card_name,
+                desc=desc,
+                labels=[info["type"]],
+                members=[info["employee"]],
+            )
+        except:
+            return "No se pudo guardar en Trello"
         return card_url
 
     def save_to_google(self, info):
         self.statusBar().showMessage("Guardando el Google")
 
-        sheet = get_worksheet()
-
+        google_api = GoogleSpreadsheetApi()
+        try:
+            worksheet = google_api.get_worksheet()
+        except Exception as e:
+            worksheet = None
+            showFailDialog(self,str(e))
+            "☑️ Error al guardar en google"
         data = [
             [
                 info["nota"],  ##Nota / factura
-                info["user_name"],  ##Cliente
-                info["user_phone"],  ##Contacto
                 info["client_name"],  ##Nombre del cliente
                 info["client_phone"],  ##Telefono del cliente
+                info["user_name"],  ##nombre usuario
+                info["user_phone"],  ##Telefono del cliente
                 info["buydate"],  ##Fecha de compra
                 "",  ##Dias Restantes
                 info["today"],  ##INICIO
@@ -346,15 +374,21 @@ class MainWindow(QMainWindow):
                 info["card_url"],  ##URL trello
             ]
         ]
-        try:
-            write_in_last_row(data, sheet)
-        except Exception as e:
-            print("No se puede guardar en google")
-            print(e)
-            showFailDialog(self, "Ocurrió un error al guardar en Google")
-            self.statusBar().showMessage("Error al guardar en Google")
+        if worksheet:
+            try:
+                print("escribiendo en la ultima fila")
+                worksheet.write_in_last_row(data)
+            except Exception as e:
+                showFailDialog(self, "Ocurrió un error al guardar en Google")
+                self.statusBar().showMessage("Error al guardar en Google")
+                return "❌ Error al guardar en google"
+        else:
+            self.statusBar().showMessage("No se pudo obtener el worksheet")
+            return "❌ Error al guardar en google"
+        return "✅ Guardado en google"
 
     def save_report(self):
+        result_message = []
         if not self.ui.CheckManualMode.isChecked():
             _, client_name, client_phone, date = split_client_info(
                 self.ui.TxtSearch.text()
@@ -383,39 +417,64 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage("Guardando registros...")
         trello_card_url = self.save_to_trello(data)
         data["card_url"] = trello_card_url
+        if trello_card_url != "":
+            result_message.append("✅ Guardado en trello")
+        else:
+            result_message.append("❌ No se pudo guardar en trello")
+        
+        
         self.statusBar().showMessage("Guardado en trello")
-        
-        
-        self.save_to_google(data)
+
+        result_message.append(self.save_to_google(data))
         self.statusBar().showMessage("Guardado en google sheets")
-        
+
         # Registrar Cliente en Google Contacts
         if self.ui.CheckRegisterClient.isChecked():
-            self.register_contact(name=data["client_name"], phone=data["client_phone"])
-            self.statusBar().showMessage(f"Guardado {data["client_name"]} en Google Contacts")
-            
+            try:
+                self.register_contact(name=data["client_name"], phone=data["client_phone"])
+                self.statusBar().showMessage(
+                    f"Guardado {data["client_name"]} en Google Contacts"
+                )
+                result_message.append('✅ Contacto guardado en google')
+            except:
+                result_message.append('❌ Contacto no guardado en google')
+
         # Registrar Usuario en Google Contacts
-        if self.ui.CheckSameUser.isChecked() and self.ui.CheckRegisterUser.isChecked():
+        if (
+            not self.ui.CheckSameUser.isChecked()
+        ) and self.ui.CheckRegisterUser.isChecked():
             if self.googleContacts.verify_connection():
-                self.googleContacts.register_contact(name=data["user_name"], phone=data["user_phone"])
-                self.statusBar().showMessage(f"Contacto {data["user_name"]} guardado en Google Contacts")
+                try:
+                    self.googleContacts.register_contact(
+                        name=data["user_name"], phone=data["user_phone"]
+                    )
+                    self.statusBar().showMessage(
+                        f"Contacto {data["user_name"]} guardado en Google Contacts"
+                    )
+                    result_message.append('✅ Contacto guardado en google')
+                except:
+                    result_message.append('❌ Contacto NO guardado en google')
             else:
                 showFailDialog(self, "No se pudo conectar a Google Contacts")
                 self.statusBar().showMessage("Error al conectar con Google Contacts")
 
         self.statusBar().showMessage("Registro guardado exitosamente", 4000)
         self.clear_inputs()
-        showSuccessDialog(self, "Registrado correctamente")
+        
+        
+        showSuccessDialog(self, "\n ".join(str(item) for item in result_message))
+        
+        
         # except Exception as e:
         #     print("Error al registrar")
 
-    
     def update_config(self):
         self.config = getConfig()
         self.ui.CbxAgent.clear()
         self.ui.CbxAgent.addItems(trello_members.keys())
         self.ui.CbxAgent.setCurrentText(self.config["TRELLO_DEFAULT_AGENT"])
         self.statusBar().showMessage("Configuración actualizada", 3000)
+
 
 if __name__ == "__main__":
 
@@ -425,38 +484,3 @@ if __name__ == "__main__":
     mainwindow.show()
 
     sys.exit(app.exec())
-
-    # def mix_sell_note_clients(self):
-    #     clients_notes = {}
-    #     try:
-    #         sell_notes_df = pd.read_excel("Notasdeventa.xlsx")
-    #         sell_notes_df[
-    #             [
-    #                 "Folio",
-    #                 "Nombre del cliente",
-    #                 "Importe del total",
-    #                 "Cliente - Teléfono",
-    #             ]
-    #         ]
-    #     except Exception as e:
-    #         showFailDialog(
-    #             self,
-    #             "No se pudo abrir el documento de las notas de venta, revise que el archivo exista o no esté dañado.",
-    #         )
-    #         return []
-
-    #     for inx in sell_notes_df.index:
-    #         clients_notes[sell_notes_df["Cliente - Nombre del cliente"].iloc[inx]] = []
-
-    #     for inx in sell_notes_df.index:
-    #         clients_notes[
-    #             sell_notes_df["Cliente - Nombre del cliente"].iloc[inx]
-    #         ].append(
-    #             "{0} - {1} - {2}".format(
-    #                 sell_notes_df["Folio"].iloc[inx],
-    #                 round(sell_notes_df["Importe del total"].iloc[inx], 2),
-    #                 sell_notes_df["Fecha registro"].iloc[inx],
-    #             ),
-    #         )
-
-    #     return clients_notes

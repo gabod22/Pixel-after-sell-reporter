@@ -4,10 +4,10 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from modules.Google.google_config import SCOPES
 
-SCOPES = ["https://www.googleapis.com/auth/contacts"]
 
-
+import logging
 class GoogleContactsApi:
     def __init__(self, token_path, creds_path):
         self.token_path = token_path
@@ -20,16 +20,20 @@ class GoogleContactsApi:
 
         if os.path.exists(self.token_path):
             creds = Credentials.from_authorized_user_file(self.token_path, SCOPES)
+            logging.info("Credenciales cargadas desde el archivo de token.")
 
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
+                logging.info("Credenciales refrescadas.")
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(self.creds_path, SCOPES)
                 creds = flow.run_local_server(port=0, open_browser=False)
+                logging.info("Nuevas credenciales obtenidas a través del flujo de autorización.")
 
             with open(self.token_path, "w") as token_file:
                 token_file.write(creds.to_json())
+                logging.info("Token guardado en el archivo.")
 
         return creds
 
@@ -45,16 +49,16 @@ class GoogleContactsApi:
                 pageSize=1,
                 personFields="names",
             ).execute()
-
-            print("✅ Conexión exitosa con la API de Google Contacts.")
+            
+            logging.info("✅ Conexión exitosa con la API de Google Contacts.")
             return True
 
         except HttpError as err:
-            print(f"❌ Error de conexión con Google Contacts: {err}")
+            logging.error(f"Error de conexión con Google Contacts: {err}")
             return False
 
         except Exception as e:
-            print(f"❌ Error inesperado al verificar conexión: {e}")
+            logging.error(f"Error inesperado al verificar conexión: {e}")
             return False
 
     def register_contact(self, name, phone):
@@ -71,11 +75,13 @@ class GoogleContactsApi:
                 }
             ).execute()
 
-            print(f"✅ Contacto '{name}' registrado correctamente.")
+            logging.info(f"Contacto '{name}' registrado correctamente.")
             return True
 
         except HttpError as err:
+            logging.error(f"Error al registrar contacto: {err}")
             raise RuntimeError(f"Error HTTP al registrar contacto: {err}")
 
         except Exception as e:
+            logging.error(f"Error inesperado al registrar contacto: {e}")
             raise RuntimeError(f"Error inesperado al registrar contacto: {e}")
