@@ -102,15 +102,6 @@ class MainWindow(QMainWindow):
                 self, "No se pudo obtener la información de inicio de sesión"
             )
             
-        google_api = GoogleSpreadsheetApi()
-        google_api.get_email()
-        try:
-            worksheet = google_api.get_worksheet()
-        except Exception as e:
-            worksheet = None
-            showFailDialog(self,str(e))
-            "☑️ Error al guardar en google"
-        print(worksheet)
         
         
             
@@ -141,16 +132,6 @@ class MainWindow(QMainWindow):
 
         for button, get_text in copy_map:
             button.clicked.connect(lambda _, g=get_text: self.copy_text(g()))
-
-        # Conexiones de señales generales
-        signals = [
-            (self.ui.TxtSearch.textEdited, self.clear_inputs),
-            (self.ui.CheckSameUser.stateChanged, self.handle_same_owner_change),
-            (self.ui.CheckManualMode.stateChanged, self.handle_manual_mode_change),
-            (self.ui.BtnSave.clicked, lambda: self.save_report()),
-        ]
-        for signal, slot in signals:
-            signal.connect(slot)
 
         # Conexiones del menú
         menu_actions = [
