@@ -665,13 +665,28 @@
     <property name="title">
      <string>Archivo</string>
     </property>
-    <addaction name="actionActualizar_datos"/>
-    <addaction name="actionGuardar_contacto"/>
     <addaction name="separator"/>
     <addaction name="actionConfiguracion"/>
+   </widget>
+   <widget class="QMenu" name="menuKordata">
+    <property name="title">
+     <string>Kordata</string>
+    </property>
+    <addaction name="actionNueva_Orden_Servicio"/>
+    <addaction name="separator"/>
     <addaction name="accionLoginKordata"/>
+    <addaction name="separator"/>
+    <addaction name="actionActualizar_datos"/>
+   </widget>
+   <widget class="QMenu" name="menuGoogle">
+    <property name="title">
+     <string>Google</string>
+    </property>
+    <addaction name="actionGuardar_contacto"/>
    </widget>
    <addaction name="menuArchivo"/>
+   <addaction name="menuKordata"/>
+   <addaction name="menuGoogle"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionActualizar_datos">
@@ -692,6 +707,16 @@
   <action name="accionLoginKordata">
    <property name="text">
     <string>Iniciar sesión</string>
+   </property>
+  </action>
+  <action name="actionNueva_Orden_Servicio">
+   <property name="text">
+    <string>Nueva Orden Servicio</string>
+   </property>
+  </action>
+  <action name="actionIniciar_sesion">
+   <property name="text">
+    <string>Iniciar sesion</string>
    </property>
   </action>
  </widget>

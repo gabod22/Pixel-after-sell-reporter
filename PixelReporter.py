@@ -19,9 +19,7 @@ from datetime import datetime, timedelta
 import logging
 
 from dialogs import showSuccessDialog, showFailDialog
-from helpers import get_last_index, split_client_info, process_kor_table
-
-from googleapiclient.discovery import build
+from helpers import  split_client_info
 
 from dotenv import load_dotenv
 
@@ -33,6 +31,7 @@ from dialogs.login_dialog import LoginDialog
 from dialogs.config_dialog import ConfigDialog
 from dialogs.addContact_dialog import AddContactDialog
 from dialogs.getInfo_dialog import GetInfoDialog
+from dialogs.create_os_kordata import CreateOSKordata
 
 
 # from gspread import *
@@ -83,6 +82,7 @@ class MainWindow(QMainWindow):
         self.sell_notes_items = {}
         self.sales_dict = {}
         self.simplied_sell_notes = []
+        self.clients = {}
 
 
         self.completer = self.set_autocomplete()
@@ -139,6 +139,7 @@ class MainWindow(QMainWindow):
             (self.ui.actionGuardar_contacto.triggered, lambda: AddContactDialog.launch(self)),
             (self.ui.actionConfiguracion.triggered, lambda: ConfigDialog.launch(self)),
             (self.ui.accionLoginKordata.triggered, lambda: LoginDialog.launch(self)),
+            (self.ui.actionNueva_Orden_Servicio.triggered,lambda: CreateOSKordata.launch(self))
         ]
         for action, func in menu_actions:
             action.connect(func)
@@ -266,7 +267,8 @@ class MainWindow(QMainWindow):
         data_dir = Path(dirname)  # Asumiendo que `dirname` ya está definido correctamente
         search_data_file = data_dir / "search_data.pkl"
         sells_file = data_dir / "sells.pkl"
-
+        clients_file = data_dir / "clients.pkl"
+        
         print(search_data_file, search_data_file.is_file())
         print(sells_file, sells_file.is_file())
 
@@ -277,6 +279,9 @@ class MainWindow(QMainWindow):
 
                 with sells_file.open("rb") as f:
                     self.sales_dict = pickle.load(f)
+                    
+                with clients_file.open("rb") as f:
+                    self.clients = pickle.load(f)
 
                 self.completer_model.setStringList(self.simplied_sell_notes)
 
@@ -284,10 +289,12 @@ class MainWindow(QMainWindow):
                 showFailDialog(self, f"Error al cargar los datos: {e}")
                 self.simplied_sell_notes = []
                 self.sales_dict = {}
+                self.clients = {}
         else:
             showFailDialog(self, "No se pudo cargar la información de ventas")
             self.simplied_sell_notes = []
             self.sales_dict = {}
+            self.clients = {}
 
     def save_to_trello(self, info):
         trello = TrelloApi()

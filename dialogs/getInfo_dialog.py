@@ -84,6 +84,33 @@ class GetInfoDialog(QDialog):
             f"Clientes recibidos: {len(clients)} clientes"
         )
         self.check_all_finished()
+        self.transform_clients(clients)
+        
+    def transform_clients(self, clients):
+        
+        clients.pop(0)
+        mapped_clients = {}
+        for client in clients:
+            mapped_clients[client["Nombre del cliente"]] = client
+        try:
+            dirname = Path(get_current_directory())
+            clients_path = dirname / "clients.pkl"
+
+            logging.debug(f"Guardando información en: {clients_path}")
+            with open(clients_path, "wb") as f:
+                pickle.dump(mapped_clients, f)
+
+            showSuccessDialog(self, "Se actualizó la información correctamente")
+            logging.info("Datos guardados exitosamente")
+            
+
+        except Exception as e:
+            logging.exception("Error al guardar archivos")
+            showFailDialog(
+                self,
+                "Ocurrió un error, revise que haya seleccionado los archivos correctos o que los exportó correctamente",
+            )
+
 
     def check_all_finished(self):
         self.finished_count += 1
