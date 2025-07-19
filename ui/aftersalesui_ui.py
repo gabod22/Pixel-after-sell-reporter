@@ -260,11 +260,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.TxtNot = QLineEdit(self.groupBox)
-        self.TxtNot.setObjectName(u"TxtNot")
-        self.TxtNot.setStyleSheet(u"")
+        self.TxtSellNote = QLineEdit(self.groupBox)
+        self.TxtSellNote.setObjectName(u"TxtSellNote")
+        self.TxtSellNote.setStyleSheet(u"")
 
-        self.horizontalLayout_7.addWidget(self.TxtNot)
+        self.horizontalLayout_7.addWidget(self.TxtSellNote)
 
         self.BtnCopyNote = QPushButton(self.groupBox)
         self.BtnCopyNote.setObjectName(u"BtnCopyNote")
@@ -520,7 +520,6 @@ class Ui_MainWindow(object):
         self.menuKordata.addSeparator()
         self.menuKordata.addAction(self.accionLoginKordata)
         self.menuKordata.addSeparator()
-        self.menuKordata.addAction(self.actionActualizar_datos)
         self.menuGoogle.addAction(self.actionGuardar_contacto)
 
         self.retranslateUi(MainWindow)
@@ -555,9 +554,9 @@ class Ui_MainWindow(object):
         self.CheckRegisterUser.setText(QCoreApplication.translate("MainWindow", u"Guardar", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"Venta", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"Nota de venta", None))
-        self.TxtNot.setInputMask(QCoreApplication.translate("MainWindow", u"AAA09999", None))
-        self.TxtNot.setText("")
-        self.TxtNot.setPlaceholderText(QCoreApplication.translate("MainWindow", u"NOT00000", None))
+        self.TxtSellNote.setInputMask(QCoreApplication.translate("MainWindow", u"AAA09999", None))
+        self.TxtSellNote.setText("")
+        self.TxtSellNote.setPlaceholderText(QCoreApplication.translate("MainWindow", u"NOT00000", None))
         self.BtnCopyNote.setText("")
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"Vendedor", None))
         self.TxtSeller.setPlaceholderText(QCoreApplication.translate("MainWindow", u"PANCHO VILLA", None))

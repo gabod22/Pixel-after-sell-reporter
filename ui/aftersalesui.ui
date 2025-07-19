@@ -326,7 +326,7 @@
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_7">
                  <item>
-                  <widget class="QLineEdit" name="TxtNot">
+                  <widget class="QLineEdit" name="TxtSellNote">
                    <property name="styleSheet">
                     <string notr="true"/>
                    </property>
@@ -676,7 +676,6 @@
     <addaction name="separator"/>
     <addaction name="accionLoginKordata"/>
     <addaction name="separator"/>
-    <addaction name="actionActualizar_datos"/>
    </widget>
    <widget class="QMenu" name="menuGoogle">
     <property name="title">

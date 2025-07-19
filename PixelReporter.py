@@ -18,7 +18,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import logging
 
-from dialogs import showSuccessDialog, showFailDialog
+from dialogs import showSuccessDialog, showFailDialog, show_yes_no_dialog
 from helpers import  split_client_info
 
 from dotenv import load_dotenv
@@ -83,9 +83,9 @@ class MainWindow(QMainWindow):
         self.sales_dict = {}
         self.simplied_sell_notes = []
         self.clients = {}
+        self.info = {}
 
-
-        self.completer = self.set_autocomplete()
+        self.completer = self.setup_autocomplete()
         self.ui.TxtSearch.setCompleter(self.completer)
         self.config = getConfig()
 
@@ -103,7 +103,7 @@ class MainWindow(QMainWindow):
             )
             
         
-        
+    
             
     def setup_init_state(self):
         
@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
             (self.ui.BtnCopySeller, self.ui.TxtSeller.text),
             (self.ui.BtnCopyLeftDays, self.ui.LbLeftDays.text),
             (self.ui.BtnCopyModel, self.ui.CbxModel.currentText),
-            (self.ui.BtnCopyNote, self.ui.TxtNot.text),
+            (self.ui.BtnCopyNote, self.ui.TxtSellNote.text),
         ]
 
         for button, get_text in copy_map:
@@ -154,7 +154,7 @@ class MainWindow(QMainWindow):
         for signal, slot in connections:
             signal.connect(slot)
 
-    def set_autocomplete(self):
+    def setup_autocomplete(self):
         self.completer_model = QStringListModel()
         completer = QCompleter(self.completer_model, self)
         completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
@@ -178,43 +178,57 @@ class MainWindow(QMainWindow):
         sell_note, _, _, date = split_client_info(text)
         sell_note_data = self.sales_dict[sell_note]
 
-        # date = sell_note_data["Fecha registro"]
         client_name = sell_note_data["Cliente - Nombre del cliente"]
-        seller = sell_note_data["Vendedor"]
+        client_phone = str(sell_note_data["phone"])
+        seller = str(sell_note_data["Vendedor"])
+        buy_date = date.strftime("%d/%m/%Y")
 
-        self.ui.TxtUserName.setText(str(client_name))
-        self.ui.TxtUserPhone.setText(str(sell_note_data["phone"]))
+        # Set UI fields
+        self.ui.TxtUserName.setText(client_name)
+        self.ui.TxtUserPhone.setText(client_phone)
         self.ui.TxtClientName.setText(client_name)
-        self.ui.TxtClientPhone.setText(str(sell_note_data["phone"]))
-        self.ui.TxtNot.setText(str(sell_note))
-        self.ui.TxtBuyDate.setText(date.strftime("%d/%m/%Y"))
-        self.ui.TxtSeller.setText(str(seller))
+        self.ui.TxtClientPhone.setText(client_phone)
+        self.ui.TxtSellNote.setText(str(sell_note))
+        self.ui.TxtBuyDate.setText(buy_date)
+        self.ui.TxtSeller.setText(seller)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
 
+        # Calcular días restantes de garantía
         now = datetime.now().date()
         one_year = timedelta(days=365)
+        left_days = (date + one_year - now).days
 
-        left_days = date + one_year - now
-        if int(left_days.days) < 0:
+        if left_days < 0:
             self.ui.LbLeftDays.setText("Sin garantía")
         else:
-            self.ui.LbLeftDays.setText(str(left_days.days))
+            self.ui.LbLeftDays.setText(str(left_days))
 
-        items = sell_note_data["items"]
-        items_description = []
-        for item in items:
-            items_description.append(item["Descripcion"])
-        if items == []:
+        # Obtener descripciones de los items
+        items = sell_note_data.get("items", [])
+        items_description = [item.get("Descripcion", "") for item in items]
+
+        if not items:
             self.ui.TxtModel.setVisible(True)
             self.ui.CbxModel.setDisabled(True)
             self.ui.TxtModel.setFocus()
         else:
             self.ui.TxtModel.setVisible(False)
             self.ui.CbxModel.setDisabled(False)
-            # self.ui.TxtModel.setFocus()
+
         self.ui.CbxModel.clear()
         self.ui.CbxModel.addItems(items_description)
+
+        # Guardar datos en self.info
+        self.info = {
+            "sell_note": sell_note,
+            "client_name": client_name,
+            "client_phone": client_phone,
+            "seller": seller,
+            "buy_date": date,
+            "warranty_days_left": left_days,
+            "items": items_description
+        }
 
     def handle_manual_mode_change(self):
         if self.ui.CheckManualMode.isChecked():
@@ -253,7 +267,7 @@ class MainWindow(QMainWindow):
         self.ui.TxtUserPhone.setText("")
         self.ui.LbLeftDays.setText("-")
         self.ui.CbxModel.clear()
-        self.ui.TxtNot.setText("")
+        self.ui.TxtSellNote.setText("")
         self.ui.TxtModel.setText("")
         self.ui.TxtBuyDate.setText("")
         self.ui.TxtClientName.setText("")
@@ -395,7 +409,7 @@ class MainWindow(QMainWindow):
                 if self.ui.CheckManualMode.isChecked()
                 else date
             ),
-            "nota": self.ui.TxtNot.text(),
+            "nota": self.ui.TxtSellNote.text(),
             "model": self.ui.CbxModel.currentText(),
             "type": self.ui.CbxType.currentText(),
             "problem": self.ui.TxtProblem.toPlainText(),
@@ -446,11 +460,16 @@ class MainWindow(QMainWindow):
                 showFailDialog(self, "No se pudo conectar a Google Contacts")
                 self.statusBar().showMessage("Error al conectar con Google Contacts")
 
+        showSuccessDialog(self, "\n ".join(str(item) for item in result_message))
         self.statusBar().showMessage("Registro guardado exitosamente", 4000)
+        
+        confirm = show_yes_no_dialog(self, "Neuva orden de servicio", "¿Deseas crear la orden de servicio?")
+        if confirm:
+            self.launch_save_os_dialog()
+        
         self.clear_inputs()
         
         
-        showSuccessDialog(self, "\n ".join(str(item) for item in result_message))
         
         
         # except Exception as e:
@@ -463,7 +482,24 @@ class MainWindow(QMainWindow):
         self.ui.CbxAgent.setCurrentText(self.config["TRELLO_DEFAULT_AGENT"])
         self.statusBar().showMessage("Configuración actualizada", 3000)
 
+    def launch_save_os_dialog(self):
+        self.info = {
+            "sell_note": self.ui.TxtSellNote.text().strip(),
+            "client_name": self.ui.TxtClientName.text().strip(),
+            "client_phone": self.ui.TxtClientPhone.text().strip(),
+            "user_name": self.ui.TxtUserName.text().strip(),
+            "user_phone": self.ui.TxtUserPhone.text().strip(),
+            "seller": self.ui.TxtSeller.text().strip(),
+            "buy_date": self.ui.TxtBuyDate.text().strip(),
+            "model": self.ui.CbxModel.currentText().strip(),
+            "warranty_days_left": self.ui.LbLeftDays.text().strip(),
+            "type": self.ui.CbxType.currentText().strip(),
+            "agent": self.ui.CbxAgent.currentText().strip(),
+            "problem": self.ui.TxtProblem.toPlainText().strip(),
+        }
 
+        # Crear y lanzar el diálogo, pasándole la info como argumento
+        CreateOSKordata.launch(self, self.info)
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)

@@ -118,8 +118,9 @@ def create_os(os: dict):
         + ",descuento: 0"
         + ",importeTotal: 0"
         + ",subtotal: 0"
-        + ',ordenesServiciosDetalle: [{productoId: 3398, descripcion: "MANO DE OBRA GARANTÍA", precioUnitario: 0, cantidad: 1, impuestos: 0, tasasDocumentos: [], subtotal: 0, trazabilidadId: null, asesorServicioId: null, porcentajeDescuento: 0, horasTrabajo: 0, id: null, isDeleted: false}]'
+        + ',ordenesServiciosDetalle: []'
         + "}\n  ) {\n    id\n folioPrefijo \n   }\n}",
+        #Producto estructura#{productoId: 3398, descripcion: "MANO DE OBRA GARANTÍA", precioUnitario: 0, cantidad: 1, impuestos: 0, tasasDocumentos: [], subtotal: 0, trazabilidadId: null, asesorServicioId: null, porcentajeDescuento: 0, horasTrabajo: 0, id: null, isDeleted: false}
     }
     response = KordataApi(K_ENDPOING).post(create_os_payload)
     print(response.json()["data"]["OrdenesServiciosGuardar"]["folioPrefijo"])
