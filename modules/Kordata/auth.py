@@ -3,8 +3,8 @@ from os import path
 from globals import get_current_directory
 from dialogs import show_yes_no_dialog
 import json
-
 from .kordataConfig import (
+    K_ENDPOING,
     K_LOGIN_ENDPOINT,
     K_LOGOUT_ENDPOINT,
     K_MASIVE_LOGOUT_ENDPOINT,
@@ -89,7 +89,27 @@ def logout(token):
         headers=headers,
     )
     print(response.json())
+
+def check_valid_session():
+    query = {"variables":{},"query":"{\n  BasesReportesGenerarConTerminosBusqueda(\n    reporteId: 894\n    terminosBusqueda: [{baseReporteColumnaId: 8564, terminoBusqueda: null, operador: null, ordenamiento: \"DESC\"}]\n    paginadoInformacion: {numeroPagina: 1, registrosPorPagina: 1}\n  ) {\n    datosListasSeleccion\n    paginadoCount\n    resultadoReporteHashmap\n    baseReporte {\n      id\n      basesReportesColumnas {\n        id\n        seLect\n        tablaRelacionId\n        basesCampos {\n          nombreColumnaCamelcase\n        }\n      }\n    }\n  }\n}"}
+
+    if get_current_token():
+        
+        headers = {"user-agent": "pixel-reporter/0.0.1", "Content-Type": "application/json", "authorization": "Bearer " + get_current_token(),}
+    else:
+        return False
+    r = requests.post(
+        K_ENDPOING,
+        json=query,
+        headers=headers,
+    )
+    r= r.json()
+    print(r)
+    if "data" in r:
+        return True
+    return False
     
+
 def get_current_token():
     try:
         f = open(path.join(dirname,"token_kordata.json"), "r")
@@ -98,6 +118,7 @@ def get_current_token():
         return kordata_session["token"]
     except:
         print('No pude obtener el token')
+        return None
         
 def get_current_user():
     try:

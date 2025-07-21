@@ -84,7 +84,10 @@ class GetInfoDialog(QDialog):
             f"Clientes recibidos: {len(clients)} clientes"
         )
         self.check_all_finished()
-        self.transform_clients(clients)
+        if clients:
+            self.transform_clients(clients)
+        else:
+            logging.log('No hay clientes')
         
     def transform_clients(self, clients):
         

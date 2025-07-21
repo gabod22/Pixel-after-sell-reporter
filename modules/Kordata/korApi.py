@@ -23,7 +23,7 @@ class KordataApi:
     #     response = requests.get(f"{self.base_url}/{endpoint}", params=params)
     #     response.raise_for_status()
     #     return response.json()
-
+    
     def post(self, query=None):
         """
         Send a POST request to the specified endpoint with optional data.
@@ -49,8 +49,8 @@ class KordataApi:
                     print("La session ha expirado. Por favor, inicie sesión de nuevo.")
                     raise Exception("La session ha expirado. Por favor, inicie sesión de nuevo.")
                 else:
-                    print(f"Server error: {response_json['message']}")
-                    raise Exception(f"Server error: {response_json['message']}")
+                    print(f"Server error: {response_json['messageError']}")
+                    raise Exception(f"Server error: {response_json['messageError']}")
             else:
                 raise Exception("Error en el servidor.")
         

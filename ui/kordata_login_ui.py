@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'update_data_dialog.ui'
+## Form generated from reading UI file 'kordata_login.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -19,14 +19,14 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QSizePolicy,
     QSpacerItem, QVBoxLayout, QWidget)
 
-class Ui_Dialog(object):
-    def setupUi(self, Dialog):
-        if not Dialog.objectName():
-            Dialog.setObjectName(u"Dialog")
-        Dialog.resize(424, 236)
-        self.verticalLayout_3 = QVBoxLayout(Dialog)
+class Ui_Kordata_Login(object):
+    def setupUi(self, Kordata_Login):
+        if not Kordata_Login.objectName():
+            Kordata_Login.setObjectName(u"Kordata_Login")
+        Kordata_Login.resize(424, 236)
+        self.verticalLayout_3 = QVBoxLayout(Kordata_Login)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.label = QLabel(Dialog)
+        self.label = QLabel(Kordata_Login)
         self.label.setObjectName(u"label")
         font = QFont()
         font.setFamilies([u"Arial Black"])
@@ -39,12 +39,12 @@ class Ui_Dialog(object):
 
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.label_3 = QLabel(Dialog)
+        self.label_3 = QLabel(Kordata_Login)
         self.label_3.setObjectName(u"label_3")
 
         self.verticalLayout_2.addWidget(self.label_3)
 
-        self.TxtEmail = QLineEdit(Dialog)
+        self.TxtEmail = QLineEdit(Kordata_Login)
         self.TxtEmail.setObjectName(u"TxtEmail")
 
         self.verticalLayout_2.addWidget(self.TxtEmail)
@@ -54,12 +54,12 @@ class Ui_Dialog(object):
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.label_2 = QLabel(Dialog)
+        self.label_2 = QLabel(Kordata_Login)
         self.label_2.setObjectName(u"label_2")
 
         self.verticalLayout.addWidget(self.label_2)
 
-        self.TxtPassword = QLineEdit(Dialog)
+        self.TxtPassword = QLineEdit(Kordata_Login)
         self.TxtPassword.setObjectName(u"TxtPassword")
         self.TxtPassword.setEchoMode(QLineEdit.EchoMode.Password)
 
@@ -70,7 +70,7 @@ class Ui_Dialog(object):
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.CheckAutoClose = QCheckBox(Dialog)
+        self.CheckAutoClose = QCheckBox(Kordata_Login)
         self.CheckAutoClose.setObjectName(u"CheckAutoClose")
 
         self.horizontalLayout.addWidget(self.CheckAutoClose)
@@ -79,7 +79,7 @@ class Ui_Dialog(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
-        self.CheckRemember = QCheckBox(Dialog)
+        self.CheckRemember = QCheckBox(Kordata_Login)
         self.CheckRemember.setObjectName(u"CheckRemember")
 
         self.horizontalLayout.addWidget(self.CheckRemember)
@@ -91,28 +91,28 @@ class Ui_Dialog(object):
 
         self.verticalLayout_3.addItem(self.verticalSpacer)
 
-        self.BtnSubmit = QPushButton(Dialog)
+        self.BtnSubmit = QPushButton(Kordata_Login)
         self.BtnSubmit.setObjectName(u"BtnSubmit")
 
         self.verticalLayout_3.addWidget(self.BtnSubmit)
 
 
-        self.retranslateUi(Dialog)
+        self.retranslateUi(Kordata_Login)
 
-        QMetaObject.connectSlotsByName(Dialog)
+        QMetaObject.connectSlotsByName(Kordata_Login)
     # setupUi
 
-    def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
-        self.label.setText(QCoreApplication.translate("Dialog", u"KORDATA LOGIN", None))
-        self.label_3.setText(QCoreApplication.translate("Dialog", u"Correo", None))
-        self.TxtEmail.setPlaceholderText(QCoreApplication.translate("Dialog", u"example@pixel-lap.com", None))
-        self.label_2.setText(QCoreApplication.translate("Dialog", u"Contrase\u00f1a", None))
+    def retranslateUi(self, Kordata_Login):
+        Kordata_Login.setWindowTitle(QCoreApplication.translate("Kordata_Login", u"Dialog", None))
+        self.label.setText(QCoreApplication.translate("Kordata_Login", u"KORDATA LOGIN", None))
+        self.label_3.setText(QCoreApplication.translate("Kordata_Login", u"Correo", None))
+        self.TxtEmail.setPlaceholderText(QCoreApplication.translate("Kordata_Login", u"example@pixel-lap.com", None))
+        self.label_2.setText(QCoreApplication.translate("Kordata_Login", u"Contrase\u00f1a", None))
         self.TxtPassword.setInputMask("")
         self.TxtPassword.setText("")
-        self.TxtPassword.setPlaceholderText(QCoreApplication.translate("Dialog", u"password", None))
-        self.CheckAutoClose.setText(QCoreApplication.translate("Dialog", u"Cerrar Sesiones autom\u00e1ticamente", None))
-        self.CheckRemember.setText(QCoreApplication.translate("Dialog", u"Recordar cuenta", None))
-        self.BtnSubmit.setText(QCoreApplication.translate("Dialog", u"Iniciar sesi\u00f3n", None))
+        self.TxtPassword.setPlaceholderText(QCoreApplication.translate("Kordata_Login", u"password", None))
+        self.CheckAutoClose.setText(QCoreApplication.translate("Kordata_Login", u"Cerrar Sesiones autom\u00e1ticamente", None))
+        self.CheckRemember.setText(QCoreApplication.translate("Kordata_Login", u"Recordar cuenta", None))
+        self.BtnSubmit.setText(QCoreApplication.translate("Kordata_Login", u"Iniciar sesi\u00f3n", None))
     # retranslateUi
 

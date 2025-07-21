@@ -1,14 +1,13 @@
+
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
-    QTableWidgetItem,
-    QFileDialog,
     QLineEdit,
     QApplication,
     QCompleter,
 )
-from PySide6.QtCore import QThreadPool, QThread, QTimer, QSize, Qt, QStringListModel
-from PySide6.QtGui import QCloseEvent, QIcon, QPixmap
+from PySide6.QtCore import QSize, Qt, QStringListModel
+from PySide6.QtGui import QIcon
 from PySide6.QtGui import QGuiApplication
 
 from ui.aftersalesui_ui import Ui_MainWindow
@@ -21,8 +20,6 @@ import logging
 from dialogs import showSuccessDialog, showFailDialog, show_yes_no_dialog
 from helpers import  split_client_info
 
-from dotenv import load_dotenv
-
 from globals import get_current_directory, getConfig
 
 import pickle
@@ -34,20 +31,20 @@ from dialogs.getInfo_dialog import GetInfoDialog
 from dialogs.create_os_kordata import CreateOSKordata
 
 
-# from gspread import *
-
 from modules.Trello.trelloConfig import trello_labels, trello_members
 from modules.Trello.trelloApi import TrelloApi
 from modules.Trello.trello_text_templates import (
     TRELLO_DESCRIPTION_TEMPLATE,
     TRELLO_CARD_NAME_TEMPLATE,
+    TRELLO_CARD_NAME_TEMPLATE_OS
 )
 
 from modules.Google.contactsApi import GoogleContactsApi
 from modules.Google.sheetsApi import GoogleSpreadsheetApi
 
+from modules.Kordata.auth import check_valid_session
 
-load_dotenv()
+
 dirname = get_current_directory()
 
 
@@ -135,7 +132,7 @@ class MainWindow(QMainWindow):
 
         # Conexiones del menú
         menu_actions = [
-            (self.ui.actionActualizar_datos.triggered, lambda: GetInfoDialog.launch(self)),
+            (self.ui.actionActualizar_datos_2.triggered, lambda: GetInfoDialog.launch(self)),
             (self.ui.actionGuardar_contacto.triggered, lambda: AddContactDialog.launch(self)),
             (self.ui.actionConfiguracion.triggered, lambda: ConfigDialog.launch(self)),
             (self.ui.accionLoginKordata.triggered, lambda: LoginDialog.launch(self)),
@@ -324,9 +321,14 @@ class MainWindow(QMainWindow):
             seller=info["seller"],
             left_days=info["left_days"],
         )
-        card_name = TRELLO_CARD_NAME_TEMPLATE.format(
-            phone=info["user_phone"], name=info["user_name"], buy_date=info["buydate"]
-        )
+        if 'kor_os_folio' in info:
+            card_name = TRELLO_CARD_NAME_TEMPLATE_OS.format(
+                phone=info["user_phone"], name=info["user_name"], buy_date=info["buydate"], service_order =info['kor_os_folio']
+            )
+        else:
+            card_name = TRELLO_CARD_NAME_TEMPLATE.format(
+                phone=info["user_phone"], name=info["user_name"], buy_date=info["buydate"]
+            )
         try:
             card_url = trello.add_card(
                 cardName=card_name,
@@ -350,30 +352,31 @@ class MainWindow(QMainWindow):
             "☑️ Error al guardar en google"
         data = [
             [
-                info["nota"],  ##Nota / factura
-                info["client_name"],  ##Nombre del cliente
-                info["client_phone"],  ##Telefono del cliente
-                info["user_name"],  ##nombre usuario
-                info["user_phone"],  ##Telefono del cliente
-                info["buydate"],  ##Fecha de compra
-                "",  ##Dias Restantes
-                info["today"],  ##INICIO
-                "",  ##FIN
-                True,  ##ACTIVO
+                info["nota"],  # Nota / factura
+                info.get("kor_os_folio", ""), # Orden de servicio
+                info["client_name"],  # Nombre del cliente
+                info["client_phone"],  # Telefono del cliente
+                info["user_name"],  # nombre usuario
+                info["user_phone"],  # Telefono del cliente
+                info["buydate"],  # Fecha de compra
+                "",  # Dias Restantes
+                info["today"],  # INICIO
+                "",  # FIN
+                True,  # ACTIVO
                 info["type"],
                 info["employee"],
-                info["seller"],  ##VENDEDOR
-                "",  ##NUEVA NOTA /FACTURA
-                info["model"],  ##MODELO DEL EQUIPO
-                "",  ##NUMERO DE SERIE
-                "",  ##ORDEN DE SERVICIO
+                info["seller"],  # VENDEDOR
+                "",  # NUEVA NOTA /FACTURA
+                info["model"],  # MODELO DEL EQUIPO
+                "",  # NUMERO DE SERIE
+                "",  # ORDEN DE SERVICIO
                 info["problem"],
-                "",  ##Solucion brindada
-                "",  ##Recursos, tiempo
-                "",  ##Costos
+                "",  # Solucion brindada
+                "",  # Recursos, tiempo
+                "",  # Costos
                 "",  # Envios,
                 None,
-                info["card_url"],  ##URL trello
+                info["card_url"],  # URL trello
             ]
         ]
         if worksheet:
@@ -416,6 +419,23 @@ class MainWindow(QMainWindow):
             "employee": self.ui.CbxAgent.currentText(),
             "seller": self.ui.TxtSeller.text(),
         }
+        confirm = show_yes_no_dialog(self, "Neuva orden de servicio", "¿Deseas crear la orden de servicio?")
+        if confirm:
+            if check_valid_session():
+                
+                os_folio = self.launch_save_os_dialog()
+                if os_folio:
+                    print('Folio: ' + os_folio)
+                    data['kor_os_folio'] = os_folio
+                else:
+                    print("El usuario canceló o hubo un error")
+                    return
+            else:
+                showFailDialog(self, "No tienes una sesion válda de Kordata, inicia sesión de nuevo para guardar la informaciín")
+                LoginDialog.launch(self)
+                return
+                
+        
         self.statusBar().showMessage("Guardando registros...")
         trello_card_url = self.save_to_trello(data)
         data["card_url"] = trello_card_url
@@ -435,7 +455,7 @@ class MainWindow(QMainWindow):
             try:
                 self.register_contact(name=data["client_name"], phone=data["client_phone"])
                 self.statusBar().showMessage(
-                    f"Guardado {data["client_name"]} en Google Contacts"
+                    "Guardado {} en Google Contacts".format(data["client_name"])
                 )
                 result_message.append('✅ Contacto guardado en google')
             except:
@@ -451,7 +471,7 @@ class MainWindow(QMainWindow):
                         name=data["user_name"], phone=data["user_phone"]
                     )
                     self.statusBar().showMessage(
-                        f"Contacto {data["user_name"]} guardado en Google Contacts"
+                        "Guardado {} en Google Contacts".format(data["client_name"])
                     )
                     result_message.append('✅ Contacto guardado en google')
                 except:
@@ -462,18 +482,9 @@ class MainWindow(QMainWindow):
 
         showSuccessDialog(self, "\n ".join(str(item) for item in result_message))
         self.statusBar().showMessage("Registro guardado exitosamente", 4000)
-        
-        confirm = show_yes_no_dialog(self, "Neuva orden de servicio", "¿Deseas crear la orden de servicio?")
-        if confirm:
-            self.launch_save_os_dialog()
-        
+                
         self.clear_inputs()
-        
-        
-        
-        
-        # except Exception as e:
-        #     print("Error al registrar")
+
 
     def update_config(self):
         self.config = getConfig()
@@ -499,7 +510,7 @@ class MainWindow(QMainWindow):
         }
 
         # Crear y lanzar el diálogo, pasándole la info como argumento
-        CreateOSKordata.launch(self, self.info)
+        return CreateOSKordata.launch(self, self.info)
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)

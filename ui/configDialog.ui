@@ -95,6 +95,13 @@
                 </item>
                </layout>
               </item>
+              <item>
+               <widget class="QCheckBox" name="ChkAutoLogin">
+                <property name="text">
+                 <string>Cerrar sesiones automaticamente</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </item>
@@ -106,13 +113,6 @@
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
                <widget class="QDateEdit" name="dateKordataStartDate"/>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_2">
-                <property name="text">
-                 <string>CheckBox</string>
-                </property>
-               </widget>
               </item>
               <item>
                <widget class="QCheckBox" name="checkBox">

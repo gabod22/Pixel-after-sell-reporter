@@ -35,6 +35,7 @@ class ConfigDialog(QDialog):
         self.config['KORDATA']['USERNAME'] = self.ui.TxtKordataUser.text()
         self.config['KORDATA']['START_DATE'] = self.ui.dateKordataStartDate.text()
         self.config['TRELLO_DEFAULT_AGENT'] = self.ui.CbxAgents.currentText()
+        self.config['KORDATA']['AUTOLOGIN'] = self.ui.ChkAutoLogin.isChecked()
 
         
 
@@ -47,11 +48,14 @@ class ConfigDialog(QDialog):
             showFailDialog(self,
                 'No se guardo la configuracion, pruebe manualmente')
             print(e)
+            
+            
     def set_config(self):
         self.ui.TxtKordataUser.setText(self.config['KORDATA']['USERNAME'])
         date = QDate.fromString(self.config['KORDATA']['START_DATE'], "dd/MM/yyyy")
         self.ui.dateKordataStartDate.setDate(date)
         self.ui.CbxAgents.setCurrentText(self.config['TRELLO_DEFAULT_AGENT'])
+        self.ui.ChkAutoLogin.setChecked(self.config['KORDATA']['AUTOLOGIN'])
         
     @staticmethod
     def launch(parent):

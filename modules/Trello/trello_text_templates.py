@@ -11,3 +11,5 @@ TRELLO_DESCRIPTION_TEMPLATE = (
     )
 
 TRELLO_CARD_NAME_TEMPLATE = "{phone} - {name} - {buy_date}"
+
+TRELLO_CARD_NAME_TEMPLATE_OS = "{phone} - {name} - {buy_date} - {service_order}"

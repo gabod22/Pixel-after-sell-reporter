@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QDialog
-from ui.update_data_dialog_ui import Ui_Dialog
+from ui.kordata_login_ui import Ui_Kordata_Login
 from dialogs import showSuccessDialog, showFailDialog, show_yes_no_dialog
 from modules.Kordata.auth import login, masive_logout
 from globals import getConfig
@@ -8,7 +8,7 @@ class LoginDialog(QDialog):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
-        self.ui = Ui_Dialog()
+        self.ui = Ui_Kordata_Login()
         self.ui.setupUi(self)
         self.ui.BtnSubmit.clicked.connect(self.attempt_login)
         self.config = getConfig()
@@ -51,7 +51,11 @@ class LoginDialog(QDialog):
         showFailDialog(self, message)
 
     def handle_already_logged(self, session, email, password):
-        confirm = show_yes_no_dialog(self, "Sesiones activas detectadas", "Ya hay sesiones abiertas. ¿Deseas cerrarlas?")
+        if self.ui.CheckAutoClose.isChecked():
+            confirm = True
+        else: 
+            confirm = show_yes_no_dialog(self, "Sesiones activas detectadas", "Ya hay sesiones abiertas. ¿Deseas cerrarlas?")
+            
         if confirm:
             masive_logout(session["error"]["data"])
             retry_session = login(email, password)

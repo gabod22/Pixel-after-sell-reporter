@@ -4,6 +4,7 @@ token_kordata.json
 search_data.pkl
 sells.pkl
 token.txt
+*.pkl
 
 
 # Byte-compiled / optimized / DLL files

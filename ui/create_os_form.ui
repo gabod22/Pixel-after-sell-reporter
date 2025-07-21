@@ -96,31 +96,26 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>Dias de diag</string>
+      <item row="2" column="3">
+       <widget class="QComboBox" name="CbxDeviceWarranty">
+        <property name="placeholderText">
+         <string>Seleccionar</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label_11">
-        <property name="text">
-         <string>Comentario</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="TxtDeviceModel">
-        <property name="text">
-         <string/>
-        </property>
+        <item>
+         <property name="text">
+          <string>SI</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>NO</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>REVISAR</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="1" column="0">
@@ -135,6 +130,52 @@
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="TxtDevicePass"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Num de serie</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Garrantia</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Dias de diag</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="SpinDeviceDaigDays"/>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="TxtDeviceSerial"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Respaldo</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+       </widget>
       </item>
       <item row="1" column="3">
        <widget class="QComboBox" name="CbxDeviceBackup">
@@ -158,29 +199,7 @@
         </item>
        </widget>
       </item>
-      <item row="2" column="3">
-       <widget class="QComboBox" name="CbxDeviceWarranty">
-        <property name="placeholderText">
-         <string>Seleccionar</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>SI</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>NO</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>REVISAR</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
          <string>Problema</string>
@@ -190,47 +209,28 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QSpinBox" name="SpinDeviceDaigDays"/>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="TxtDeviceModel">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </item>
       <item row="3" column="3">
-       <widget class="QPlainTextEdit" name="TxtDeviceComment"/>
+       <widget class="QLineEdit" name="TxtDevicePeripherials"/>
       </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="label_2">
+      <item row="3" column="2">
+       <widget class="QLabel" name="label_15">
         <property name="text">
-         <string>Garrantia</string>
+         <string>Perifericos</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Num de serie</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
+      <item row="4" column="1" colspan="3">
        <widget class="QPlainTextEdit" name="TxtDeviceProblem"/>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLineEdit" name="TxtDeviceSerial"/>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Respaldo</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>
@@ -316,7 +316,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="BtnSaveDevice">
+    <widget class="QPushButton" name="BtnCreateOs">
      <property name="text">
       <string>Guardar Dispositivo</string>
      </property>

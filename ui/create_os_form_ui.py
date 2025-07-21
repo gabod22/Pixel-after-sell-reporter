@@ -78,22 +78,13 @@ class Ui_create_os_form(object):
 
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
 
-        self.label_6 = QLabel(self.groupBox)
-        self.label_6.setObjectName(u"label_6")
-        self.label_6.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.CbxDeviceWarranty = QComboBox(self.groupBox)
+        self.CbxDeviceWarranty.addItem("")
+        self.CbxDeviceWarranty.addItem("")
+        self.CbxDeviceWarranty.addItem("")
+        self.CbxDeviceWarranty.setObjectName(u"CbxDeviceWarranty")
 
-        self.gridLayout_2.addWidget(self.label_6, 2, 0, 1, 1)
-
-        self.label_11 = QLabel(self.groupBox)
-        self.label_11.setObjectName(u"label_11")
-        self.label_11.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
-
-        self.gridLayout_2.addWidget(self.label_11, 3, 2, 1, 1)
-
-        self.TxtDeviceModel = QLineEdit(self.groupBox)
-        self.TxtDeviceModel.setObjectName(u"TxtDeviceModel")
-
-        self.gridLayout_2.addWidget(self.TxtDeviceModel, 0, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.CbxDeviceWarranty, 2, 3, 1, 1)
 
         self.label_4 = QLabel(self.groupBox)
         self.label_4.setObjectName(u"label_4")
@@ -106,37 +97,11 @@ class Ui_create_os_form(object):
 
         self.gridLayout_2.addWidget(self.TxtDevicePass, 1, 1, 1, 1)
 
-        self.CbxDeviceBackup = QComboBox(self.groupBox)
-        self.CbxDeviceBackup.addItem("")
-        self.CbxDeviceBackup.addItem("")
-        self.CbxDeviceBackup.addItem("")
-        self.CbxDeviceBackup.setObjectName(u"CbxDeviceBackup")
+        self.label_5 = QLabel(self.groupBox)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.gridLayout_2.addWidget(self.CbxDeviceBackup, 1, 3, 1, 1)
-
-        self.CbxDeviceWarranty = QComboBox(self.groupBox)
-        self.CbxDeviceWarranty.addItem("")
-        self.CbxDeviceWarranty.addItem("")
-        self.CbxDeviceWarranty.addItem("")
-        self.CbxDeviceWarranty.setObjectName(u"CbxDeviceWarranty")
-
-        self.gridLayout_2.addWidget(self.CbxDeviceWarranty, 2, 3, 1, 1)
-
-        self.label_10 = QLabel(self.groupBox)
-        self.label_10.setObjectName(u"label_10")
-        self.label_10.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
-
-        self.gridLayout_2.addWidget(self.label_10, 3, 0, 1, 1)
-
-        self.SpinDeviceDaigDays = QSpinBox(self.groupBox)
-        self.SpinDeviceDaigDays.setObjectName(u"SpinDeviceDaigDays")
-
-        self.gridLayout_2.addWidget(self.SpinDeviceDaigDays, 2, 1, 1, 1)
-
-        self.TxtDeviceComment = QPlainTextEdit(self.groupBox)
-        self.TxtDeviceComment.setObjectName(u"TxtDeviceComment")
-
-        self.gridLayout_2.addWidget(self.TxtDeviceComment, 3, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.label_5, 0, 2, 1, 1)
 
         self.label_2 = QLabel(self.groupBox)
         self.label_2.setObjectName(u"label_2")
@@ -144,16 +109,16 @@ class Ui_create_os_form(object):
 
         self.gridLayout_2.addWidget(self.label_2, 2, 2, 1, 1)
 
-        self.label_5 = QLabel(self.groupBox)
-        self.label_5.setObjectName(u"label_5")
-        self.label_5.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_6 = QLabel(self.groupBox)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.gridLayout_2.addWidget(self.label_5, 0, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.label_6, 2, 0, 1, 1)
 
-        self.TxtDeviceProblem = QPlainTextEdit(self.groupBox)
-        self.TxtDeviceProblem.setObjectName(u"TxtDeviceProblem")
+        self.SpinDeviceDaigDays = QSpinBox(self.groupBox)
+        self.SpinDeviceDaigDays.setObjectName(u"SpinDeviceDaigDays")
 
-        self.gridLayout_2.addWidget(self.TxtDeviceProblem, 3, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.SpinDeviceDaigDays, 2, 1, 1, 1)
 
         self.TxtDeviceSerial = QLineEdit(self.groupBox)
         self.TxtDeviceSerial.setObjectName(u"TxtDeviceSerial")
@@ -165,6 +130,41 @@ class Ui_create_os_form(object):
         self.label_8.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_8, 1, 2, 1, 1)
+
+        self.CbxDeviceBackup = QComboBox(self.groupBox)
+        self.CbxDeviceBackup.addItem("")
+        self.CbxDeviceBackup.addItem("")
+        self.CbxDeviceBackup.addItem("")
+        self.CbxDeviceBackup.setObjectName(u"CbxDeviceBackup")
+
+        self.gridLayout_2.addWidget(self.CbxDeviceBackup, 1, 3, 1, 1)
+
+        self.label_10 = QLabel(self.groupBox)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+
+        self.gridLayout_2.addWidget(self.label_10, 4, 0, 1, 1)
+
+        self.TxtDeviceModel = QLineEdit(self.groupBox)
+        self.TxtDeviceModel.setObjectName(u"TxtDeviceModel")
+
+        self.gridLayout_2.addWidget(self.TxtDeviceModel, 0, 1, 1, 1)
+
+        self.TxtDevicePeripherials = QLineEdit(self.groupBox)
+        self.TxtDevicePeripherials.setObjectName(u"TxtDevicePeripherials")
+
+        self.gridLayout_2.addWidget(self.TxtDevicePeripherials, 3, 3, 1, 1)
+
+        self.label_15 = QLabel(self.groupBox)
+        self.label_15.setObjectName(u"label_15")
+        self.label_15.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_2.addWidget(self.label_15, 3, 2, 1, 1)
+
+        self.TxtDeviceProblem = QPlainTextEdit(self.groupBox)
+        self.TxtDeviceProblem.setObjectName(u"TxtDeviceProblem")
+
+        self.gridLayout_2.addWidget(self.TxtDeviceProblem, 4, 1, 1, 3)
 
 
         self.verticalLayout_5.addWidget(self.groupBox)
@@ -234,10 +234,10 @@ class Ui_create_os_form(object):
 
         self.verticalLayout_5.addWidget(self.groupBox_2)
 
-        self.BtnSaveDevice = QPushButton(create_os_form)
-        self.BtnSaveDevice.setObjectName(u"BtnSaveDevice")
+        self.BtnCreateOs = QPushButton(create_os_form)
+        self.BtnCreateOs.setObjectName(u"BtnCreateOs")
 
-        self.verticalLayout_5.addWidget(self.BtnSaveDevice)
+        self.verticalLayout_5.addWidget(self.BtnCreateOs)
 
 
         self.retranslateUi(create_os_form)
@@ -255,28 +255,28 @@ class Ui_create_os_form(object):
         self.TxtClientPhone.setPlaceholderText(QCoreApplication.translate("create_os_form", u"1234567890", None))
         self.groupBox.setTitle(QCoreApplication.translate("create_os_form", u"Informaci\u00f3n del dispositivo", None))
         self.label.setText(QCoreApplication.translate("create_os_form", u"Modelo", None))
-        self.label_6.setText(QCoreApplication.translate("create_os_form", u"Dias de diag", None))
-        self.label_11.setText(QCoreApplication.translate("create_os_form", u"Comentario", None))
-        self.TxtDeviceModel.setText("")
-        self.label_4.setText(QCoreApplication.translate("create_os_form", u"Contrase\u00f1a", None))
-        self.CbxDeviceBackup.setItemText(0, QCoreApplication.translate("create_os_form", u"SI", None))
-        self.CbxDeviceBackup.setItemText(1, QCoreApplication.translate("create_os_form", u"NO", None))
-        self.CbxDeviceBackup.setItemText(2, QCoreApplication.translate("create_os_form", u"REVISAR", None))
-
-        self.CbxDeviceBackup.setPlaceholderText(QCoreApplication.translate("create_os_form", u"Seleccionar", None))
         self.CbxDeviceWarranty.setItemText(0, QCoreApplication.translate("create_os_form", u"SI", None))
         self.CbxDeviceWarranty.setItemText(1, QCoreApplication.translate("create_os_form", u"NO", None))
         self.CbxDeviceWarranty.setItemText(2, QCoreApplication.translate("create_os_form", u"REVISAR", None))
 
         self.CbxDeviceWarranty.setPlaceholderText(QCoreApplication.translate("create_os_form", u"Seleccionar", None))
-        self.label_10.setText(QCoreApplication.translate("create_os_form", u"Problema", None))
-        self.label_2.setText(QCoreApplication.translate("create_os_form", u"Garrantia", None))
+        self.label_4.setText(QCoreApplication.translate("create_os_form", u"Contrase\u00f1a", None))
         self.label_5.setText(QCoreApplication.translate("create_os_form", u"Num de serie", None))
+        self.label_2.setText(QCoreApplication.translate("create_os_form", u"Garrantia", None))
+        self.label_6.setText(QCoreApplication.translate("create_os_form", u"Dias de diag", None))
         self.label_8.setText(QCoreApplication.translate("create_os_form", u"Respaldo", None))
+        self.CbxDeviceBackup.setItemText(0, QCoreApplication.translate("create_os_form", u"SI", None))
+        self.CbxDeviceBackup.setItemText(1, QCoreApplication.translate("create_os_form", u"NO", None))
+        self.CbxDeviceBackup.setItemText(2, QCoreApplication.translate("create_os_form", u"REVISAR", None))
+
+        self.CbxDeviceBackup.setPlaceholderText(QCoreApplication.translate("create_os_form", u"Seleccionar", None))
+        self.label_10.setText(QCoreApplication.translate("create_os_form", u"Problema", None))
+        self.TxtDeviceModel.setText("")
+        self.label_15.setText(QCoreApplication.translate("create_os_form", u"Perifericos", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("create_os_form", u"Orden de servicio", None))
         self.label_12.setText(QCoreApplication.translate("create_os_form", u"Ejecutvio", None))
         self.label_14.setText(QCoreApplication.translate("create_os_form", u"Dias de procesamiento", None))
         self.label_13.setText(QCoreApplication.translate("create_os_form", u"Soluci\u00f3n", None))
-        self.BtnSaveDevice.setText(QCoreApplication.translate("create_os_form", u"Guardar Dispositivo", None))
+        self.BtnCreateOs.setText(QCoreApplication.translate("create_os_form", u"Guardar Dispositivo", None))
     # retranslateUi
 
