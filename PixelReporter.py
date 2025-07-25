@@ -315,6 +315,7 @@ class MainWindow(QMainWindow):
             client_phone=info["client_phone"],
             user_name=info["user_name"],
             user_phone=info["user_phone"],
+            not_fac=info["sell_note"],
             model=info["model"],
             issue=info["problem"],
             buy_date=info["buydate"],
@@ -323,11 +324,11 @@ class MainWindow(QMainWindow):
         )
         if 'kor_os_folio' in info:
             card_name = TRELLO_CARD_NAME_TEMPLATE_OS.format(
-                phone=info["user_phone"], name=info["user_name"], buy_date=info["buydate"], service_order =info['kor_os_folio']
+                phone=info["user_phone"], name=info["user_name"], not_fac=info["nota"], service_order=info['kor_os_folio']
             )
         else:
             card_name = TRELLO_CARD_NAME_TEMPLATE.format(
-                phone=info["user_phone"], name=info["user_name"], buy_date=info["buydate"]
+                phone=info["user_phone"], name=info["user_name"], not_fac=info["nota"]
             )
         try:
             card_url = trello.add_card(
@@ -368,10 +369,10 @@ class MainWindow(QMainWindow):
                 info["seller"],  # VENDEDOR
                 "",  # NUEVA NOTA /FACTURA
                 info["model"],  # MODELO DEL EQUIPO
-                "",  # NUMERO DE SERIE
+                info["serial_number"],  # NUMERO DE SERIE
                 "",  # ORDEN DE SERVICIO
                 info["problem"],
-                "",  # Solucion brindada
+                info["solution"],  # Solucion brindada
                 "",  # Recursos, tiempo
                 "",  # Costos
                 "",  # Envios,
