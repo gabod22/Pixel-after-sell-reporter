@@ -315,7 +315,7 @@ class MainWindow(QMainWindow):
             client_phone=info["client_phone"],
             user_name=info["user_name"],
             user_phone=info["user_phone"],
-            not_fac=info["sell_note"],
+            not_fac=info.get("sell_note",""),
             model=info["model"],
             issue=info["problem"],
             buy_date=info["buydate"],
@@ -324,11 +324,11 @@ class MainWindow(QMainWindow):
         )
         if 'kor_os_folio' in info:
             card_name = TRELLO_CARD_NAME_TEMPLATE_OS.format(
-                phone=info["user_phone"], name=info["user_name"], not_fac=info["nota"], service_order=info['kor_os_folio']
+                phone=info["user_phone"], name=info["user_name"], not_fac=info["sell_note"], service_order=info['kor_os_folio']
             )
         else:
             card_name = TRELLO_CARD_NAME_TEMPLATE.format(
-                phone=info["user_phone"], name=info["user_name"], not_fac=info["nota"]
+                phone=info["user_phone"], name=info["user_name"], not_fac=info["sell_note"]
             )
         try:
             card_url = trello.add_card(
@@ -353,31 +353,30 @@ class MainWindow(QMainWindow):
             "☑️ Error al guardar en google"
         data = [
             [
-                info["nota"],  # Nota / factura
-                info.get("kor_os_folio", ""), # Orden de servicio
-                info["client_name"],  # Nombre del cliente
-                info["client_phone"],  # Telefono del cliente
-                info["user_name"],  # nombre usuario
-                info["user_phone"],  # Telefono del cliente
-                info["buydate"],  # Fecha de compra
-                "",  # Dias Restantes
-                info["today"],  # INICIO
+                info.get("sell_note", ""),  # Nota / factura
+                info.get("kor_os_folio", ""),  # Orden de servicio
+                info.get("client_name", ""),  # Nombre del cliente
+                info.get("client_phone", ""),  # Telefono del cliente
+                info.get("user_name", ""),  # Nombre usuario
+                info.get("user_phone", ""),  # Teléfono del usuario
+                info.get("buydate", ""),  # Fecha de compra
+                "",  # Días restantes
+                info.get("today", ""),  # INICIO
                 "",  # FIN
                 True,  # ACTIVO
-                info["type"],
-                info["employee"],
-                info["seller"],  # VENDEDOR
+                info.get("type", ""),
+                info.get("employee", ""),
+                info.get("seller", ""),  # VENDEDOR
                 "",  # NUEVA NOTA /FACTURA
-                info["model"],  # MODELO DEL EQUIPO
-                info["serial_number"],  # NUMERO DE SERIE
-                "",  # ORDEN DE SERVICIO
-                info["problem"],
-                info["solution"],  # Solucion brindada
+                info.get("model", ""),  # MODELO DEL EQUIPO
+                info.get("serial_number", ""),  # NÚMERO DE SERIE
+                info.get("problem", ""),
+                info.get("solution", ""),  # Solución brindada
                 "",  # Recursos, tiempo
                 "",  # Costos
-                "",  # Envios,
+                "",  # Envíos
                 None,
-                info["card_url"],  # URL trello
+                info.get("card_url", ""),  # URL Trello
             ]
         ]
         if worksheet:
@@ -413,7 +412,7 @@ class MainWindow(QMainWindow):
                 if self.ui.CheckManualMode.isChecked()
                 else date
             ),
-            "nota": self.ui.TxtSellNote.text(),
+            "sell_note": self.ui.TxtSellNote.text(),
             "model": self.ui.CbxModel.currentText(),
             "type": self.ui.CbxType.currentText(),
             "problem": self.ui.TxtProblem.toPlainText(),

@@ -1,8 +1,12 @@
-START_DATE = "2024-01-01"
-K_ENDPOING = "https://biz.kordata.mx/graphql"
-K_LOGIN_ENDPOINT = "https://one.kordata.mx/api/commons/iniciar-sesion"
-K_LOGOUT_ENDPOINT = "https://one.kordata.mx/api/commons/cerrar-sesion"
-K_MASIVE_LOGOUT_ENDPOINT = "https://one.kordata.mx/api/commons/cerrar-sesion-masivo"
+import datetime
+from globals import getConfig
+config = getConfig()
+date = datetime.datetime.strptime(config["KORDATA"]['START_DATE'], "%d/%m/%Y")
+START_DATE = date.strftime("%Y-%m-%d")
+K_ENDPOING = "https://biz3.kordata.mx/graphql"
+K_LOGIN_ENDPOINT = "https://one3.kordata.mx/api/commons/iniciar-sesion"
+K_LOGOUT_ENDPOINT = "https://one3.kordata.mx/api/commons/cerrar-sesion"
+K_MASIVE_LOGOUT_ENDPOINT = "https://one3.kordata.mx/api/commons/cerrar-sesion-masivo"
 
 sell_notes_columns = [
     "Folio",
@@ -26,3 +30,5 @@ items_cols = [
     "Subtotal",
     "Importe",
 ]
+
+print(START_DATE)

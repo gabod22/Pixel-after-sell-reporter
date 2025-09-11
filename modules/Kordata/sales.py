@@ -24,6 +24,7 @@ def get_sales_invoices(progress_callback, on_error, show_dialog):
         items.pop(0)
         progress_callback.emit("Facturas de ventas obtenidas correctamente")
         # print(invoices)
+        
         return invoices, items
     except Exception as e:
         print("Error al obtener las facturas de ventas:", e)
@@ -54,8 +55,10 @@ def get_sales_notes(progress_callback, on_error, show_dialog):
         items = response["data"]["BasesReportesGenerarReportePorId"][
             "resultadoReporteHashmap"
         ][0]["detalle"]
+        
         items.pop(0)
         progress_callback.emit("Notas de venta obtenidas correctamente")
+        print(sales_notes)
         
         return sales_notes, items
     except Exception as e:
