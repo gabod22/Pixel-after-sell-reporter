@@ -36,6 +36,7 @@ class ConfigDialog(QDialog):
         self.config['KORDATA']['START_DATE'] = self.ui.dateKordataStartDate.text()
         self.config['TRELLO_DEFAULT_AGENT'] = self.ui.CbxAgents.currentText()
         self.config['KORDATA']['AUTOLOGIN'] = self.ui.ChkAutoLogin.isChecked()
+        self.config['KORDATA']['OPEN_DIALOG_CREATE_OS'] = self.ui.ChkDialogCreateOS.isChecked()
 
         
 
@@ -56,6 +57,7 @@ class ConfigDialog(QDialog):
         self.ui.dateKordataStartDate.setDate(date)
         self.ui.CbxAgents.setCurrentText(self.config['TRELLO_DEFAULT_AGENT'])
         self.ui.ChkAutoLogin.setChecked(self.config['KORDATA']['AUTOLOGIN'])
+        self.ui.ChkDialogCreateOS.setChecked(self.config['KORDATA'].get('OPEN_DIALOG_CREATE_OS', True))
         
     @staticmethod
     def launch(parent):

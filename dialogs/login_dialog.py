@@ -13,6 +13,7 @@ class LoginDialog(QDialog):
         self.ui.BtnSubmit.clicked.connect(self.attempt_login)
         self.config = getConfig()
         self.ui.TxtEmail.setText(self.config['KORDATA']['USERNAME'])
+        self.ui.CheckAutoClose.setChecked(self.config['KORDATA'].get('AUTOLOGIN', False))
 
     def attempt_login(self):
         email = self.ui.TxtEmail.text().strip()

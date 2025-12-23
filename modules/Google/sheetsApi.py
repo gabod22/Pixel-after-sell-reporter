@@ -52,7 +52,7 @@ class WorksheetApi():
         self.ensure_enough_rows(target_row)
 
         # Insertar el índice como primer valor en la fila
-        data[0].insert(0, new_row_index)
+        # data[0].insert(0, new_row_index)
 
         cell_start = f"A{target_row}"
         logging.debug(f"Escribiendo en última fila {cell_start}")

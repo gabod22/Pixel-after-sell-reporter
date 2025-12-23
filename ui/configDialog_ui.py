@@ -94,15 +94,20 @@ class Ui_ConfigDialog(object):
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.verticalLayout_5 = QVBoxLayout(self.groupBox_2)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.label_2 = QLabel(self.groupBox_2)
+        self.label_2.setObjectName(u"label_2")
+
+        self.verticalLayout_5.addWidget(self.label_2)
+
         self.dateKordataStartDate = QDateEdit(self.groupBox_2)
         self.dateKordataStartDate.setObjectName(u"dateKordataStartDate")
 
         self.verticalLayout_5.addWidget(self.dateKordataStartDate)
 
-        self.checkBox = QCheckBox(self.groupBox_2)
-        self.checkBox.setObjectName(u"checkBox")
+        self.ChkDialogCreateOS = QCheckBox(self.groupBox_2)
+        self.ChkDialogCreateOS.setObjectName(u"ChkDialogCreateOS")
 
-        self.verticalLayout_5.addWidget(self.checkBox)
+        self.verticalLayout_5.addWidget(self.ChkDialogCreateOS)
 
 
         self.verticalLayout_3.addWidget(self.groupBox_2)
@@ -141,7 +146,8 @@ class Ui_ConfigDialog(object):
         self.label.setText(QCoreApplication.translate("ConfigDialog", u"Correo Kordata", None))
         self.ChkAutoLogin.setText(QCoreApplication.translate("ConfigDialog", u"Cerrar sesiones automaticamente", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ConfigDialog", u"Funcionalidad", None))
-        self.checkBox.setText(QCoreApplication.translate("ConfigDialog", u"CheckBox", None))
+        self.label_2.setText(QCoreApplication.translate("ConfigDialog", u"Fecha inicio de extraci\u00f3n de datos", None))
+        self.ChkDialogCreateOS.setText(QCoreApplication.translate("ConfigDialog", u"Solicitar creaci\u00f3n de OS", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("ConfigDialog", u"Kordata", None))
         self.BtnSaveConfig.setText(QCoreApplication.translate("ConfigDialog", u"Guardar", None))
     # retranslateUi

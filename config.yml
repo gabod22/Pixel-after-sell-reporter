@@ -1,5 +1,6 @@
 KORDATA:
   AUTOLOGIN: true
+  OPEN_DIALOG_CREATE_OS: true
   START_DATE: 01/01/2023
   USERNAME: consultoria@pixel-lap.com
 MEMBERS:

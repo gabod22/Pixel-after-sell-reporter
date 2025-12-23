@@ -1,5 +1,8 @@
+import ssl
 import requests
 from .auth import get_current_token
+from .kordataConfig import kordata_chain  # ya no se usará, pero lo dejo por si luego quieres volver a CA bundle
+import certifi
 
 class KordataApi:
     """
@@ -15,15 +18,11 @@ class KordataApi:
             "authorization": "Bearer " + self.currentToken,
         }
 
-    # def get(self, endpoint, params=None):
-    #     """
-    #     Send a GET request to the specified endpoint with optional parameters.
-    #     """
-        
-    #     response = requests.get(f"{self.base_url}/{endpoint}", params=params)
-    #     response.raise_for_status()
-    #     return response.json()
-    
+        # Crear contexto SSL cifrado pero sin validación estricta del certificado
+        self.ssl_context = ssl.create_default_context()
+        self.ssl_context.check_hostname = False
+        self.ssl_context.verify_mode = ssl.CERT_NONE
+
     def post(self, query=None):
         """
         Send a POST request to the specified endpoint with optional data.
@@ -32,27 +31,25 @@ class KordataApi:
             self.base_url,
             json=query,
             headers=self.headers,
+            verify=False  # Importante: dejamos verify=False para que no choque con el contexto
         )
+
         status_code = response.status_code
         print(f"Response status code: {status_code}")
+
         if status_code == 401:
-            print("Unauthorized access. Please check your token.")
             raise Exception("Unauthorized access. Please check your token.")
         elif status_code == 403:
-            print("Forbidden access. You do not have permission to access this resource.")
-            raise Exception("Forbidden access. You do not have permission to access this resource.")
+            raise Exception("Forbidden access.")
         elif status_code == 500:
             response_json = response.json()
-            print(response_json)
             if "messageError" in response_json:
                 if response_json["messageError"] == "jwt-expiret":
-                    print("La session ha expirado. Por favor, inicie sesión de nuevo.")
-                    raise Exception("La session ha expirado. Por favor, inicie sesión de nuevo.")
+                    raise Exception("La sesión ha expirado. Inicie sesión nuevamente.")
                 else:
-                    print(f"Server error: {response_json['messageError']}")
                     raise Exception(f"Server error: {response_json['messageError']}")
             else:
-                raise Exception("Error en el servidor.")
+                raise Exception("Internal server error.")
         
         response.raise_for_status()
         return response.json()

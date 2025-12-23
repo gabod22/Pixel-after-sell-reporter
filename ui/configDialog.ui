@@ -112,12 +112,19 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Fecha inicio de extración de datos</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QDateEdit" name="dateKordataStartDate"/>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox">
+               <widget class="QCheckBox" name="ChkDialogCreateOS">
                 <property name="text">
-                 <string>CheckBox</string>
+                 <string>Solicitar creación de OS</string>
                 </property>
                </widget>
               </item>

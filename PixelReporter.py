@@ -319,7 +319,7 @@ class MainWindow(QMainWindow):
             model=info["model"],
             issue=info["problem"],
             buy_date=info["buydate"],
-            seller=info["seller"],
+            seller=info["seller"] if info["seller"] == "None" else "No especificado",
             left_days=info["left_days"],
         )
         if 'kor_os_folio' in info:
@@ -355,28 +355,33 @@ class MainWindow(QMainWindow):
             [
                 info.get("sell_note", ""),  # Nota / factura
                 info.get("kor_os_folio", ""),  # Orden de servicio
+                None, # Status
                 info.get("client_name", ""),  # Nombre del cliente
                 info.get("client_phone", ""),  # Telefono del cliente
                 info.get("user_name", ""),  # Nombre usuario
                 info.get("user_phone", ""),  # Teléfono del usuario
-                info.get("buydate", ""),  # Fecha de compra
-                "",  # Días restantes
-                info.get("today", ""),  # INICIO
-                "",  # FIN
-                True,  # ACTIVO
+                None, #whatsapp button
                 info.get("type", ""),
                 info.get("employee", ""),
-                info.get("seller", ""),  # VENDEDOR
-                "",  # NUEVA NOTA /FACTURA
+                None,
+                info.get("problem", ""),
+                None, # Clasificacion problema
+                None, # Area responsable
+                info.get("solution", ""),  # Solución brindada
+                None, # Cambio de equipo?
+                info["seller"] if info["seller"] == "None" else "No especificado",
                 info.get("model", ""),  # MODELO DEL EQUIPO
                 info.get("serial_number", ""),  # NÚMERO DE SERIE
-                info.get("problem", ""),
-                info.get("solution", ""),  # Solución brindada
-                "",  # Recursos, tiempo
-                "",  # Costos
-                "",  # Envíos
-                None,
+                info.get("buydate", ""),  # Fecha de compra
+                None,  # Días restantes
+                None,  # Inicio
+                None,  # Fin
+                None,  # Recursos, tiempo
+                None,  # Envíos
+                None,  # Costos
+                None,  # Costo Total
                 info.get("card_url", ""),  # URL Trello
+                info.get("today", ""),  # Fecha registro
             ]
         ]
         if worksheet:
@@ -419,7 +424,10 @@ class MainWindow(QMainWindow):
             "employee": self.ui.CbxAgent.currentText(),
             "seller": self.ui.TxtSeller.text(),
         }
-        confirm = show_yes_no_dialog(self, "Neuva orden de servicio", "¿Deseas crear la orden de servicio?")
+        if self.config['KORDATA']['OPEN_DIALOG_CREATE_OS']:
+            confirm = show_yes_no_dialog(self, "Neuva orden de servicio", "¿Deseas crear la orden de servicio?")
+        else:
+            confirm = False
         if confirm:
             if check_valid_session():
                 

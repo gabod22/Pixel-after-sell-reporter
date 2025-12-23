@@ -1,12 +1,20 @@
 import datetime
+from os import path
 from globals import getConfig
+
+from globals import dirname
 config = getConfig()
 date = datetime.datetime.strptime(config["KORDATA"]['START_DATE'], "%d/%m/%Y")
 START_DATE = date.strftime("%Y-%m-%d")
-K_ENDPOING = "https://biz3.kordata.mx/graphql"
-K_LOGIN_ENDPOINT = "https://one3.kordata.mx/api/commons/iniciar-sesion"
-K_LOGOUT_ENDPOINT = "https://one3.kordata.mx/api/commons/cerrar-sesion"
-K_MASIVE_LOGOUT_ENDPOINT = "https://one3.kordata.mx/api/commons/cerrar-sesion-masivo"
+K_ENDPOING = "https://biz.kordata.mx/graphql"
+K_LOGIN_ENDPOINT = "https://one.kordata.mx/api/commons/iniciar-sesion"
+K_LOGOUT_ENDPOINT = "https://one.kordata.mx/api/commons/cerrar-sesion"
+K_MASIVE_LOGOUT_ENDPOINT = "https://one.kordata.mx/api/commons/cerrar-sesion-masivo"
+
+kordata_chain = path.join(dirname, "kordata_chain.crt")
+print("Ruta CA:", kordata_chain)
+print("Existe el archivo?:", path.exists(kordata_chain))
+
 
 sell_notes_columns = [
     "Folio",
