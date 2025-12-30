@@ -319,7 +319,7 @@ class MainWindow(QMainWindow):
             model=info["model"],
             issue=info["problem"],
             buy_date=info["buydate"],
-            seller=info["seller"] if info["seller"] == "None" else "No especificado",
+            seller=info["seller"] if info["seller"] != "None" else "No especificado",
             left_days=info["left_days"],
         )
         if 'kor_os_folio' in info:
@@ -369,7 +369,7 @@ class MainWindow(QMainWindow):
                 None, # Area responsable
                 info.get("solution", ""),  # Solución brindada
                 None, # Cambio de equipo?
-                info["seller"] if info["seller"] == "None" else "No especificado",
+                info["seller"] if info["seller"] != "None" else "No especificado",
                 info.get("model", ""),  # MODELO DEL EQUIPO
                 info.get("serial_number", ""),  # NÚMERO DE SERIE
                 info.get("buydate", ""),  # Fecha de compra
