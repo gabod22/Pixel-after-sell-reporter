@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
         try:
             credentials_path = Path(dirname) / "credentials.json"
             token_path =Path(dirname) / "token.json"
-            self.googleContacts = GoogleContactsApi(str(token_path), str(credentials_path))
+            self.googleContacts = GoogleContactsApi(self,str(token_path), str(credentials_path))
         except:
             showFailDialog(
                 self, "No se pudo obtener la información de inicio de sesión"
@@ -105,13 +105,16 @@ class MainWindow(QMainWindow):
     def setup_init_state(self):
         
         self.ui.TxtModel.setVisible(False)
-        self.ui.userInfoFrame.setVisible(False)
-        self.ui.CbxType.addItems(trello_labels.keys())
         self.ui.CheckSameUser.setChecked(True)
+        # self.ui.userInfoFrame.setVisible(False)
         self.ui.TxtUserName.setEnabled(False)
         self.ui.TxtUserPhone.setEnabled(False)
+        self.ui.CbxType.addItems(trello_labels.keys())
         self.ui.CbxAgent.addItems(trello_members.keys())
         self.ui.CbxAgent.setCurrentText(self.config["TRELLO_DEFAULT_AGENT"])
+
+        self.ui.CheckRegisterClient.setEnabled(False)
+        self.ui.CheckRegisterClient.setChecked(False)
         
     def setup_connections(self):
         # Conexiones de botones para copiar texto
@@ -188,8 +191,16 @@ class MainWindow(QMainWindow):
         self.ui.TxtSellNote.setText(str(sell_note))
         self.ui.TxtBuyDate.setText(buy_date)
         self.ui.TxtSeller.setText(seller)
-        self.ui.TxtUserName.setEnabled(False)
-        self.ui.TxtUserPhone.setEnabled(False)
+
+
+        if self.ui.CheckSameUser.isChecked():
+            self.ui.TxtUserName.setEnabled(False)
+            self.ui.TxtUserPhone.setEnabled(False)
+        else:
+            self.ui.TxtUserName.setText("")
+            self.ui.TxtUserPhone.setText("")
+            self.ui.TxtUserName.setEnabled(True)
+            self.ui.TxtUserPhone.setEnabled(True)
 
         # Calcular días restantes de garantía
         now = datetime.now().date()
@@ -200,9 +211,9 @@ class MainWindow(QMainWindow):
             self.ui.LbLeftDays.setText("Sin garantía")
         else:
             self.ui.LbLeftDays.setText(str(left_days))
-
         # Obtener descripciones de los items
         items = sell_note_data.get("items", [])
+        print(items[0])
         items_description = [item.get("Descripcion", "") for item in items]
 
         if not items:
@@ -244,11 +255,11 @@ class MainWindow(QMainWindow):
             self.ui.TxtUserPhone.setText("")
             self.ui.TxtUserName.setEnabled(True)
             self.ui.TxtUserPhone.setEnabled(True)
-            self.ui.userInfoFrame.setVisible(True)
         else:
+            self.ui.TxtUserName.setText(self.ui.TxtClientName.text())
+            self.ui.TxtUserPhone.setText(self.ui.TxtClientPhone.text())
             self.ui.TxtUserName.setEnabled(False)
             self.ui.TxtUserPhone.setEnabled(False)
-            self.ui.userInfoFrame.setVisible(False)
 
     def handle_completion(
         self, text, txt_line: QLineEdit, completer: QCompleter, completing
@@ -308,28 +319,39 @@ class MainWindow(QMainWindow):
             self.clients = {}
 
     def save_to_trello(self, info):
+        """Prepares and saves a card to Trello."""
+        self.statusBar().showMessage("Guardando en Trello...")
         trello = TrelloApi()
-        self.statusBar().showMessage("Guardando en Trello")
+        
+        # Format description using template
         desc = TRELLO_DESCRIPTION_TEMPLATE.format(
             client_name=info["client_name"],
             client_phone=info["client_phone"],
             user_name=info["user_name"],
             user_phone=info["user_phone"],
-            not_fac=info.get("sell_note",""),
+            not_fac=info.get("sell_note", ""),
             model=info["model"],
             issue=info["problem"],
             buy_date=info["buydate"],
             seller=info["seller"] if info["seller"] != "None" else "No especificado",
             left_days=info["left_days"],
         )
+
+        # Determine card name template
         if 'kor_os_folio' in info:
             card_name = TRELLO_CARD_NAME_TEMPLATE_OS.format(
-                phone=info["user_phone"], name=info["user_name"], not_fac=info["sell_note"], service_order=info['kor_os_folio']
+                phone=info["user_phone"], 
+                name=info["user_name"], 
+                not_fac=info["sell_note"], 
+                service_order=info['kor_os_folio']
             )
         else:
             card_name = TRELLO_CARD_NAME_TEMPLATE.format(
-                phone=info["user_phone"], name=info["user_name"], not_fac=info["sell_note"]
+                phone=info["user_phone"], 
+                name=info["user_name"], 
+                not_fac=info["sell_note"]
             )
+
         try:
             card_url = trello.add_card(
                 cardName=card_name,
@@ -337,9 +359,10 @@ class MainWindow(QMainWindow):
                 labels=[info["type"]],
                 members=[info["employee"]],
             )
-        except:
-            return "No se pudo guardar en Trello"
-        return card_url
+            return card_url
+        except Exception as e:
+            logging.error(f"Error saving to Trello: {e}")
+            return None
 
     def save_to_google(self, info):
         self.statusBar().showMessage("Guardando el Google")
@@ -350,38 +373,39 @@ class MainWindow(QMainWindow):
         except Exception as e:
             worksheet = None
             showFailDialog(self,str(e))
-            "☑️ Error al guardar en google"
+            "❌ Error al guardar en google"
         data = [
             [
-                info.get("sell_note", ""),  # Nota / factura
-                info.get("kor_os_folio", ""),  # Orden de servicio
-                None, # Status
-                info.get("client_name", ""),  # Nombre del cliente
-                info.get("client_phone", ""),  # Telefono del cliente
-                info.get("user_name", ""),  # Nombre usuario
-                info.get("user_phone", ""),  # Teléfono del usuario
-                None, #whatsapp button
-                info.get("type", ""),
-                info.get("employee", ""),
-                None,
-                info.get("problem", ""),
-                None, # Clasificacion problema
-                None, # Area responsable
-                info.get("solution", ""),  # Solución brindada
-                None, # Cambio de equipo?
-                info["seller"] if info["seller"] != "None" else "No especificado",
-                info.get("model", ""),  # MODELO DEL EQUIPO
-                info.get("serial_number", ""),  # NÚMERO DE SERIE
-                info.get("buydate", ""),  # Fecha de compra
-                None,  # Días restantes
-                None,  # Inicio
-                None,  # Fin
-                None,  # Recursos, tiempo
-                None,  # Envíos
-                None,  # Costos
-                None,  # Costo Total
-                info.get("card_url", ""),  # URL Trello
-                info.get("today", ""),  # Fecha registro
+                info.get("sell_note", ""),  # a Nota / factura
+                info.get("kor_os_folio", ""),  # b Orden de servicio
+                None, # c Status
+                info.get("client_name", ""),  # d Nombre del cliente
+                info.get("client_phone", ""),  # e Telefono del cliente
+                info.get("user_name", ""),  # f Nombre usuario
+                info.get("user_phone", ""),  # g Teléfono del usuario
+                None, #h whatsapp button
+                info.get("type", ""),#i tipo
+                info.get("employee", ""),#j Empleado
+                None,#k Ultima actualización
+                None,#l fecha ultima actualizacion
+                info.get("problem", ""),#m Problema reportado
+                None, #n Clasificacion problema
+                None, #o Area responsable
+                info.get("solution", ""),  #p Solución brindada
+                "FALSE", #q Cambio de equipo?
+                info["seller"] if info["seller"] != "None" else "No especificado",#r vendedor
+                info.get("model", ""),  #s MODELO DEL EQUIPO
+                info.get("serial_number", ""),  #t NÚMERO DE SERIE
+                info.get("buydate", ""),  #u Fecha de compra
+                None,  #v Días restantes
+                None,  #w Inicio
+                None,  #x Fin
+                None,  #y Recursos, tiempo
+                None,  #z Envíos
+                None,  #aa Costos
+                None,  #ab Costo Total
+                info.get("card_url", ""),  #ac URL Trello
+                info.get("today", ""),  #ad Fecha registro
             ]
         ]
         if worksheet:
@@ -397,26 +421,22 @@ class MainWindow(QMainWindow):
             return "❌ Error al guardar en google"
         return "✅ Guardado en google"
 
-    def save_report(self):
-        result_message = []
+    def _collect_report_data(self):
+        """Collects all data from the UI to be used in saving processes."""
         if not self.ui.CheckManualMode.isChecked():
-            _, client_name, client_phone, date = split_client_info(
-                self.ui.TxtSearch.text()
-            )
-            date = date.strftime("%d/%m/%Y")
-        today = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        data = {
+            _, client_name, client_phone, date = split_client_info(self.ui.TxtSearch.text())
+            buy_date_str = date.strftime("%d/%m/%Y")
+        else:
+            buy_date_str = self.ui.TxtSearch.text()
+
+        return {
             "left_days": self.ui.LbLeftDays.text(),
             "user_name": self.ui.TxtUserName.text(),
             "user_phone": self.ui.TxtUserPhone.text(),
             "client_name": self.ui.TxtClientName.text(),
             "client_phone": self.ui.TxtClientPhone.text(),
-            "today": today,
-            "buydate": (
-                self.ui.TxtSearch.text()
-                if self.ui.CheckManualMode.isChecked()
-                else date
-            ),
+            "today": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "buydate": buy_date_str,
             "sell_note": self.ui.TxtSellNote.text(),
             "model": self.ui.CbxModel.currentText(),
             "type": self.ui.CbxType.currentText(),
@@ -424,74 +444,65 @@ class MainWindow(QMainWindow):
             "employee": self.ui.CbxAgent.currentText(),
             "seller": self.ui.TxtSeller.text(),
         }
-        if self.config['KORDATA']['OPEN_DIALOG_CREATE_OS']:
-            confirm = show_yes_no_dialog(self, "Neuva orden de servicio", "¿Deseas crear la orden de servicio?")
-        else:
-            confirm = False
-        if confirm:
-            if check_valid_session():
-                
-                os_folio = self.launch_save_os_dialog()
-                if os_folio:
-                    print('Folio: ' + os_folio)
-                    data['kor_os_folio'] = os_folio
+
+    def save_report(self):
+        """Main method to orchestrate saving the report across all platforms."""
+        data = self._collect_report_data()
+        result_messages = []
+
+        # Optional: Create Kordata OS
+        if self.config.get('KORDATA', {}).get('OPEN_DIALOG_CREATE_OS'):
+            if show_yes_no_dialog(self, "Nueva orden de servicio", "¿Deseas crear la orden de servicio?"):
+                if check_valid_session():
+                    os_folio = self.launch_save_os_dialog()
+                    if os_folio:
+                        data['kor_os_folio'] = os_folio
+                    else:
+                        return # User cancelled or error occurred in dialog
                 else:
-                    print("El usuario canceló o hubo un error")
+                    showFailDialog(self, "Sesión de Kordata no válida. Inicie sesión de nuevo.")
+                    LoginDialog.launch(self)
                     return
-            else:
-                showFailDialog(self, "No tienes una sesion válda de Kordata, inicia sesión de nuevo para guardar la informaciín")
-                LoginDialog.launch(self)
-                return
-                
-        
+
         self.statusBar().showMessage("Guardando registros...")
-        trello_card_url = self.save_to_trello(data)
-        data["card_url"] = trello_card_url
-        if trello_card_url != "":
-            result_message.append("✅ Guardado en trello")
+
+        # 1. Save to Trello
+        trello_url = self.save_to_trello(data)
+        if trello_url:
+            data["card_url"] = trello_url
+            result_messages.append("✅ Guardado en Trello")
         else:
-            result_message.append("❌ No se pudo guardar en trello")
-        
-        
-        self.statusBar().showMessage("Guardado en trello")
+            result_messages.append("❌ Error al guardar en Trello")
 
-        result_message.append(self.save_to_google(data))
-        self.statusBar().showMessage("Guardado en google sheets")
+        # 2. Save to Google Sheets
+        google_result = self.save_to_google(data)
+        result_messages.append(google_result)
 
-        # Registrar Cliente en Google Contacts
-        if self.ui.CheckRegisterClient.isChecked():
-            try:
-                self.register_contact(name=data["client_name"], phone=data["client_phone"])
-                self.statusBar().showMessage(
-                    "Guardado {} en Google Contacts".format(data["client_name"])
-                )
-                result_message.append('✅ Contacto guardado en google')
-            except:
-                result_message.append('❌ Contacto no guardado en google')
+        # 3. Register Contacts
+        self._handle_contact_registration(data, result_messages)
 
-        # Registrar Usuario en Google Contacts
-        if (
-            not self.ui.CheckSameUser.isChecked()
-        ) and self.ui.CheckRegisterUser.isChecked():
-            if self.googleContacts.verify_connection():
-                try:
-                    self.googleContacts.register_contact(
-                        name=data["user_name"], phone=data["user_phone"]
-                    )
-                    self.statusBar().showMessage(
-                        "Guardado {} en Google Contacts".format(data["client_name"])
-                    )
-                    result_message.append('✅ Contacto guardado en google')
-                except:
-                    result_message.append('❌ Contacto NO guardado en google')
+        showSuccessDialog(self, "\n".join(result_messages))
+        self.statusBar().showMessage("Registro completado con éxito", 4000)
+        self.clear_inputs()
+
+    def _handle_contact_registration(self, data, result_messages):
+        """Handles contact registration for both client and user."""
+
+        if self.googleContacts.verify_connection():
+
+            # User registration (if different from client)
+            if self.ui.CheckRegisterUser.isChecked():
+                if self.googleContacts.verify_connection():
+                    try:
+                        self.googleContacts.register_contact(name=data["user_name"], phone=data["user_phone"])
+                        result_messages.append('✅ Usuario guardado en Google Contacts')
+                    except Exception as e:
+                        logging.error(f"Error saving user contact: {e}")
+                        result_messages.append('❌ Error al guardar usuario en Google')
+                else:
+                    showFailDialog(self, "No se pudo conectar a Google Contacts")
             else:
                 showFailDialog(self, "No se pudo conectar a Google Contacts")
-                self.statusBar().showMessage("Error al conectar con Google Contacts")
-
-        showSuccessDialog(self, "\n ".join(str(item) for item in result_message))
-        self.statusBar().showMessage("Registro guardado exitosamente", 4000)
-                
-        self.clear_inputs()
 
 
     def update_config(self):

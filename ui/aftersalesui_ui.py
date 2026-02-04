@@ -96,8 +96,8 @@ class Ui_MainWindow(object):
         self.userBox.setObjectName(u"userBox")
         self.userBox.setEnabled(True)
         self.userBox.setFlat(False)
-        self.verticalLayout_19 = QVBoxLayout(self.userBox)
-        self.verticalLayout_19.setObjectName(u"verticalLayout_19")
+        self.verticalLayout_17 = QVBoxLayout(self.userBox)
+        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
         self.horizontalLayout_12 = QHBoxLayout()
         self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
         self.verticalLayout_5 = QVBoxLayout()
@@ -158,40 +158,34 @@ class Ui_MainWindow(object):
 
         self.CheckRegisterClient = QCheckBox(self.userBox)
         self.CheckRegisterClient.setObjectName(u"CheckRegisterClient")
-        self.CheckRegisterClient.setChecked(True)
+        self.CheckRegisterClient.setEnabled(True)
+        self.CheckRegisterClient.setCheckable(False)
+        self.CheckRegisterClient.setChecked(False)
 
         self.horizontalLayout_12.addWidget(self.CheckRegisterClient)
 
         self.horizontalLayout_12.setStretch(0, 2)
 
-        self.verticalLayout_19.addLayout(self.horizontalLayout_12)
+        self.verticalLayout_17.addLayout(self.horizontalLayout_12)
 
-        self.userInfoFrame = QFrame(self.userBox)
-        self.userInfoFrame.setObjectName(u"userInfoFrame")
-        self.userInfoFrame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.userInfoFrame.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_17 = QVBoxLayout(self.userInfoFrame)
-        self.verticalLayout_17.setSpacing(0)
-        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
-        self.verticalLayout_17.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.verticalLayout_15 = QVBoxLayout()
         self.verticalLayout_15.setObjectName(u"verticalLayout_15")
-        self.label_3 = QLabel(self.userInfoFrame)
+        self.label_3 = QLabel(self.userBox)
         self.label_3.setObjectName(u"label_3")
 
         self.verticalLayout_15.addWidget(self.label_3)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.TxtUserName = QLineEdit(self.userInfoFrame)
+        self.TxtUserName = QLineEdit(self.userBox)
         self.TxtUserName.setObjectName(u"TxtUserName")
         self.TxtUserName.setStyleSheet(u"")
 
         self.horizontalLayout_2.addWidget(self.TxtUserName)
 
-        self.BtnCopyUser = QPushButton(self.userInfoFrame)
+        self.BtnCopyUser = QPushButton(self.userBox)
         self.BtnCopyUser.setObjectName(u"BtnCopyUser")
         self.BtnCopyUser.setIcon(icon)
 
@@ -205,21 +199,21 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_16 = QVBoxLayout()
         self.verticalLayout_16.setObjectName(u"verticalLayout_16")
-        self.label_10 = QLabel(self.userInfoFrame)
+        self.label_10 = QLabel(self.userBox)
         self.label_10.setObjectName(u"label_10")
 
         self.verticalLayout_16.addWidget(self.label_10)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.TxtUserPhone = QLineEdit(self.userInfoFrame)
+        self.TxtUserPhone = QLineEdit(self.userBox)
         self.TxtUserPhone.setObjectName(u"TxtUserPhone")
         self.TxtUserPhone.setMaximumSize(QSize(100, 16777215))
         self.TxtUserPhone.setStyleSheet(u"")
 
         self.horizontalLayout.addWidget(self.TxtUserPhone)
 
-        self.BtnCopyUserPhone = QPushButton(self.userInfoFrame)
+        self.BtnCopyUserPhone = QPushButton(self.userBox)
         self.BtnCopyUserPhone.setObjectName(u"BtnCopyUserPhone")
         self.BtnCopyUserPhone.setIcon(icon)
 
@@ -231,7 +225,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_3.addLayout(self.verticalLayout_16)
 
-        self.CheckRegisterUser = QCheckBox(self.userInfoFrame)
+        self.CheckRegisterUser = QCheckBox(self.userBox)
         self.CheckRegisterUser.setObjectName(u"CheckRegisterUser")
 
         self.horizontalLayout_3.addWidget(self.CheckRegisterUser)
@@ -239,9 +233,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setStretch(0, 2)
 
         self.verticalLayout_17.addLayout(self.horizontalLayout_3)
-
-
-        self.verticalLayout_19.addWidget(self.userInfoFrame)
 
 
         self.verticalLayout_14.addWidget(self.userBox)

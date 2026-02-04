@@ -1,11 +1,14 @@
 from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import Qt
 
+from pathlib import Path
 from ui.add_contact_dialog_ui import Ui_Dialog
 from googleapiclient.errors import HttpError
 from dialogs import showSuccessDialog, showFailDialog
+from globals import config_file, getConfig, get_current_directory
+from modules.Google.contactsApi import GoogleContactsApi
 
-
+dirname = get_current_directory()
 class AddContactDialog(QDialog):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -13,11 +16,18 @@ class AddContactDialog(QDialog):
         self.parent = parent
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        self.googleContacts = self.parent.googleContacts
+        
         self.ui.BtnSaveContact.clicked.connect(self.save_contact)
         self.ui.BtnCancel.clicked.connect(self.close)
         self.setFixedHeight(74)
-        
+        try:
+            credentials_path = Path(dirname) / "credentials.json"
+            token_path =Path(dirname) / "token.json"
+            self.googleContacts = GoogleContactsApi(self,str(token_path), str(credentials_path))
+        except:
+            showFailDialog(
+                self, "No se pudo obtener la información de inicio de sesión"
+            )
 
         
 
@@ -33,7 +43,7 @@ class AddContactDialog(QDialog):
                     self.close()
                 else:
                     showFailDialog(self, "No se pudo conectar a Google Contacts")
-                    self.statusBar().showMessage("Error al conectar con Google Contacts")
+                    self.parent.statusBar().showMessage("Error al conectar con Google Contacts")
             except HttpError as err:
                 print(err)
                 showFailDialog(self, "No se pudo registrar el contacto")
