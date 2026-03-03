@@ -2,7 +2,7 @@ TRELLO_DESCRIPTION_TEMPLATE = (
         "## Cliente \n"
         "nombre: {client_name} - {client_phone} \n"
         "usuario: {user_name} - {user_phone} \n"
-        "### Modelo \n {model} \n"
+        "### Modelo \n {model} - {model_cost} \n"
         "### Problema \n {issue} \n \n "
         "### Dirección \n [Dirección] \n"
         "### Información de venta\n"

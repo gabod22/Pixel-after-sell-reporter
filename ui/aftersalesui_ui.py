@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'aftersalesui.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.7.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -117,7 +117,7 @@ class Ui_MainWindow(object):
 
         self.BtnCopyClientName = QPushButton(self.userBox)
         self.BtnCopyClientName.setObjectName(u"BtnCopyClientName")
-        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.EditCopy))
+        icon = QIcon(QIcon.fromTheme(u"QIcon::ThemeIcon::EditCopy"))
         self.BtnCopyClientName.setIcon(icon)
 
         self.horizontalLayout_5.addWidget(self.BtnCopyClientName)
@@ -372,6 +372,12 @@ class Ui_MainWindow(object):
         self.BtnCopyModel.setIcon(icon)
 
         self.horizontalLayout_11.addWidget(self.BtnCopyModel)
+
+        self.TxtModelCost = QLineEdit(self.groupBox)
+        self.TxtModelCost.setObjectName(u"TxtModelCost")
+        self.TxtModelCost.setMaximumSize(QSize(70, 16777215))
+
+        self.horizontalLayout_11.addWidget(self.TxtModelCost)
 
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_11)

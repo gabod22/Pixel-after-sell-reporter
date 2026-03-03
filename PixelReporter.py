@@ -81,6 +81,7 @@ class MainWindow(QMainWindow):
         self.simplied_sell_notes = []
         self.clients = {}
         self.info = {}
+        self.current_items = []
 
         self.completer = self.setup_autocomplete()
         self.ui.TxtSearch.setCompleter(self.completer)
@@ -149,6 +150,7 @@ class MainWindow(QMainWindow):
             (self.ui.CheckSameUser.stateChanged, self.handle_same_owner_change),
             (self.ui.CheckManualMode.stateChanged, self.handle_manual_mode_change),
             (self.ui.BtnSave.clicked, lambda: self.save_report()),
+            (self.ui.CbxModel.currentIndexChanged, self.handle_model_change),
         ]
 
         for signal, slot in connections:
@@ -182,6 +184,7 @@ class MainWindow(QMainWindow):
         client_phone = str(sell_note_data["phone"])
         seller = str(sell_note_data["Vendedor"])
         buy_date = date.strftime("%d/%m/%Y")
+        
 
         # Set UI fields
         self.ui.TxtUserName.setText(client_name)
@@ -213,19 +216,34 @@ class MainWindow(QMainWindow):
             self.ui.LbLeftDays.setText(str(left_days))
         # Obtener descripciones de los items
         items = sell_note_data.get("items", [])
-        print(items[0])
+        self.current_items = items
+        print(items)
         items_description = [item.get("Descripcion", "") for item in items]
+
+        self.ui.CbxModel.blockSignals(True)
+        self.ui.CbxModel.clear()
 
         if not items:
             self.ui.TxtModel.setVisible(True)
             self.ui.CbxModel.setDisabled(True)
             self.ui.TxtModel.setFocus()
+            self.ui.TxtModelCost.setText("")
         else:
             self.ui.TxtModel.setVisible(False)
             self.ui.CbxModel.setDisabled(False)
+            self.ui.CbxModel.addItems(items_description)
+            if len(items) == 1:
+                self.ui.CbxModel.setCurrentIndex(0)
+                try:
+                    precio = float(items[0].get("Precio unitario", 0)) * 1.16
+                    self.ui.TxtModelCost.setText(f"{precio:.2f}")
+                except (ValueError, TypeError):
+                    self.ui.TxtModelCost.setText("")
+            else:
+                self.ui.CbxModel.setCurrentIndex(-1)
+                self.ui.TxtModelCost.setText("")
 
-        self.ui.CbxModel.clear()
-        self.ui.CbxModel.addItems(items_description)
+        self.ui.CbxModel.blockSignals(False)
 
         # Guardar datos en self.info
         self.info = {
@@ -235,7 +253,9 @@ class MainWindow(QMainWindow):
             "seller": seller,
             "buy_date": date,
             "warranty_days_left": left_days,
-            "items": items_description
+            "items": items_description,
+            "model_cost": precio
+            
         }
 
     def handle_manual_mode_change(self):
@@ -261,6 +281,19 @@ class MainWindow(QMainWindow):
             self.ui.TxtUserName.setEnabled(False)
             self.ui.TxtUserPhone.setEnabled(False)
 
+    def handle_model_change(self, index):
+        if hasattr(self, 'current_items') and index >= 0 and index < len(self.current_items):
+            item = self.current_items[index]
+            try:
+                precio = float(item.get("Precio unitario", 0)) * 1.16
+                self.ui.TxtModelCost.setText(f"{precio:.2f}")
+                self.info["model_cost"] = f"{precio:.2f}"
+                print(self.info)
+            except (ValueError, TypeError):
+                self.ui.TxtModelCost.setText("")
+        else:
+            self.ui.TxtModelCost.setText("")
+
     def handle_completion(
         self, text, txt_line: QLineEdit, completer: QCompleter, completing
     ):
@@ -281,7 +314,7 @@ class MainWindow(QMainWindow):
         self.ui.TxtClientName.setText("")
         self.ui.TxtClientPhone.setText("")
         self.ui.TxtSeller.setText("")
-        self.ui.CbxModel.clear()
+        self.ui.TxtModelCost.setText("")
         self.ui.TxtProblem.setPlainText("")
         # self.ui.TxtSearch.setText("")
 
@@ -330,6 +363,7 @@ class MainWindow(QMainWindow):
             user_name=info["user_name"],
             user_phone=info["user_phone"],
             not_fac=info.get("sell_note", ""),
+            model_cost=info.get("model_cost", ""),
             model=info["model"],
             issue=info["problem"],
             buy_date=info["buydate"],
@@ -392,9 +426,10 @@ class MainWindow(QMainWindow):
                 None, #n Clasificacion problema
                 None, #o Area responsable
                 info.get("solution", ""),  #p Solución brindada
-                "FALSE", #q Cambio de equipo?
+                None, #q Cambio de equipo?
                 info["seller"] if info["seller"] != "None" else "No especificado",#r vendedor
                 info.get("model", ""),  #s MODELO DEL EQUIPO
+                info.get("model_cost", ""),  #t Costo
                 info.get("serial_number", ""),  #t NÚMERO DE SERIE
                 info.get("buydate", ""),  #u Fecha de compra
                 None,  #v Días restantes
@@ -435,6 +470,7 @@ class MainWindow(QMainWindow):
             "user_phone": self.ui.TxtUserPhone.text(),
             "client_name": self.ui.TxtClientName.text(),
             "client_phone": self.ui.TxtClientPhone.text(),
+            "model_cost": self.ui.TxtModelCost.text(),
             "today": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             "buydate": buy_date_str,
             "sell_note": self.ui.TxtSellNote.text(),

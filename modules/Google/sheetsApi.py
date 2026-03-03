@@ -56,7 +56,7 @@ class WorksheetApi():
 
         cell_start = f"A{target_row}"
         logging.debug(f"Escribiendo en última fila {cell_start}")
-        self.worksheet.update(cell_start, data)
+        self.worksheet.update(cell_start, data, value_input_option="USER_ENTERED")
 
     def insert_notes(self, notes: List[str], row: int):
         for i, note in enumerate(notes):
