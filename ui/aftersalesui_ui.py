@@ -117,7 +117,7 @@ class Ui_MainWindow(object):
 
         self.BtnCopyClientName = QPushButton(self.userBox)
         self.BtnCopyClientName.setObjectName(u"BtnCopyClientName")
-        icon = QIcon(QIcon.fromTheme(u"QIcon::ThemeIcon::EditCopy"))
+        icon = QIcon(QIcon.fromTheme(u"edit-copy"))
         self.BtnCopyClientName.setIcon(icon)
 
         self.horizontalLayout_5.addWidget(self.BtnCopyClientName)

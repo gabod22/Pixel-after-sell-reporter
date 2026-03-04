@@ -125,7 +125,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+                    <iconset theme="edit-copy"/>
                    </property>
                   </widget>
                  </item>
@@ -166,7 +166,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+                    <iconset theme="edit-copy"/>
                    </property>
                   </widget>
                  </item>
@@ -218,7 +218,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+                    <iconset theme="edit-copy"/>
                    </property>
                   </widget>
                  </item>
@@ -262,7 +262,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+                    <iconset theme="edit-copy"/>
                    </property>
                   </widget>
                  </item>
@@ -326,7 +326,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+                    <iconset theme="edit-copy"/>
                    </property>
                   </widget>
                  </item>
@@ -361,7 +361,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+                    <iconset theme="edit-copy"/>
                    </property>
                   </widget>
                  </item>
@@ -402,7 +402,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+                    <iconset theme="edit-copy"/>
                    </property>
                   </widget>
                  </item>
@@ -471,7 +471,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+                    <iconset theme="edit-copy"/>
                    </property>
                   </widget>
                  </item>
@@ -530,7 +530,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
+                    <iconset theme="edit-copy"/>
                    </property>
                   </widget>
                  </item>
