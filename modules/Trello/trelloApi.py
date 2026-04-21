@@ -1,6 +1,7 @@
 import requests
 from .trelloConfig import TRELLO_ID_LIST, TRELLO_KEY, TRELLO_TOKEN, TRELLO_ENDPOINT, TRELLO_HEADERS
 from .trelloConfig import trello_labels, trello_members
+import logging
 
 class TrelloApi:
     def __init__(self):
@@ -41,6 +42,7 @@ class TrelloApi:
                 timeout=10  # Opcional: evita cuelgues por red lenta
             )
         except requests.exceptions.RequestException as e:
+            logging.error(f"Error de conexión con Trello: {e}", exc_info=True)
             raise RuntimeError(f"Error de conexión con Trello: {e}")
 
         # Manejo de errores por código de estado HTTP
@@ -48,25 +50,32 @@ class TrelloApi:
             data = response.json()
             short_url = data.get("shortUrl")
             if not short_url:
+                logging.error("No se recibió un enlace de tarjeta válido desde Trello.")
                 raise RuntimeError("No se recibió un enlace de tarjeta válido desde Trello.")
             return short_url
 
         elif response.status_code == 400:
+            logging.error("Solicitud incorrecta (400). Verifica los datos enviados a Trello.")
             raise RuntimeError("Solicitud incorrecta (400). Verifica los datos enviados.")
 
         elif response.status_code == 401:
+            logging.error("No autorizado (401). Verifica tu token y API key de Trello.")
             raise RuntimeError("No autorizado (401). Verifica tu token y API key de Trello.")
 
         elif response.status_code == 403:
+            logging.error("Prohibido (403). No tienes permisos para agregar tarjetas en este tablero de Trello.")
             raise RuntimeError("Prohibido (403). No tienes permisos para agregar tarjetas en este tablero.")
 
         elif response.status_code == 404:
+            logging.error("Recurso no encontrado en Trello (404). Revisa la URL o el ID del tablero.")
             raise RuntimeError("Recurso no encontrado (404). Revisa la URL o el ID del tablero.")
 
         elif response.status_code >= 500:
+            logging.error("Error del servidor de Trello (500+). Intenta más tarde.")
             raise RuntimeError("Error del servidor de Trello. Intenta más tarde.")
 
         else:
+            logging.error(f"Error inesperado de Trello ({response.status_code}): {response.text}")
             raise RuntimeError(f"Error inesperado ({response.status_code}): {response.text}")
 
     def get_boards(self):

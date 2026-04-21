@@ -76,31 +76,7 @@ class WorksheetApi():
             logging.warning(f"No se encontró el valor '{value}': {e}")
         return -1
 
-    def insert_notes(
-        self,
-        notes: List[str],
-        row: int,
-    ):
-        for i, note in enumerate(notes):
-            if note:
-                cell = f"{LETTERS[i]}{row}"
-                logging.debug(f"Insertando nota en {cell}: {note}")
-                self.worksheet.insert_note(cell, note)
 
-    def find_row_by_value(
-        self,
-        value: str,
-        column: int,
-    ) -> int:
-        logging.info(f"Buscando valor '{value}' en columna {column}")
-        try:
-            cell = self.worksheet.find(value, in_column=column)
-            if cell:
-                logging.debug(f"Encontrado en fila: {cell.row}")
-                return cell.row
-        except Exception as e:
-            logging.warning(f"No se encontró el valor '{value}': {e}")
-        return -1
     
     
 class GoogleSpreadsheetApi:
@@ -116,10 +92,8 @@ class GoogleSpreadsheetApi:
         return WorksheetApi(worksheet)
 
     def get_email(self):
-        
-
         creds = Credentials.from_service_account_file(str(gspread_file))
-        print(creds.service_account_email)
+        logging.info(f"Service account email: {creds.service_account_email}")
             
 
     def get_credentials(
@@ -154,14 +128,14 @@ class GoogleSpreadsheetApi:
         logging.info(f"Accediendo a hoja de cálculo {doc_id}, hoja: {worksheet_name}")
         credentials = self.get_credentials(json_file)
         gspread_client = gspread.service_account(filename=str(json_file))
-        print(gspread_client)
+        logging.debug(f"Google spread client initialised: {gspread_client}")
         try:
             sheet = gspread_client.open_by_key(doc_id)
-            print(f"Título del archivo: {sheet.title}")
+            logging.debug(f"Título del archivo: {sheet.title}")
 
             # Intenta obtener la hoja
             ws = sheet.worksheet(worksheet_name)
-            print(f"Título de la hoja encontrada: {ws.title}")
+            logging.debug(f"Título de la hoja encontrada: {ws.title}")
             return ws
         # except PermissionError:
         #     logging.exception('No tienes permiso para acceder a este worksheet')

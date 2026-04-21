@@ -13,6 +13,7 @@ from dialogs import showSuccessDialog, showFailDialog, show_yes_no_dialog
 from modules.Kordata.korApi import KordataApi
 from modules.Kordata.kordataConfig import K_ENDPOING
 from modules.Kordata.auth import get_current_user, check_valid_session
+import logging
 
 dirname = get_current_directory()
 
@@ -51,8 +52,8 @@ class CreateOSKordata(QDialog):
             + ', numeroPolizaSeguro: "' + str(device["diagnositcs_days"]) + '"'  #Dias de diagnostico
             + "}\n  ) {\nid\n}\n}",
         }
-        response = response = KordataApi(K_ENDPOING).post(post_save_device)
-        print(response)
+        response = KordataApi(K_ENDPOING).post(post_save_device)
+        logging.debug(f"Create device response: {response}")
         
         return response["data"]["VehiculosGuardar"]["id"]
     
@@ -130,11 +131,10 @@ class CreateOSKordata(QDialog):
             "diagnositcs_days": form_data['device']['diagnostic_days'],
         }
         try:
-            
             device_id = self.create_device(device_info)
-            print(device_id)
+            logging.info(f"Device created successfully with ID: {device_id}")
         except Exception as e:
-            print(e)
+            logging.error(f"Error al crear dispositivo: {e}", exc_info=True)
             showFailDialog(self, "No se pudo crear el dispositivo: " + str(e))
             return
         
@@ -158,7 +158,7 @@ class CreateOSKordata(QDialog):
             + "}\n  ) {\n    id\n folioPrefijo \n   }\n}",
             #Producto estructura#{productoId: 3398, descripcion: "MANO DE OBRA GARANTÍA", precioUnitario: 0, cantidad: 1, impuestos: 0, tasasDocumentos: [], subtotal: 0, trazabilidadId: null, asesorServicioId: null, porcentajeDescuento: 0, horasTrabajo: 0, id: null, isDeleted: false}
         }
-        print(create_os_payload)
+        logging.debug(f"Create OS payload: {create_os_payload}")
         response = KordataApi(K_ENDPOING).post(create_os_payload)
         os_folio = response["data"]["OrdenesServiciosGuardar"]["folioPrefijo"]
         

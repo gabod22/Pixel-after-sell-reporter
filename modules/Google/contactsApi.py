@@ -63,8 +63,8 @@ class GoogleContactsApi:
                 # Lanzamos el hilo
                 auth_thread = threading.Thread(target=run_manual_server, daemon=True)
                 auth_thread.start()
-                print("Abre la siguiente URL en tu navegador para autenticarte:")
-                print(self.auth_url)
+                logging.info("Abre la siguiente URL en tu navegador para autenticarte:")
+                logging.info(self.auth_url)
                 # Lanzamos la UI
                 if self.parent:
                     from dialogs.GoogleLoing_dialog import GoogleLogin 

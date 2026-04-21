@@ -3,6 +3,7 @@ from os import path
 from globals import get_current_directory
 from dialogs import show_yes_no_dialog
 import json
+import logging
 from .kordataConfig import (
     K_ENDPOING,
     K_LOGIN_ENDPOINT,
@@ -34,7 +35,7 @@ def login(username, password):
         K_LOGIN_ENDPOINT, json=payload, headers=headers, verify=False
     )
     data_response = response.json()
-    print(data_response)
+    logging.debug(f"Login response: {data_response}")
     if "token" in data_response and data_response["token"] != None:
         with open(path.join(dirname, "token_kordata.json"), "w", encoding="utf-8") as f:
             json.dump(data_response, f, ensure_ascii=False, indent=4)
@@ -65,8 +66,8 @@ def login(username, password):
 
 
 def masive_logout(response):
-    print("Cerrando sesiones masivamente")
-    print(response)
+    logging.info("Cerrando sesiones masivamente")
+    logging.debug(f"Masive logout response: {response}")
     idsBitacora = []
     usuarioId = response["idUsuario"]
     empresaId = response["bitacoraAccesoDto"]["secciones"][0]["usuario"]["empresaId"]
@@ -87,8 +88,8 @@ def masive_logout(response):
         headers=headers,
         verify=False,
     )
-    print("Massive logout", payload)
-    print(response.json())
+    logging.debug(f"Massive logout payload: {payload}")
+    logging.debug(f"Massive logout result: {response.json()}")
 
 
 def logout(token):
@@ -102,7 +103,7 @@ def logout(token):
         headers=headers,
         verify=False,
     )
-    print(response.json())
+    logging.debug(f"Logout result: {response.json()}")
 
 
 def check_valid_session():
@@ -127,7 +128,7 @@ def check_valid_session():
         verify=False,
     )
     r = r.json()
-    print(r)
+    logging.debug(f"Session check response: {r}")
     if "data" in r:
         return True
     return False
@@ -137,10 +138,12 @@ def get_current_token():
     try:
         f = open(path.join(dirname, "token_kordata.json"), "r")
         kordata_session = json.loads(f.read())
-        # print(kordata_session)
         return kordata_session["token"]
-    except:
-        print("No pude obtener el token")
+    except FileNotFoundError:
+        logging.warning("El archivo token_kordata.json no fue encontrado.")
+        return None
+    except Exception as e:
+        logging.error(f"No pude obtener el token: {e}")
         return None
 
 
@@ -149,6 +152,9 @@ def get_current_user():
         f = open(path.join(dirname, "token_kordata.json"), "r")
         kordata_session = json.loads(f.read())
         return kordata_session
-    except:
-        print("No pude obtener el usuario actual")
+    except FileNotFoundError:
+        logging.warning("El archivo token_kordata.json no fue encontrado.")
+        return None
+    except Exception as e:
+        logging.error(f"No pude obtener el usuario actual: {e}")
         return None

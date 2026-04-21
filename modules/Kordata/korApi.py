@@ -1,8 +1,9 @@
 import ssl
 import requests
+from requests.exceptions import HTTPError
+
 from .auth import get_current_token
-from .kordataConfig import kordata_chain  # ya no se usará, pero lo dejo por si luego quieres volver a CA bundle
-import certifi
+import logging
 
 class KordataApi:
     """
@@ -35,21 +36,26 @@ class KordataApi:
         )
 
         status_code = response.status_code
-        print(f"Response status code: {status_code}")
+        logging.debug(f"Kordata API Response status code: {status_code}")
 
         if status_code == 401:
-            raise Exception("Unauthorized access. Please check your token.")
+            logging.error("Unauthorized access. Please check your token.")
+            raise HTTPError("Unauthorized access. Please check your token.")
         elif status_code == 403:
-            raise Exception("Forbidden access.")
+            logging.error("Forbidden access.")
+            raise HTTPError("Forbidden access.")
         elif status_code == 500:
             response_json = response.json()
             if "messageError" in response_json:
                 if response_json["messageError"] == "jwt-expiret":
-                    raise Exception("La sesión ha expirado. Inicie sesión nuevamente.")
+                    logging.warning("La sesión ha expirado. Inicie sesión nuevamente.")
+                    raise HTTPError("La sesión ha expirado. Inicie sesión nuevamente.")
                 else:
-                    raise Exception(f"Server error: {response_json['messageError']}")
+                    logging.error(f"Server error: {response_json['messageError']}")
+                    raise HTTPError(f"Server error: {response_json['messageError']}")
             else:
-                raise Exception("Internal server error.")
+                logging.error("Internal server error.")
+                raise HTTPError("Internal server error.")
         
         response.raise_for_status()
         return response.json()

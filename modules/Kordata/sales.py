@@ -1,5 +1,6 @@
 from .korApi import KordataApi
 from .kordataConfig import START_DATE, K_ENDPOING
+import logging
 
 
 def get_sales_invoices(progress_callback, on_error, show_dialog):
@@ -23,15 +24,13 @@ def get_sales_invoices(progress_callback, on_error, show_dialog):
         ][0]["detalle"]
         items.pop(0)
         progress_callback.emit("Facturas de ventas obtenidas correctamente")
-        # print(invoices)
+        logging.debug(f"Facturas obtenidas: {len(invoices)} invoices, {len(items)} items")
         
         return invoices, items
     except Exception as e:
-        print("Error al obtener las facturas de ventas:", e)
-        on_error.emit("Error al obtener las facturas de ventas: " + str(e))
+        logging.error(f"Error al obtener las facturas de ventas: {e}", exc_info=True)
+        on_error.emit(f"Error al obtener las facturas de ventas: {e}")
         return [], []
-
-    # print(type(data))
     
 
 
@@ -58,9 +57,10 @@ def get_sales_notes(progress_callback, on_error, show_dialog):
         
         items.pop(0)
         progress_callback.emit("Notas de venta obtenidas correctamente")
-        print(sales_notes)
+        logging.debug(f"Notas de venta obtenidas: {len(sales_notes)} notes, {len(items)} items")
         
         return sales_notes, items
     except Exception as e:
+        logging.error(f"Error al obtener las notas de venta: {e}", exc_info=True)
         on_error.emit("Error al obtener las notas de venta: " + str(e))
         return [], []

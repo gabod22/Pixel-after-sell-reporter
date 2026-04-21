@@ -1,12 +1,10 @@
 import pandas as pd
 from pandas import DataFrame
-from datetime import datetime 
+from datetime import datetime
 from os import path
 import yaml
 import sys
-# from tabulate import tabulate 
-
-# pd.set_option('mode.chained_assignment', None)
+import logging
 
 
 """get the directory of the current script or executable"""
@@ -35,14 +33,15 @@ def merge_dict(dict1, dict2):
     return res
 
 def split_client_info(string):
-    if string != None or string != "":
-        print(string)
+    if string is not None and string != "":
+        logging.debug(f"Splitting client info string: {string}")
         client_arr = string.split(" - ")
         client_id = client_arr[0]
         client_name = client_arr[1]
         client_phone = client_arr[-2]
         date = datetime.strptime(client_arr[-1], '%Y-%m-%d %H:%M:%S.%f').date()
         return client_id, client_name, client_phone, date
+    return None, None, None, None
 
 def array_to_string(arr):
     string = ""
@@ -86,8 +85,12 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
     id_items = {}
     try:
         detailed_table = pd.read_excel(detailed_filepath)
+    except FileNotFoundError as e:
+        logging.error(f"El archivo {detailed_filepath} no fue encontrado: {e}")
+        raise FileNotFoundError(f"No se pudo abrir el documento: {e}")
     except Exception as e:
-        raise "No se pudo abrir el documento:" + e
+        logging.error(f"Error inesperado al leer {detailed_filepath}: {e}", exc_info=True)
+        raise RuntimeError(f"Error inesperado al abrir el documento: {e}")
 
     detailed_table.drop(detailed_table.index[0:7], inplace=True)
     detailed_table = detailed_table.reset_index(drop=True)
@@ -99,9 +102,9 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
     simplified_table = detailed_table.dropna(subset=detailed_table.columns[0], inplace=False)
     if folio_column_index != 0:
         folio_column = simplified_table.pop('Folio')
-        print("El folio está en la columna: ", folio_column_index)
+        logging.info(f"El folio está en la columna: {folio_column_index}")
         simplified_table.insert(0, folio_column.name, folio_column)
-    # print(tabulate(detailed_table))
+    
     last_index = get_last_index(detailed_table)
 
     table_indexs = simplified_table.index.append(pd.Index([last_index]))
@@ -120,7 +123,6 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
         ).set_axis(simplified_table.index)
     simplified_table_list = df_to_list_str(simplified_table, ["Folio","Nombre del cliente", "Teléfono", "Fecha registro"])
     dict_by_folio = df_to_dict_by_folio(simplified_table)
-    # print(simplified_table_list)
     
     
     for inx in range(len(table_indexs) - 1):
@@ -136,7 +138,7 @@ def process_kor_table(detailed_filepath, header, items_header, tables_to_merge):
                 items = []
             else:
                 items = df_to_list_str(items_df, ["SKU", "Descripcion"])
-            # print(sell_notes_list)
+                
             id = simplified_table.iloc[inx, 0]
 
             id_items[id] = items
@@ -166,9 +168,9 @@ def save_excel(df: pd.DataFrame, book_name: str, sheet_name: str):
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
 
-def replace_nan(string, replace= ""):
-    if type(string) == float:
-        print(string, type(string))
+def replace_nan(string, replace=""):
+    if isinstance(string, float):
+        logging.debug(f"Replacing NaN/float: {string} (type: {type(string)})")
         return replace
     return f"{string}"
 

@@ -5,6 +5,7 @@ import re
 from modules.helpers import convert_size
 import asyncio
 import json
+import logging
 
 
 class CustomDialog(QDialog):
@@ -94,4 +95,4 @@ class RegisterFormDialog(QDialog):
             self.parent.this_computer = json.loads(r)
             self.accept()
             if "warn" in r:
-                print(r)
+                logging.warning(r)

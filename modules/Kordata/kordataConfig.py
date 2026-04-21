@@ -11,9 +11,10 @@ K_LOGIN_ENDPOINT = "https://one.kordata.mx/api/commons/iniciar-sesion"
 K_LOGOUT_ENDPOINT = "https://one.kordata.mx/api/commons/cerrar-sesion"
 K_MASIVE_LOGOUT_ENDPOINT = "https://one.kordata.mx/api/commons/cerrar-sesion-masivo"
 
+import logging
+
 kordata_chain = path.join(dirname, "kordata_chain.crt")
-print("Ruta CA:", kordata_chain)
-print("Existe el archivo?:", path.exists(kordata_chain))
+logging.info(f"Ruta CA: {kordata_chain}, Existe el archivo?: {path.exists(kordata_chain)}")
 
 
 sell_notes_columns = [
@@ -38,5 +39,4 @@ items_cols = [
     "Subtotal",
     "Importe",
 ]
-
-print(START_DATE)
+logging.debug(f"START_DATE used in kordata app is: {START_DATE}")

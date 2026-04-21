@@ -1,5 +1,7 @@
 from PySide6.QtWidgets import QMessageBox
 
+import logging
+
 def showSuccessDialog(parent,message):
     msgBox = QMessageBox(parent=parent)
     msgBox.setIcon(QMessageBox.Information)
@@ -9,7 +11,7 @@ def showSuccessDialog(parent,message):
 
     returnValue = msgBox.exec()
     if returnValue == QMessageBox.Ok:
-        print('OK clicked')
+        logging.debug('OK clicked on success dialog')
 
 def showFailDialog(parent, message):
     msgBox = QMessageBox(parent=parent)
@@ -20,7 +22,7 @@ def showFailDialog(parent, message):
 
     returnValue = msgBox.exec()
     if returnValue == QMessageBox.Ok:
-        print('OK clicked')
+        logging.debug('OK clicked on fail dialog')
         
 def show_yes_no_dialog(parent, title, text):
     msg_box = QMessageBox(parent=parent)

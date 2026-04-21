@@ -3,12 +3,10 @@ from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QLineEdit,
-    QApplication,
     QCompleter,
 )
 from PySide6.QtCore import QSize, Qt, QStringListModel
-from PySide6.QtGui import QIcon
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QIcon, QGuiApplication
 
 from ui.aftersalesui_ui import Ui_MainWindow
 
@@ -93,15 +91,13 @@ class MainWindow(QMainWindow):
         self.load_info()
         try:
             credentials_path = Path(dirname) / "credentials.json"
-            token_path =Path(dirname) / "token.json"
-            self.googleContacts = GoogleContactsApi(self,str(token_path), str(credentials_path))
-        except:
+            token_path = Path(dirname) / "token.json"
+            self.googleContacts = GoogleContactsApi(self, str(token_path), str(credentials_path))
+        except Exception as e:
+            logging.error(f"No se pudo obtener la información de inicio de sesión: {e}")
             showFailDialog(
                 self, "No se pudo obtener la información de inicio de sesión"
             )
-            
-        
-    
             
     def setup_init_state(self):
         
@@ -217,7 +213,7 @@ class MainWindow(QMainWindow):
         # Obtener descripciones de los items
         items = sell_note_data.get("items", [])
         self.current_items = items
-        print(items)
+        logging.debug(f"Items details: {items}")
         items_description = [item.get("Descripcion", "") for item in items]
 
         self.ui.CbxModel.blockSignals(True)
@@ -288,7 +284,7 @@ class MainWindow(QMainWindow):
                 precio = float(item.get("Precio unitario", 0)) * 1.16
                 self.ui.TxtModelCost.setText(f"{precio:.2f}")
                 self.info["model_cost"] = f"{precio:.2f}"
-                print(self.info)
+                logging.debug(f"Info model_cost updated: {self.info}")
             except (ValueError, TypeError):
                 self.ui.TxtModelCost.setText("")
         else:
@@ -324,8 +320,7 @@ class MainWindow(QMainWindow):
         sells_file = data_dir / "sells.pkl"
         clients_file = data_dir / "clients.pkl"
         
-        print(search_data_file, search_data_file.is_file())
-        print(sells_file, sells_file.is_file())
+        logging.info(f"Checking data files: search_data_file={search_data_file.is_file()}, sells_file={sells_file.is_file()}")
 
         if search_data_file.is_file() and sells_file.is_file():
             try:
@@ -412,6 +407,7 @@ class MainWindow(QMainWindow):
             [
                 info.get("sell_note", ""),  # a Nota / factura
                 info.get("kor_os_folio", ""),  # b Orden de servicio
+                None, # c status kordata
                 None, # c Status
                 info.get("client_name", ""),  # d Nombre del cliente
                 info.get("client_phone", ""),  # e Telefono del cliente
@@ -422,6 +418,7 @@ class MainWindow(QMainWindow):
                 info.get("employee", ""),#j Empleado
                 None,#k Ultima actualización
                 None,#l fecha ultima actualizacion
+                None, #N Boton recordatorio
                 info.get("problem", ""),#m Problema reportado
                 None, #n Clasificacion problema
                 None, #o Area responsable
@@ -445,7 +442,7 @@ class MainWindow(QMainWindow):
         ]
         if worksheet:
             try:
-                print("escribiendo en la ultima fila")
+                logging.info("Escribiendo en la ultima fila del spreadsheet de Google.")
                 worksheet.write_in_last_row(data)
             except Exception as e:
                 showFailDialog(self, "Ocurrió un error al guardar en Google")

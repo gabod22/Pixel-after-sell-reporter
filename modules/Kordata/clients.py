@@ -1,5 +1,6 @@
 from .korApi import KordataApi
 from .kordataConfig import K_ENDPOING
+import logging
 def get_clients(progress_callback, on_error, show_dialog):
     try:
         progress_callback.emit("Obteniendo clientes...")
@@ -16,7 +17,7 @@ def get_clients(progress_callback, on_error, show_dialog):
         progress_callback.emit("Clientes obtenidos correctamente")
         return clients
     except Exception as e:
-        print("Error al obtener los clientes:", e)
-        on_error.emit("Error al obtener los clientes: " + str(e))
+        logging.error(f"Error al obtener los clientes: {e}", exc_info=True)
+        on_error.emit(f"Error al obtener los clientes: {e}")
         return []
         

@@ -4,6 +4,7 @@ from PySide6.QtCore import QTimer, QRunnable, Slot, Signal, QObject, QThreadPool
 import sys
 import time
 import traceback
+import logging
 
 
 class WorkerSignals(QObject):
@@ -70,9 +71,9 @@ class Worker(QRunnable):
         # Retrieve args/kwargs here; and fire processing using them
         try:
             result = self.fn(*self.args, **self.kwargs)
-            # print('desde worker',result)
-        except:
-            traceback.print_exc()
+            logging.debug(f"Worker {self.fn.__name__} result: {result}")
+        except Exception as e:
+            logging.error(f"Error in worker {self.fn.__name__}: {e}", exc_info=True)
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:

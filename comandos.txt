@@ -1,0 +1,1 @@
+pyinstaller  --icon assets\icono.ico --add-data=assets\*:assets --add-data=config.yml:. --add-data=credentials.json:.  --add-data=aftersales-438922-93709469aa37.json:. --add-data=kordata_chain.crt:. --noconsole  PixelReporter.py   

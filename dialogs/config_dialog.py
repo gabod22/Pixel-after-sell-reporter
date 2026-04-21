@@ -10,6 +10,7 @@ from globals import config_file, getConfig, get_current_directory
 from modules.Trello.trelloConfig import trello_members
 
 from dialogs import showSuccessDialog, showFailDialog, show_yes_no_dialog
+import logging
 
 
 # from gspread import *
@@ -46,9 +47,9 @@ class ConfigDialog(QDialog):
             showSuccessDialog(self,'Se cambio la configuracion correctamente')
             self.parent.update_config()
         except Exception as e:
+            logging.error(f"Error al guardar configuración: {e}", exc_info=True)
             showFailDialog(self,
                 'No se guardo la configuracion, pruebe manualmente')
-            print(e)
             
             
     def set_config(self):

@@ -9,7 +9,8 @@ TRELLO_ID_LIST="66db40b0006d1f0947656dec"
 # Load configuration from YAML file
 
 
+import logging
 trello_labels = getConfig()['TRELLO_LABELS']
-print(f"trello_labels: {trello_labels}")
+logging.debug(f"trello_labels: {trello_labels}")
 
 trello_members = getConfig()['MEMBERS']

@@ -7,6 +7,7 @@ from googleapiclient.errors import HttpError
 from dialogs import showSuccessDialog, showFailDialog
 from globals import config_file, getConfig, get_current_directory
 from modules.Google.contactsApi import GoogleContactsApi
+import logging
 
 dirname = get_current_directory()
 class AddContactDialog(QDialog):
@@ -24,12 +25,11 @@ class AddContactDialog(QDialog):
             credentials_path = Path(dirname) / "credentials.json"
             token_path =Path(dirname) / "token.json"
             self.googleContacts = GoogleContactsApi(self,str(token_path), str(credentials_path))
-        except:
+        except Exception as e:
+            logging.error(f"Error cargando sesión de google contacts en AddContact: {e}")
             showFailDialog(
                 self, "No se pudo obtener la información de inicio de sesión"
             )
-
-        
 
     def save_contact(self):
         name = self.ui.TxtContactName.text().strip()
@@ -45,8 +45,11 @@ class AddContactDialog(QDialog):
                     showFailDialog(self, "No se pudo conectar a Google Contacts")
                     self.parent.statusBar().showMessage("Error al conectar con Google Contacts")
             except HttpError as err:
-                print(err)
+                logging.error(f"Error HTTP al guardar contacto: {err}")
                 showFailDialog(self, "No se pudo registrar el contacto")
+            except Exception as e:
+                logging.error(f"Error inesperado al guardar contacto: {e}")
+                showFailDialog(self, "Ocurrió un error inesperado al registrar el contacto")
         else:
             showFailDialog(self, "Por favor, complete todos los campos")
     
